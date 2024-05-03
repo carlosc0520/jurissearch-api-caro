@@ -4,6 +4,7 @@ import procedures from '../configMappers';
 import { User } from '../../models/admin/user.model'
 import { Result } from '../../models/result.model';
 import { DataTable } from '../../models/DataTable.model.';
+import { query } from 'express';
 
 @Injectable()
 export class UserService {
@@ -48,6 +49,43 @@ export class UserService {
             return { MESSAGE, STATUS: isSuccess };
         } catch (error) {
             const MESSAGE = error.originalError?.info?.message || "Ocurrió un error al intentar agregar el usuario";
+            return { MESSAGE, STATUS: false };
+        }
+    }
+
+    async editUser(entidad: User): Promise<Result> {
+        let queryAsync = procedures.ADMIN.USUARIO.CRUD;
+        queryAsync += ` @p_cData = ${entidad ? `'${JSON.stringify(entidad)}'` : null},`;
+        queryAsync += ` @p_cUser = ${entidad?.USER ? `'${entidad.USER}'` : null},`;
+        queryAsync += ` @p_nTipo = ${1},`;
+        queryAsync += ` @p_nId = ${entidad?.ID}`;
+
+        console.log(queryAsync)
+        try {
+            const result = await this.connection.query(queryAsync);
+            const isSuccess = result?.[0]?.RESULT > 0;
+            const MESSAGE = isSuccess ? "Usuario editado correctamente" : "Ocurrió un error al intentar editar el usuario";
+            return { MESSAGE, STATUS: isSuccess };
+        } catch (error) {
+            const MESSAGE = error.originalError?.info?.message || "Ocurrió un error al intentar editar el usuario";
+            return { MESSAGE, STATUS: false };
+        }
+    }
+
+    async deleteUser(id: number): Promise<Result> {
+        let queryAsync = procedures.ADMIN.USUARIO.CRUD;
+        queryAsync += ` @p_cData = ${null},`;
+        queryAsync += ` @p_cUser = ${null},`;
+        queryAsync += ` @p_nTipo = ${2},`;
+        queryAsync += ` @p_nId = ${id}`;
+
+        try {
+            const result = await this.connection.query(queryAsync);
+            const isSuccess = result?.[0]?.RESULT > 0;
+            const MESSAGE = isSuccess ? "Usuario eliminado correctamente" : "Ocurrió un error al intentar eliminar el usuario";
+            return { MESSAGE, STATUS: isSuccess };
+        } catch (error) {
+            const MESSAGE = error.originalError?.info?.message || "Ocurrió un error al intentar eliminar el usuario";
             return { MESSAGE, STATUS: false };
         }
     }

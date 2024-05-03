@@ -22,5 +22,17 @@ export class UsuarioController {
         return await this.userService.list(entidad, IDROLE);
     }
 
+    @Post('delete')
+    async deleteUser(@Body('ID') ID: number): Promise<Result> {
+        return await this.userService.deleteUser(ID);
+    }
+
+    @Post('edit')
+    async editUser(@Body() entidad: User): Promise<Result> {
+        const admin = "ADMIN";
+        entidad.USER = entidad.EMAIL.split('@')?.[0] || entidad.EMAIL;
+        return await this.userService.editUser(entidad);
+    }
+
 
 }
