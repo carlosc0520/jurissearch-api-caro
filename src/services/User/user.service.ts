@@ -1,7 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 import procedures from '../configMappers';
-import { User } from '../../models/user.model'
+import { User } from '../../models/admin/user.model'
+import { Result } from '../../models/result.model';
+import { DataTable } from '../../models/DataTable.model.';
 
 @Injectable()
 export class UserService {
@@ -32,36 +34,36 @@ export class UserService {
         }
     }
 
-    async createUser(entidad: User): Promise<User> {
-        try {
-            // VALIDAR SI EXISTE USUARIO
-            let queryAsync = procedures.JURIS?.['createUser'];
-            queryAsync += ` @EMAIL = ${entidad?.EMAIL ? `'${entidad.EMAIL}'` : null},`;
-            queryAsync += ` @PASSWORD = ${entidad?.PASSWORD ? `'${entidad.PASSWORD}'` : null},`;
-            queryAsync += ` @NOMBRES = ${entidad?.NOMBRES ? `'${entidad.NOMBRES}'` : null},`;
-            queryAsync += ` @APELLIDO = ${entidad?.APELLIDO ? `'${entidad.APELLIDO}'` : null},`;
-            queryAsync += ` @APATERNO = ${entidad?.APATERNO ? `'${entidad.APATERNO}'` : null},`;
-            queryAsync += ` @AMATERNO = ${entidad?.AMATERNO ? `'${entidad.AMATERNO}'` : null},`;
-            queryAsync += ` @TELEFONO = ${entidad?.TELEFONO ? `'${entidad.TELEFONO}'` : null},`;
-            queryAsync += ` @FNACIMIENTO = ${entidad?.FNACIMIENTO ? `'${entidad.FNACIMIENTO}'` : null},`;
-            queryAsync += ` @EBLOQUEO = ${entidad?.EBLOQUEO ? `'${entidad.EBLOQUEO}'` : null},`;
-            queryAsync += ` @FVCMNTO = ${entidad?.FVCMNTO ? `'${entidad.FVCMNTO}'` : null},`;
-            queryAsync += ` @INTENTOS = ${entidad?.INTENTOS ? `'${entidad.INTENTOS}'` : null},`;
-            queryAsync += ` @UCRCN = ${entidad?.UCRCN ? `'${entidad.UCRCN}'` : null},`;
-            queryAsync += ` @FCRCN = ${entidad?.FCRCN ? `'${entidad.FCRCN}'` : null},`;
-            queryAsync += ` @FEDCN = ${entidad?.FEDCN ? `'${entidad.FEDCN}'` : null},`;
-            queryAsync += ` @CDESTDO = ${entidad?.CDESTDO ? `'${entidad.CDESTDO}'` : null},`;
-            queryAsync += ` @TOKEN =
-            ${entidad?.TOKEN ? `'${entidad.TOKEN}'` : null},`;
-            queryAsync += ` @IND = ${1}`
-            console.log(queryAsync);
-            const usuario: User = await this.connection.query(queryAsync)
-                .then((result) => result?.[0] ? result[0] : null)
-                .catch((error) => error);
+    async createUser(entidad: User): Promise<Result> {
+        let queryAsync = procedures.ADMIN.USUARIO.CRUD;
+        queryAsync += ` @p_cData = ${entidad ? `'${JSON.stringify(entidad)}'` : null},`;
+        queryAsync += ` @p_cUser = ${entidad?.USER ? `'${entidad.USER}'` : null},`;
+        queryAsync += ` @p_nTipo = ${1},`;
+        queryAsync += ` @p_nId = ${0}`;
 
-        }catch (error) {
+        try {
+            const result = await this.connection.query(queryAsync);
+            const isSuccess = result?.[0]?.RESULT > 0;
+            const MESSAGE = isSuccess ? "Usuario agregado correctamente" : "Ocurrió un error al intentar agregar el usuario";
+            return { MESSAGE, STATUS: isSuccess };
+        } catch (error) {
+            const MESSAGE = error.originalError?.info?.message || "Ocurrió un error al intentar agregar el usuario";
+            return { MESSAGE, STATUS: false };
+        }
+    }
+
+    async list(entidad: DataTable, IDROLE: string): Promise<User[]> {
+        let queryAsync = procedures.ADMIN.USUARIO.CRUD;
+        queryAsync += ` @p_cData = ${entidad ? `'${JSON.stringify({ ...entidad, IDROLE })}'` : null},`;
+        queryAsync += ` @p_cUser = ${null},`;
+        queryAsync += ` @p_nTipo = ${4},`;
+        queryAsync += ` @p_nId = ${0}`;
+
+        try {
+            const result = await this.connection.query(queryAsync);
+            return result;
+        } catch (error) {
             return error;
         }
-
     }
 }

@@ -1,6 +1,8 @@
 import { BadRequestException, Body, Controller, Get, Post, Query } from '@nestjs/common';
 import { UserService } from '../../services/User/user.service';
-import { User } from '../../models/user.model';
+import { User } from '../../models/admin/user.model';
+import { Result } from '../../models/result.model';
+import { DataTable } from '../../models/DataTable.model.';
 
 @Controller('admin-user')
 export class UsuarioController {
@@ -9,23 +11,16 @@ export class UsuarioController {
     ) { }
 
     @Post('add')
-    async addUser(@Body() entidad: User): Promise<User> {
-        const usuario: User = await this.userService.createUser(entidad);
-
-        // if (!usuario) {
-        //     throw new BadRequestException('Usuario no encontrado');
-        // }
-
-        // if (usuario.PASSWORD !== entidad.PASSWORD) {
-        //     throw new BadRequestException('Contraseña incorrecta');
-        // }
-
-        // const token = this.tokenService.generateToken(usuario);
-        // usuario.TOKEN = token;
-        // return usuario;
-        return usuario;
+    async addUser(@Body() entidad: User): Promise<Result> {
+        const admin = "ADMIN";
+        entidad.USER = entidad.EMAIL.split('@')?.[0] || entidad.EMAIL;
+        return await this.userService.createUser(entidad);
     }
 
+    @Get('list')
+    async listUsers(@Query() entidad : DataTable, @Query('IDROLE') IDROLE: string): Promise<User[]> {
+        return await this.userService.list(entidad, IDROLE);
+    }
 
 
 }

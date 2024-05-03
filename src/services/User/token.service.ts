@@ -1,7 +1,7 @@
 // token.service.ts
 import { Injectable } from '@nestjs/common';
 import * as jwt from 'jsonwebtoken';
-import { User } from '../../models/user.model';
+import { User } from '../../models/Admin/user.model';
 
 @Injectable()
 export class TokenService {

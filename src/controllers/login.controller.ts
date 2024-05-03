@@ -1,6 +1,6 @@
 import { BadRequestException, Body, Controller, Get, Post, Query } from '@nestjs/common';
 import { UserService } from '../services/User/user.service';
-import { User } from '../models/user.model';
+import { User } from '../models/admin/user.model';
 import { TokenService } from '../services/User/token.service';
 
 @Controller('login')
