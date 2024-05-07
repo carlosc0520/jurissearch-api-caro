@@ -1,6 +1,4 @@
-import { BadRequestException, Body, Controller, Get, Post, Query } from '@nestjs/common';
-import { UserService } from '../../services/User/user.service';
-import { User } from '../../models/admin/user.model';
+import { Body, Controller, Get, Post, Query } from '@nestjs/common';
 import { Result } from '../../models/result.model';
 import { DataTable } from '../../models/DataTable.model.';
 import { filtrosService } from '../../services/Filtros/filtros.service';
