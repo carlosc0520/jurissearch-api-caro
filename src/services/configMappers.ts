@@ -5,6 +5,9 @@ const procedures = {
     "ADMIN": {
         "USUARIO": {
             "CRUD": "EXEC JURIS.USP_CRUD_USR01",
+        },
+        "FILTROS": {
+            "CRUD": "EXEC JURIS.USP_CRUD_FILTROS",
         }
     }
 }

@@ -8,11 +8,13 @@ import { TokenService } from './User/token.service';
 // * CONTROLADORES
 import { LoginController } from '../controllers/login.controller';
 import { UsuarioController } from 'src/controllers/adminControllers/usuario.controller';
+import { FiltrosController } from 'src/controllers/adminControllers/filtros.controller';
+import { filtrosService } from './Filtros/filtros.service';
 
 @Module({
     // access Note entity using TypeOrmModule
     imports: [TypeOrmModule.forFeature([])],
-    controllers: [LoginController, UsuarioController],
-    providers: [UserService, TokenService],
+    controllers: [LoginController, UsuarioController, FiltrosController],
+    providers: [UserService, TokenService, filtrosService],
 })
 export class UserModule { }

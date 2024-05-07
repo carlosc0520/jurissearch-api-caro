@@ -4,7 +4,6 @@ import procedures from '../configMappers';
 import { User } from '../../models/admin/user.model'
 import { Result } from '../../models/result.model';
 import { DataTable } from '../../models/DataTable.model.';
-import { query } from 'express';
 
 @Injectable()
 export class UserService {
@@ -60,7 +59,6 @@ export class UserService {
         queryAsync += ` @p_nTipo = ${1},`;
         queryAsync += ` @p_nId = ${entidad?.ID}`;
 
-        console.log(queryAsync)
         try {
             const result = await this.connection.query(queryAsync);
             const isSuccess = result?.[0]?.RESULT > 0;
