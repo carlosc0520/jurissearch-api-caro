@@ -12,11 +12,12 @@ import { FiltrosController } from 'src/controllers/adminControllers/filtros.cont
 import { filtrosService } from './Filtros/filtros.service';
 import { EntriesController } from 'src/controllers/adminControllers/entries.controller';
 import { EntriesService } from './Admin/entries.service';
+import { S3Service } from './Aws/aws.service';
 
 @Module({
     // access Note entity using TypeOrmModule
     imports: [TypeOrmModule.forFeature([])],
     controllers: [LoginController, UsuarioController, FiltrosController, EntriesController],
-    providers: [UserService, TokenService, filtrosService, EntriesService],
+    providers: [UserService, TokenService, filtrosService, EntriesService, S3Service],
 })
 export class UserModule { }

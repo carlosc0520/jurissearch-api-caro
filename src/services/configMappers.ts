@@ -8,6 +8,9 @@ const procedures = {
         },
         "FILTROS": {
             "CRUD": "EXEC JURIS.USP_CRUD_FILTROS",
+        },
+        "ENTRIES": {
+            "CRUD": "EXEC JURIS.USP_CRUD_ENTRIES",
         }
     }
 }

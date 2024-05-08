@@ -1,5 +1,3 @@
-import { Express } from 'express';
-
 export class EntriesModel {
     ID: number = 0;
     TITLE: string = '';
@@ -7,12 +5,12 @@ export class EntriesModel {
     AMBIT: string = '';
     FRESOLUTION: string = '';
     OJURISDICCIONAL: string = '';
-    MAGISTRATES: any = [];
+    MAGISTRATES: string = '';
     VDESIDENTE: number = 1;
     CVOTE: number = 1;
-    ENTRIEFILE: Express.Multer.File;
-    ENTRIEFILERESUMEN: Express.Multer.File;
-    KEYWORDS: any = [];
+    ENTRIEFILE: string = '';
+    ENTRIEFILERESUMEN: string = '';
+    KEYWORDS: string = '';
     TEMA: string = '';
     SUBTEMA: string = '';
     SHORTSUMMARY: string = '';
@@ -21,4 +19,6 @@ export class EntriesModel {
     FCRCN: Date = new Date();
     FEDCN: Date = new Date();
     CDESTDO: string = '';
+    TYPE: string = '';
+    TIPO: string = '';
 }
