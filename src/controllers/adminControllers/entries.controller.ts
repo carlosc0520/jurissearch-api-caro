@@ -7,7 +7,6 @@ import { diskStorage } from 'multer';
 import { S3Service } from 'src/services/Aws/aws.service';
 import * as fs from 'fs';
 import { DataTable } from 'src/models/DataTable.model.';
-import { table } from 'console';
 
 @Controller('admin-entries')
 export class EntriesController {
@@ -17,7 +16,6 @@ export class EntriesController {
         private readonly entriesService: EntriesService,
         private readonly s3Service: S3Service
     ) { }
-
 
 
     @Post('add')

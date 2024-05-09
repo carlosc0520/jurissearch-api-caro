@@ -11,6 +11,9 @@ const procedures = {
         },
         "ENTRIES": {
             "CRUD": "EXEC JURIS.USP_CRUD_ENTRIES",
+        },
+        "MAGISTRADOS": {
+            "CRUD": "EXEC JURIS.USP_CRUD_MAGISTRADOS"
         }
     }
 }

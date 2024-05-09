@@ -13,11 +13,25 @@ import { filtrosService } from './Filtros/filtros.service';
 import { EntriesController } from 'src/controllers/adminControllers/entries.controller';
 import { EntriesService } from './Admin/entries.service';
 import { S3Service } from './Aws/aws.service';
+import { MagistradoController } from 'src/controllers/adminControllers/magistrados.controller';
+import { MagistradosService } from './Admin/magistrados.service';
 
 @Module({
-    // access Note entity using TypeOrmModule
     imports: [TypeOrmModule.forFeature([])],
-    controllers: [LoginController, UsuarioController, FiltrosController, EntriesController],
-    providers: [UserService, TokenService, filtrosService, EntriesService, S3Service],
+    controllers: [
+        LoginController,
+        UsuarioController, 
+        FiltrosController, 
+        EntriesController,
+        MagistradoController
+    ],
+    providers: [
+        UserService, 
+        TokenService, 
+        filtrosService, 
+        EntriesService, 
+        S3Service,
+        MagistradosService
+    ],
 })
 export class UserModule { }
