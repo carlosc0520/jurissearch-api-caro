@@ -3,4 +3,5 @@ export class DataTable {
     ROWS: number;
     DESC: string;
     CESTDO: string;
+    ID?: number = 0;
 }

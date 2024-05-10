@@ -9,7 +9,9 @@ export class EntriesModel {
     VDESIDENTE: number = 1;
     CVOTE: number = 1;
     ENTRIEFILE: string = '';
+    NENTRIEFILE?: string = '';
     ENTRIEFILERESUMEN: string = '';
+    NENTRIEFILERESUMEN?: string = '';
     KEYWORDS: string = '';
     TEMA: string = '';
     SUBTEMA: string = '';
@@ -21,4 +23,6 @@ export class EntriesModel {
     CDESTDO: string = '';
     TYPE: string = '';
     TIPO: string = '';
+    CASO: string = '';
+    RESUMEN2: string = '';
 }

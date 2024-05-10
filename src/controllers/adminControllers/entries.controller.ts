@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Query, UploadedFiles, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query, Res, UploadedFiles, UseInterceptors } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { EntriesModel } from 'src/models/Admin/entries.model';
 import { EntriesService } from '../../services/Admin/entries.service';
@@ -7,6 +7,7 @@ import { diskStorage } from 'multer';
 import { S3Service } from 'src/services/Aws/aws.service';
 import * as fs from 'fs';
 import { DataTable } from 'src/models/DataTable.model.';
+import { Response } from 'express';
 
 @Controller('admin-entries')
 export class EntriesController {
@@ -39,12 +40,12 @@ export class EntriesController {
     )
     async uploadMultipleFiles(@Body() entidad: EntriesModel, @UploadedFiles() files,): Promise<Result> {
         try {
-
             const table: DataTable = {
                 INIT: 0,
                 ROWS: 1,
-                DESC:  null,
+                DESC: null,
                 CESTDO: null,
+                ID: 0
             };
             const obtener = await this.entriesService.list(table, entidad.TITLE, entidad.TYPE, entidad.TIPO);
             if (obtener.length > 0) {
@@ -77,8 +78,88 @@ export class EntriesController {
         }
     }
 
+    @Post('edit')
+    @UseInterceptors(
+        FilesInterceptor('files', 20, {
+            storage: diskStorage({
+                destination: './uploads',
+                filename: function (req, file, cb) {
+                    // solo si tiene algo
+                    if (file) {
+                        const filename = `${Date.now()}-${file.originalname.replace(/\s/g, '')}`;
+                        return cb(null, filename);
+                    }
+                }
+            }),
+            fileFilter: (req, file, cb) => {
+                if (file.mimetype.match(/\/pdf$/)) {
+                    cb(null, true);
+                } else {
+                    cb(new Error('Solo se permiten archivos PDF'), false);
+                }
+            }
+        }),
+    )
+    async editMultipleFiles(@Body() entidad: EntriesModel, @UploadedFiles() files? : any[]): Promise<Result> {
+        try {
+            const table: DataTable = {
+                INIT: 0,
+                ROWS: 1,
+                DESC: null,
+                CESTDO: null,
+                ID: entidad.ID
+            };
+
+            const obtener = await this.entriesService.list(table, entidad.TITLE, entidad.TYPE, entidad.TIPO);
+            if (obtener.length > 0) {
+                console.log("dsdd")
+                return { MESSAGE: `Ya existe una entrada con el mismo título para ${entidad.TYPE} - ${entidad.TIPO}`, STATUS: false };
+            }
+
+            const [file1, file2] = files;
+            console.log(file1, file2)
+
+            if(![undefined, null].includes(file1)){
+                console.log("first")
+                await this.s3Service.deleteFile(entidad.ENTRIEFILE);
+                const keysLocation: string = await this.s3Service.uploadFile(
+                    entidad,
+                    file1.filename,
+                    file1.path
+                );
+    
+                entidad.ENTRIEFILE = keysLocation;
+            }
+
+
+            if(![undefined, null].includes(file2)){
+                await this.s3Service.deleteFile(entidad.ENTRIEFILERESUMEN);
+                const keysLocation: string = await this.s3Service.uploadFile(
+                    entidad,
+                    file2.filename,
+                    file2.path
+                );
+
+                entidad.ENTRIEFILERESUMEN = keysLocation;
+            }
+
+
+            const result = await this.entriesService.edit(entidad);
+            return result
+        }
+        catch (error) {
+            return { MESSAGE: error.message, STATUS: false };
+        }
+        finally {
+            await files.forEach(file => {
+                fs.unlinkSync(file.path);
+            });
+        }
+    }
+
+
     @Get('list')
-    async listUsers(@Query() entidad : DataTable, @Query('TYPE') TYPE: string): Promise<EntriesModel[]> {
+    async listUsers(@Query() entidad: DataTable, @Query('TYPE') TYPE: string): Promise<EntriesModel[]> {
         return await this.entriesService.list(entidad, entidad.DESC, TYPE, null);
     }
 
@@ -87,6 +168,20 @@ export class EntriesController {
         return await this.entriesService.deleteFilter(ID);
     }
 
+    @Get('get')
+    async Obtener(@Query('ID') ID: number): Promise<EntriesModel> {
+        return await this.entriesService.get(ID);
+    }
 
+    @Post('download-file')
+    async downloadFile(@Body('PATH') PATH: string, @Res() res: Response): Promise<any> {
+        try {
+            const file = await this.s3Service.downloadFile(PATH);
+            res.set('Content-Type', 'application/pdf');
+            res.send(file);
+        } catch (error) {
+            res.status(500).send('Error al descargar el archivo');
+        }
+    }
 
 }

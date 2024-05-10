@@ -29,5 +29,4 @@ export class MagistradoController {
     async editUser(@Body() entidad: MagistradosModel): Promise<Result> {
         return await this.magistradoService.edit(entidad);
     }
-
 }
