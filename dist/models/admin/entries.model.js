@@ -29,6 +29,8 @@ class EntriesModel {
         this.TIPO = '';
         this.CASO = '';
         this.RESUMEN2 = '';
+        this.TPONRMA = '';
+        this.NMRCN = '';
     }
 }
 exports.EntriesModel = EntriesModel;

@@ -12,7 +12,14 @@ const app_controller_1 = require("./app.controller");
 const app_service_1 = require("./app.service");
 const typeorm_1 = require("@nestjs/typeorm");
 const UserModule_1 = require("./services/UserModule");
+const auth_middleware_1 = require("./middleware/auth.middleware");
 let AppModule = class AppModule {
+    configure(consumer) {
+        consumer.apply(auth_middleware_1.AuthMiddleware).forRoutes({
+            path: 'admin/*',
+            method: common_1.RequestMethod.ALL,
+        });
+    }
 };
 exports.AppModule = AppModule;
 exports.AppModule = AppModule = __decorate([
@@ -23,7 +30,7 @@ exports.AppModule = AppModule = __decorate([
                 "host": "database-caro.crudeh2irmny.us-east-1.rds.amazonaws.com",
                 "port": 1433,
                 "username": "admin",
-                "password": "123456789",
+                "password": "lo9T@Y[6!xq^lXk<N9H*]S+g49D:",
                 "database": "JURIS_SEARCH",
                 "entities": ["dist/**/*.entity{.ts,.js}"],
                 "synchronize": true,

@@ -7,6 +7,6 @@ export declare class MagistradosService {
     constructor(connection: DataSource);
     create(entidad: MagistradosModel): Promise<Result>;
     list(entidad: DataTable): Promise<MagistradosModel[]>;
-    delete(id: number): Promise<Result>;
+    delete(id: number, UCRCN: string): Promise<Result>;
     edit(entidad: MagistradosModel): Promise<Result>;
 }

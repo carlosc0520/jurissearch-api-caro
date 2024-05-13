@@ -6,7 +6,7 @@ export declare class filtrosService {
     private connection;
     constructor(connection: DataSource);
     list(entidad: DataTable, TIPO: string): Promise<FiltrosModel[]>;
-    deleteFilter(id: number): Promise<Result>;
+    deleteFilter(id: number, UCRCN: string): Promise<Result>;
     createFilter(entidad: FiltrosModel): Promise<Result>;
     editFilter(entidad: FiltrosModel): Promise<Result>;
 }

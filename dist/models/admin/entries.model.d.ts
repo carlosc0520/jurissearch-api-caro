@@ -25,4 +25,6 @@ export declare class EntriesModel {
     TIPO: string;
     CASO: string;
     RESUMEN2: string;
+    TPONRMA: string;
+    NMRCN: string;
 }

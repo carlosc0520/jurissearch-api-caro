@@ -6,7 +6,7 @@ export declare class FiltrosController {
     private readonly filtrosService;
     constructor(filtrosService: filtrosService);
     listFilters(entidad: DataTable, TIPO: string): Promise<FiltrosModel[]>;
-    addUser(entidad: FiltrosModel): Promise<Result>;
-    deleteUser(ID: number): Promise<Result>;
-    editUser(entidad: FiltrosModel): Promise<Result>;
+    addUser(req: any, entidad: FiltrosModel): Promise<Result>;
+    deleteUser(req: any, ID: number): Promise<Result>;
+    editUser(req: any, entidad: FiltrosModel): Promise<Result>;
 }

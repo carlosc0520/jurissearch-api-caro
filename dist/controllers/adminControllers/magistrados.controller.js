@@ -24,13 +24,15 @@ let MagistradoController = class MagistradoController {
     async listFilters(entidad) {
         return await this.magistradoService.list(entidad);
     }
-    async deleteUser(ID) {
-        return await this.magistradoService.delete(ID);
+    async deleteUser(req, ID) {
+        return await this.magistradoService.delete(ID, req.user.UCRCN);
     }
-    async addUser(entidad) {
+    async addUser(req, entidad) {
+        entidad.UCRCN = req.user.UCRCN;
         return await this.magistradoService.create(entidad);
     }
-    async editUser(entidad) {
+    async editUser(req, entidad) {
+        entidad.UCRCN = req.user.UCRCN;
         return await this.magistradoService.edit(entidad);
     }
 };
@@ -44,27 +46,30 @@ __decorate([
 ], MagistradoController.prototype, "listFilters", null);
 __decorate([
     (0, common_1.Post)('delete'),
-    __param(0, (0, common_1.Body)('ID')),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Body)('ID')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number]),
+    __metadata("design:paramtypes", [Object, Number]),
     __metadata("design:returntype", Promise)
 ], MagistradoController.prototype, "deleteUser", null);
 __decorate([
     (0, common_1.Post)('add'),
-    __param(0, (0, common_1.Body)()),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [magistrados_model_1.MagistradosModel]),
+    __metadata("design:paramtypes", [Object, magistrados_model_1.MagistradosModel]),
     __metadata("design:returntype", Promise)
 ], MagistradoController.prototype, "addUser", null);
 __decorate([
     (0, common_1.Post)('edit'),
-    __param(0, (0, common_1.Body)()),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [magistrados_model_1.MagistradosModel]),
+    __metadata("design:paramtypes", [Object, magistrados_model_1.MagistradosModel]),
     __metadata("design:returntype", Promise)
 ], MagistradoController.prototype, "editUser", null);
 exports.MagistradoController = MagistradoController = __decorate([
-    (0, common_1.Controller)('admin-magistrados'),
+    (0, common_1.Controller)('admin/magistrados'),
     __metadata("design:paramtypes", [magistrados_service_1.MagistradosService])
 ], MagistradoController);
 //# sourceMappingURL=magistrados.controller.js.map

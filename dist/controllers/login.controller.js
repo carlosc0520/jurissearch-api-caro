@@ -23,6 +23,7 @@ let LoginController = class LoginController {
         this.tokenService = tokenService;
     }
     async autenticarUsuario(entidad) {
+        console.log("usuario");
         const usuario = await this.userService.loguearUsuario(entidad);
         if (!usuario) {
             throw new common_1.BadRequestException('Usuario no encontrado');

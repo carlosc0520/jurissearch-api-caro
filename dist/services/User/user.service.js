@@ -70,10 +70,10 @@ let UserService = class UserService {
             return { MESSAGE, STATUS: false };
         }
     }
-    async deleteUser(id) {
+    async deleteUser(id, UCRCN) {
         let queryAsync = configMappers_1.default.ADMIN.USUARIO.CRUD;
         queryAsync += ` @p_cData = ${null},`;
-        queryAsync += ` @p_cUser = ${null},`;
+        queryAsync += ` @p_cUser = ${UCRCN},`;
         queryAsync += ` @p_nTipo = ${2},`;
         queryAsync += ` @p_nId = ${id}`;
         try {

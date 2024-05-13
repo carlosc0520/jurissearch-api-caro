@@ -20,7 +20,7 @@ let EntriesService = class EntriesService {
     async createEntries(entidad) {
         let queryAsync = configMappers_1.default.ADMIN.ENTRIES.CRUD;
         queryAsync += ` @p_cData = ${entidad ? `'${JSON.stringify(entidad)}'` : null},`;
-        queryAsync += ` @p_cUser = ${'ADMIN' ? `'${'ADMIN'}'` : null},`;
+        queryAsync += ` @p_cUser = ${entidad.UCRCN},`;
         queryAsync += ` @p_nTipo = ${1},`;
         queryAsync += ` @p_nId = ${0}`;
         try {
@@ -62,10 +62,10 @@ let EntriesService = class EntriesService {
             return error;
         }
     }
-    async deleteFilter(id) {
+    async deleteFilter(id, UCRCN) {
         let queryAsync = configMappers_1.default.ADMIN.ENTRIES.CRUD;
         queryAsync += ` @p_cData = ${null},`;
-        queryAsync += ` @p_cUser = ${null},`;
+        queryAsync += ` @p_cUser = ${UCRCN},`;
         queryAsync += ` @p_nTipo = ${2},`;
         queryAsync += ` @p_nId = ${id}`;
         try {
@@ -82,7 +82,7 @@ let EntriesService = class EntriesService {
     async edit(entidad) {
         let queryAsync = configMappers_1.default.ADMIN.ENTRIES.CRUD;
         queryAsync += ` @p_cData = ${entidad ? `'${JSON.stringify(entidad)}'` : null},`;
-        queryAsync += ` @p_cUser = ${'ADMIN' ? `'${'ADMIN'}'` : null},`;
+        queryAsync += ` @p_cUser = ${entidad.UCRCN},`;
         queryAsync += ` @p_nTipo = ${1},`;
         queryAsync += ` @p_nId = ${entidad?.ID}`;
         try {

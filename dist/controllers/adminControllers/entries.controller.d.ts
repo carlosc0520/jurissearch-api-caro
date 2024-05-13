@@ -8,10 +8,12 @@ export declare class EntriesController {
     private readonly entriesService;
     private readonly s3Service;
     constructor(entriesService: EntriesService, s3Service: S3Service);
-    uploadMultipleFiles(entidad: EntriesModel, files: any): Promise<Result>;
-    editMultipleFiles(entidad: EntriesModel, files?: any[]): Promise<Result>;
+    uploadMultipleFiles(req: any, entidad: EntriesModel, files: any): Promise<Result>;
+    uploadSingleFile(req: any, entidad: EntriesModel, files: any): Promise<Result>;
+    editMultipleFiles(req: any, entidad: EntriesModel, files?: any[]): Promise<Result>;
+    editSingleFile(req: any, entidad: EntriesModel, files?: any[]): Promise<Result>;
     listUsers(entidad: DataTable, TYPE: string): Promise<EntriesModel[]>;
-    deleteUser(ID: number): Promise<Result>;
+    deleteUser(req: any, ID: number): Promise<Result>;
     Obtener(ID: number): Promise<EntriesModel>;
     downloadFile(PATH: string, res: Response): Promise<any>;
 }

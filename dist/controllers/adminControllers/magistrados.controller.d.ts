@@ -6,7 +6,7 @@ export declare class MagistradoController {
     private readonly magistradoService;
     constructor(magistradoService: MagistradosService);
     listFilters(entidad: DataTable): Promise<MagistradosModel[]>;
-    deleteUser(ID: number): Promise<Result>;
-    addUser(entidad: MagistradosModel): Promise<Result>;
-    editUser(entidad: MagistradosModel): Promise<Result>;
+    deleteUser(req: any, ID: number): Promise<Result>;
+    addUser(req: any, entidad: MagistradosModel): Promise<Result>;
+    editUser(req: any, entidad: MagistradosModel): Promise<Result>;
 }

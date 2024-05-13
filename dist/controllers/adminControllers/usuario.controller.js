@@ -21,29 +21,38 @@ let UsuarioController = class UsuarioController {
     constructor(userService) {
         this.userService = userService;
     }
-    async addUser(entidad) {
-        const admin = "ADMIN";
-        entidad.USER = entidad.EMAIL.split('@')?.[0] || entidad.EMAIL;
+    async validateToken() {
+        return true;
+    }
+    async addUser(req, entidad) {
+        entidad.USER = req.user.UCRCN;
+        entidad.PASSWORD = entidad.APATERNO;
         return await this.userService.createUser(entidad);
     }
     async listUsers(entidad, IDROLE) {
         return await this.userService.list(entidad, IDROLE);
     }
-    async deleteUser(ID) {
-        return await this.userService.deleteUser(ID);
+    async deleteUser(req, ID) {
+        return await this.userService.deleteUser(ID, req.user.UCRCN);
     }
-    async editUser(entidad) {
-        const admin = "ADMIN";
-        entidad.USER = entidad.EMAIL.split('@')?.[0] || entidad.EMAIL;
+    async editUser(req, entidad) {
+        entidad.USER = req.user.UCRCN;
         return await this.userService.editUser(entidad);
     }
 };
 exports.UsuarioController = UsuarioController;
 __decorate([
-    (0, common_1.Post)('add'),
-    __param(0, (0, common_1.Body)()),
+    (0, common_1.Get)('validate-token'),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [user_model_1.User]),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], UsuarioController.prototype, "validateToken", null);
+__decorate([
+    (0, common_1.Post)('add'),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, user_model_1.User]),
     __metadata("design:returntype", Promise)
 ], UsuarioController.prototype, "addUser", null);
 __decorate([
@@ -56,20 +65,22 @@ __decorate([
 ], UsuarioController.prototype, "listUsers", null);
 __decorate([
     (0, common_1.Post)('delete'),
-    __param(0, (0, common_1.Body)('ID')),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Body)('ID')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number]),
+    __metadata("design:paramtypes", [Object, Number]),
     __metadata("design:returntype", Promise)
 ], UsuarioController.prototype, "deleteUser", null);
 __decorate([
     (0, common_1.Post)('edit'),
-    __param(0, (0, common_1.Body)()),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [user_model_1.User]),
+    __metadata("design:paramtypes", [Object, user_model_1.User]),
     __metadata("design:returntype", Promise)
 ], UsuarioController.prototype, "editUser", null);
 exports.UsuarioController = UsuarioController = __decorate([
-    (0, common_1.Controller)('admin-user'),
+    (0, common_1.Controller)('admin/user'),
     __metadata("design:paramtypes", [user_service_1.UserService])
 ], UsuarioController);
 //# sourceMappingURL=usuario.controller.js.map

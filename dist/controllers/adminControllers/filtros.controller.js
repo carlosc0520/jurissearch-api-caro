@@ -24,13 +24,15 @@ let FiltrosController = class FiltrosController {
     async listFilters(entidad, TIPO) {
         return await this.filtrosService.list(entidad, TIPO);
     }
-    async addUser(entidad) {
+    async addUser(req, entidad) {
+        entidad.UCRCN = req.user.UCRCN;
         return await this.filtrosService.createFilter(entidad);
     }
-    async deleteUser(ID) {
-        return await this.filtrosService.deleteFilter(ID);
+    async deleteUser(req, ID) {
+        return await this.filtrosService.deleteFilter(ID, req.user.UCRCN);
     }
-    async editUser(entidad) {
+    async editUser(req, entidad) {
+        entidad.UCRCN = req.user.UCRCN;
         return await this.filtrosService.editFilter(entidad);
     }
 };
@@ -45,27 +47,30 @@ __decorate([
 ], FiltrosController.prototype, "listFilters", null);
 __decorate([
     (0, common_1.Post)('add'),
-    __param(0, (0, common_1.Body)()),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [filtros_model_1.FiltrosModel]),
+    __metadata("design:paramtypes", [Object, filtros_model_1.FiltrosModel]),
     __metadata("design:returntype", Promise)
 ], FiltrosController.prototype, "addUser", null);
 __decorate([
     (0, common_1.Post)('delete'),
-    __param(0, (0, common_1.Body)('ID')),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Body)('ID')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number]),
+    __metadata("design:paramtypes", [Object, Number]),
     __metadata("design:returntype", Promise)
 ], FiltrosController.prototype, "deleteUser", null);
 __decorate([
     (0, common_1.Post)('edit'),
-    __param(0, (0, common_1.Body)()),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [filtros_model_1.FiltrosModel]),
+    __metadata("design:paramtypes", [Object, filtros_model_1.FiltrosModel]),
     __metadata("design:returntype", Promise)
 ], FiltrosController.prototype, "editUser", null);
 exports.FiltrosController = FiltrosController = __decorate([
-    (0, common_1.Controller)('admin-filtros'),
+    (0, common_1.Controller)('admin/filtros'),
     __metadata("design:paramtypes", [filtros_service_1.filtrosService])
 ], FiltrosController);
 //# sourceMappingURL=filtros.controller.js.map

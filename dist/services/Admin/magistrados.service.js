@@ -20,7 +20,7 @@ let MagistradosService = class MagistradosService {
     async create(entidad) {
         let queryAsync = configMappers_1.default.ADMIN.MAGISTRADOS.CRUD;
         queryAsync += ` @p_cData = ${entidad ? `'${JSON.stringify(entidad)}'` : null},`;
-        queryAsync += ` @p_cUser = ${'ADMIN' ? `'${'ADMIN'}'` : null},`;
+        queryAsync += ` @p_cUser = ${entidad.UCRCN},`;
         queryAsync += ` @p_nTipo = ${1},`;
         queryAsync += ` @p_nId = ${0}`;
         try {
@@ -48,10 +48,10 @@ let MagistradosService = class MagistradosService {
             return error;
         }
     }
-    async delete(id) {
+    async delete(id, UCRCN) {
         let queryAsync = configMappers_1.default.ADMIN.MAGISTRADOS.CRUD;
         queryAsync += ` @p_cData = ${null},`;
-        queryAsync += ` @p_cUser = ${null},`;
+        queryAsync += ` @p_cUser = ${UCRCN},`;
         queryAsync += ` @p_nTipo = ${2},`;
         queryAsync += ` @p_nId = ${id}`;
         try {
@@ -68,7 +68,7 @@ let MagistradosService = class MagistradosService {
     async edit(entidad) {
         let queryAsync = configMappers_1.default.ADMIN.MAGISTRADOS.CRUD;
         queryAsync += ` @p_cData = ${entidad ? `'${JSON.stringify(entidad)}'` : null},`;
-        queryAsync += ` @p_cUser = ${'ADMIN' ? `'${'ADMIN'}'` : null},`;
+        queryAsync += ` @p_cUser = ${entidad?.UCRCN},`;
         queryAsync += ` @p_nTipo = ${1},`;
         queryAsync += ` @p_nId = ${entidad?.ID}`;
         try {

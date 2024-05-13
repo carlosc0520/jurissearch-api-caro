@@ -5,8 +5,9 @@ import { DataTable } from '../../models/DataTable.model.';
 export declare class UsuarioController {
     private readonly userService;
     constructor(userService: UserService);
-    addUser(entidad: User): Promise<Result>;
+    validateToken(): Promise<boolean>;
+    addUser(req: any, entidad: User): Promise<Result>;
     listUsers(entidad: DataTable, IDROLE: string): Promise<User[]>;
-    deleteUser(ID: number): Promise<Result>;
-    editUser(entidad: User): Promise<Result>;
+    deleteUser(req: any, ID: number): Promise<Result>;
+    editUser(req: any, entidad: User): Promise<Result>;
 }

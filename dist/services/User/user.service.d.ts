@@ -8,6 +8,6 @@ export declare class UserService {
     loguearUsuario(entidad: User): Promise<User>;
     createUser(entidad: User): Promise<Result>;
     editUser(entidad: User): Promise<Result>;
-    deleteUser(id: number): Promise<Result>;
+    deleteUser(id: number, UCRCN: string): Promise<Result>;
     list(entidad: DataTable, IDROLE: string): Promise<User[]>;
 }

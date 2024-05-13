@@ -26,7 +26,7 @@ let EntriesController = class EntriesController {
         this.entriesService = entriesService;
         this.s3Service = s3Service;
     }
-    async uploadMultipleFiles(entidad, files) {
+    async uploadMultipleFiles(req, entidad, files) {
         try {
             const table = {
                 INIT: 0,
@@ -43,6 +43,7 @@ let EntriesController = class EntriesController {
             const keysLocation = await this.s3Service.uploadFiles(entidad, file1.filename, file1.path, file2.filename, file2.path);
             entidad.ENTRIEFILE = keysLocation[0];
             entidad.ENTRIEFILERESUMEN = keysLocation[1];
+            entidad.UCRCN = req.user.UCRCN;
             const result = await this.entriesService.createEntries(entidad);
             return result;
         }
@@ -55,7 +56,36 @@ let EntriesController = class EntriesController {
             });
         }
     }
-    async editMultipleFiles(entidad, files) {
+    async uploadSingleFile(req, entidad, files) {
+        try {
+            const table = {
+                INIT: 0,
+                ROWS: 1,
+                DESC: null,
+                CESTDO: null,
+                ID: 0
+            };
+            const obtener = await this.entriesService.list(table, entidad.TITLE, entidad.TYPE, entidad.TIPO);
+            if (obtener.length > 0) {
+                return { MESSAGE: `Ya existe una entrada con el mismo título para ${entidad.TYPE} - ${entidad.TIPO}`, STATUS: false };
+            }
+            const [file1] = files;
+            const keysLocation = await this.s3Service.uploadFile(entidad, file1.filename, file1.path);
+            entidad.ENTRIEFILE = keysLocation;
+            entidad.UCRCN = req.user.UCRCN;
+            const result = await this.entriesService.createEntries(entidad);
+            return result;
+        }
+        catch (error) {
+            return { MESSAGE: error.message, STATUS: false };
+        }
+        finally {
+            await files.forEach(file => {
+                fs.unlinkSync(file.path);
+            });
+        }
+    }
+    async editMultipleFiles(req, entidad, files) {
         try {
             const table = {
                 INIT: 0,
@@ -66,13 +96,11 @@ let EntriesController = class EntriesController {
             };
             const obtener = await this.entriesService.list(table, entidad.TITLE, entidad.TYPE, entidad.TIPO);
             if (obtener.length > 0) {
-                console.log("dsdd");
                 return { MESSAGE: `Ya existe una entrada con el mismo título para ${entidad.TYPE} - ${entidad.TIPO}`, STATUS: false };
             }
             const [file1, file2] = files;
             console.log(file1, file2);
             if (![undefined, null].includes(file1)) {
-                console.log("first");
                 await this.s3Service.deleteFile(entidad.ENTRIEFILE);
                 const keysLocation = await this.s3Service.uploadFile(entidad, file1.filename, file1.path);
                 entidad.ENTRIEFILE = keysLocation;
@@ -82,6 +110,39 @@ let EntriesController = class EntriesController {
                 const keysLocation = await this.s3Service.uploadFile(entidad, file2.filename, file2.path);
                 entidad.ENTRIEFILERESUMEN = keysLocation;
             }
+            entidad.UCRCN = req.user.UCRCN;
+            const result = await this.entriesService.edit(entidad);
+            return result;
+        }
+        catch (error) {
+            return { MESSAGE: error.message, STATUS: false };
+        }
+        finally {
+            await files.forEach(file => {
+                fs.unlinkSync(file.path);
+            });
+        }
+    }
+    async editSingleFile(req, entidad, files) {
+        try {
+            const table = {
+                INIT: 0,
+                ROWS: 1,
+                DESC: null,
+                CESTDO: null,
+                ID: entidad.ID
+            };
+            const obtener = await this.entriesService.list(table, entidad.TITLE, entidad.TYPE, entidad.TIPO);
+            if (obtener.length > 0) {
+                return { MESSAGE: `Ya existe una entrada con el mismo título para ${entidad.TYPE} - ${entidad.TIPO}`, STATUS: false };
+            }
+            const [file1] = files;
+            if (![undefined, null].includes(file1)) {
+                await this.s3Service.deleteFile(entidad.ENTRIEFILE);
+                const keysLocation = await this.s3Service.uploadFile(entidad, file1.filename, file1.path);
+                entidad.ENTRIEFILE = keysLocation;
+            }
+            entidad.UCRCN = req.user.UCRCN;
             const result = await this.entriesService.edit(entidad);
             return result;
         }
@@ -97,8 +158,8 @@ let EntriesController = class EntriesController {
     async listUsers(entidad, TYPE) {
         return await this.entriesService.list(entidad, entidad.DESC, TYPE, null);
     }
-    async deleteUser(ID) {
-        return await this.entriesService.deleteFilter(ID);
+    async deleteUser(req, ID) {
+        return await this.entriesService.deleteFilter(ID, req.user.UCRCN);
     }
     async Obtener(ID) {
         return await this.entriesService.get(ID);
@@ -134,12 +195,39 @@ __decorate([
             }
         }
     })),
-    __param(0, (0, common_1.Body)()),
-    __param(1, (0, common_1.UploadedFiles)()),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Body)()),
+    __param(2, (0, common_1.UploadedFiles)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [entries_model_1.EntriesModel, Object]),
+    __metadata("design:paramtypes", [Object, entries_model_1.EntriesModel, Object]),
     __metadata("design:returntype", Promise)
 ], EntriesController.prototype, "uploadMultipleFiles", null);
+__decorate([
+    (0, common_1.Post)('add-single'),
+    (0, common_1.UseInterceptors)((0, platform_express_1.FilesInterceptor)('files', 20, {
+        storage: (0, multer_1.diskStorage)({
+            destination: './uploads',
+            filename: function (req, file, cb) {
+                const filename = `${Date.now()}-${file.originalname.replace(/\s/g, '')}`;
+                return cb(null, filename);
+            }
+        }),
+        fileFilter: (req, file, cb) => {
+            if (file.mimetype.match(/\/pdf$/)) {
+                cb(null, true);
+            }
+            else {
+                cb(new Error('Solo se permiten archivos PDF'), false);
+            }
+        }
+    })),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Body)()),
+    __param(2, (0, common_1.UploadedFiles)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, entries_model_1.EntriesModel, Object]),
+    __metadata("design:returntype", Promise)
+], EntriesController.prototype, "uploadSingleFile", null);
 __decorate([
     (0, common_1.Post)('edit'),
     (0, common_1.UseInterceptors)((0, platform_express_1.FilesInterceptor)('files', 20, {
@@ -161,12 +249,41 @@ __decorate([
             }
         }
     })),
-    __param(0, (0, common_1.Body)()),
-    __param(1, (0, common_1.UploadedFiles)()),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Body)()),
+    __param(2, (0, common_1.UploadedFiles)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [entries_model_1.EntriesModel, Array]),
+    __metadata("design:paramtypes", [Object, entries_model_1.EntriesModel, Array]),
     __metadata("design:returntype", Promise)
 ], EntriesController.prototype, "editMultipleFiles", null);
+__decorate([
+    (0, common_1.Post)('edit-single'),
+    (0, common_1.UseInterceptors)((0, platform_express_1.FilesInterceptor)('files', 20, {
+        storage: (0, multer_1.diskStorage)({
+            destination: './uploads',
+            filename: function (req, file, cb) {
+                if (file) {
+                    const filename = `${Date.now()}-${file.originalname.replace(/\s/g, '')}`;
+                    return cb(null, filename);
+                }
+            }
+        }),
+        fileFilter: (req, file, cb) => {
+            if (file.mimetype.match(/\/pdf$/)) {
+                cb(null, true);
+            }
+            else {
+                cb(new Error('Solo se permiten archivos PDF'), false);
+            }
+        }
+    })),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Body)()),
+    __param(2, (0, common_1.UploadedFiles)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, entries_model_1.EntriesModel, Array]),
+    __metadata("design:returntype", Promise)
+], EntriesController.prototype, "editSingleFile", null);
 __decorate([
     (0, common_1.Get)('list'),
     __param(0, (0, common_1.Query)()),
@@ -177,9 +294,10 @@ __decorate([
 ], EntriesController.prototype, "listUsers", null);
 __decorate([
     (0, common_1.Post)('delete'),
-    __param(0, (0, common_1.Body)('ID')),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Body)('ID')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number]),
+    __metadata("design:paramtypes", [Object, Number]),
     __metadata("design:returntype", Promise)
 ], EntriesController.prototype, "deleteUser", null);
 __decorate([
@@ -198,7 +316,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], EntriesController.prototype, "downloadFile", null);
 exports.EntriesController = EntriesController = __decorate([
-    (0, common_1.Controller)('admin-entries'),
+    (0, common_1.Controller)('admin/entries'),
     __metadata("design:paramtypes", [entries_service_1.EntriesService,
         aws_service_1.S3Service])
 ], EntriesController);

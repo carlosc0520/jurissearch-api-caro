@@ -6,36 +6,31 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.TokenService = void 0;
+exports.AuthMiddleware = void 0;
 const common_1 = require("@nestjs/common");
 const jwt = require("jsonwebtoken");
-let TokenService = class TokenService {
+let AuthMiddleware = class AuthMiddleware {
     constructor() {
         this.secretKey = process.env.SECRET_KEY;
     }
-    generateToken(user) {
-        const payload = {
-            EMAIL: user.EMAIL,
-            ID: user.ID,
-            role: 1,
-            NAME: user.NOMBRES,
-            APELLIDO: user.APELLIDO,
-            UCRCN: user.EMAIL.split('@')[0] || ""
-        };
-        return jwt.sign(payload, this.secretKey);
-    }
-    validateToken(token) {
+    use(req, res, next) {
+        let token = req.headers.authorization;
+        if (!token) {
+            return res.status(401).json({ message: 'Token no proporcionado' });
+        }
+        token = token.replace('Bearer ', '');
         try {
-            jwt.verify(token, this.secretKey);
-            return true;
+            const decoded = jwt.verify(token, this.secretKey);
+            req['user'] = decoded;
+            next();
         }
         catch (error) {
-            return false;
+            return res.status(401).json({ message: 'Token inválido' });
         }
     }
 };
-exports.TokenService = TokenService;
-exports.TokenService = TokenService = __decorate([
+exports.AuthMiddleware = AuthMiddleware;
+exports.AuthMiddleware = AuthMiddleware = __decorate([
     (0, common_1.Injectable)()
-], TokenService);
-//# sourceMappingURL=token.service.js.map
+], AuthMiddleware);
+//# sourceMappingURL=auth.middleware.js.map
