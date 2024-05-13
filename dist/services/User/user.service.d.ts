@@ -1,7 +1,27 @@
 import { DataSource } from 'typeorm';
-import { User } from 'models/admin/user.model';
-import { Result } from 'models/result.model';
-import { DataTable } from 'models/DataTable.model.';
+import { Result } from '../../models/result.model';
+import { DataTable } from '../../models/DataTable.model.';
+declare class User {
+    ID: number;
+    USER: string;
+    IDROLE: number;
+    EMAIL: string;
+    PASSWORD: string;
+    NOMBRES: string;
+    APELLIDO: string;
+    APATERNO: string;
+    AMATERNO: string;
+    TELEFONO: string;
+    FNACIMIENTO: Date;
+    EBLOQUEO: boolean;
+    FVCMNTO: Date;
+    INTENTOS: number;
+    UCRCN: string;
+    FCRCN: Date;
+    FEDCN: Date;
+    CDESTDO: string;
+    TOKEN: string;
+}
 export declare class UserService {
     private connection;
     constructor(connection: DataSource);
@@ -11,3 +31,4 @@ export declare class UserService {
     deleteUser(id: number, UCRCN: string): Promise<Result>;
     list(entidad: DataTable, IDROLE: string): Promise<User[]>;
 }
+export {};

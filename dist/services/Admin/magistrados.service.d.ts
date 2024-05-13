@@ -1,7 +1,7 @@
 import { DataSource } from 'typeorm';
-import { Result } from 'models/result.model';
-import { DataTable } from 'models/DataTable.model.';
-import { MagistradosModel } from 'models/Admin/magistrados.model';
+import { Result } from '../../models/result.model';
+import { DataTable } from 'src/models/DataTable.model.';
+import { MagistradosModel } from 'src/models/Admin/magistrados.model';
 export declare class MagistradosService {
     private connection;
     constructor(connection: DataSource);

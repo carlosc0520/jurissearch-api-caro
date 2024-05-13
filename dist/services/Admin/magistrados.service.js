@@ -18,6 +18,7 @@ let MagistradosService = class MagistradosService {
         this.connection = connection;
     }
     async create(entidad) {
+        var _a, _b, _c;
         let queryAsync = configMappers_1.default.ADMIN.MAGISTRADOS.CRUD;
         queryAsync += ` @p_cData = ${entidad ? `'${JSON.stringify(entidad)}'` : null},`;
         queryAsync += ` @p_cUser = ${entidad.UCRCN},`;
@@ -25,12 +26,12 @@ let MagistradosService = class MagistradosService {
         queryAsync += ` @p_nId = ${0}`;
         try {
             const result = await this.connection.query(queryAsync);
-            const isSuccess = result?.[0]?.RESULT > 0;
+            const isSuccess = ((_a = result === null || result === void 0 ? void 0 : result[0]) === null || _a === void 0 ? void 0 : _a.RESULT) > 0;
             const MESSAGE = isSuccess ? "Magistrado agregado correctamente" : "Ocurrió un error al intentar agregar el magistrado";
             return { MESSAGE, STATUS: isSuccess };
         }
         catch (error) {
-            const MESSAGE = error.originalError?.info?.message || "Ocurrió un error al intentar agregar el magistrado";
+            const MESSAGE = ((_c = (_b = error.originalError) === null || _b === void 0 ? void 0 : _b.info) === null || _c === void 0 ? void 0 : _c.message) || "Ocurrió un error al intentar agregar el magistrado";
             return { MESSAGE, STATUS: false };
         }
     }
@@ -49,6 +50,7 @@ let MagistradosService = class MagistradosService {
         }
     }
     async delete(id, UCRCN) {
+        var _a, _b, _c;
         let queryAsync = configMappers_1.default.ADMIN.MAGISTRADOS.CRUD;
         queryAsync += ` @p_cData = ${null},`;
         queryAsync += ` @p_cUser = ${UCRCN},`;
@@ -56,29 +58,30 @@ let MagistradosService = class MagistradosService {
         queryAsync += ` @p_nId = ${id}`;
         try {
             const result = await this.connection.query(queryAsync);
-            const isSuccess = result?.[0]?.RESULT > 0;
+            const isSuccess = ((_a = result === null || result === void 0 ? void 0 : result[0]) === null || _a === void 0 ? void 0 : _a.RESULT) > 0;
             const MESSAGE = isSuccess ? "Estado cambiado correctamente" : "Ocurrió un error al intentar cambiar el estado del magistrado";
             return { MESSAGE, STATUS: isSuccess };
         }
         catch (error) {
-            const MESSAGE = error.originalError?.info?.message || "Ocurrió un error al intentar cambiar el estado del magistrado";
+            const MESSAGE = ((_c = (_b = error.originalError) === null || _b === void 0 ? void 0 : _b.info) === null || _c === void 0 ? void 0 : _c.message) || "Ocurrió un error al intentar cambiar el estado del magistrado";
             return { MESSAGE, STATUS: false };
         }
     }
     async edit(entidad) {
+        var _a, _b, _c;
         let queryAsync = configMappers_1.default.ADMIN.MAGISTRADOS.CRUD;
         queryAsync += ` @p_cData = ${entidad ? `'${JSON.stringify(entidad)}'` : null},`;
-        queryAsync += ` @p_cUser = ${entidad?.UCRCN},`;
+        queryAsync += ` @p_cUser = ${entidad === null || entidad === void 0 ? void 0 : entidad.UCRCN},`;
         queryAsync += ` @p_nTipo = ${1},`;
-        queryAsync += ` @p_nId = ${entidad?.ID}`;
+        queryAsync += ` @p_nId = ${entidad === null || entidad === void 0 ? void 0 : entidad.ID}`;
         try {
             const result = await this.connection.query(queryAsync);
-            const isSuccess = result?.[0]?.RESULT > 0;
+            const isSuccess = ((_a = result === null || result === void 0 ? void 0 : result[0]) === null || _a === void 0 ? void 0 : _a.RESULT) > 0;
             const MESSAGE = isSuccess ? "Magistrado editado correctamente" : "Ocurrió un error al intentar editar el magistrado";
             return { MESSAGE, STATUS: isSuccess };
         }
         catch (error) {
-            const MESSAGE = error.originalError?.info?.message || "Ocurrió un error al intentar editar el magistrado";
+            const MESSAGE = ((_c = (_b = error.originalError) === null || _b === void 0 ? void 0 : _b.info) === null || _c === void 0 ? void 0 : _c.message) || "Ocurrió un error al intentar editar el magistrado";
             return { MESSAGE, STATUS: false };
         }
     }

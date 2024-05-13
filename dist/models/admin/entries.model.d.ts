@@ -27,4 +27,7 @@ export declare class EntriesModel {
     RESUMEN2: string;
     TPONRMA: string;
     NMRCN: string;
+    DELITO: string;
+    RECURSO: string;
+    MATERIA: string;
 }

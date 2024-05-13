@@ -99,7 +99,6 @@ let EntriesController = class EntriesController {
                 return { MESSAGE: `Ya existe una entrada con el mismo título para ${entidad.TYPE} - ${entidad.TIPO}`, STATUS: false };
             }
             const [file1, file2] = files;
-            console.log(file1, file2);
             if (![undefined, null].includes(file1)) {
                 await this.s3Service.deleteFile(entidad.ENTRIEFILE);
                 const keysLocation = await this.s3Service.uploadFile(entidad, file1.filename, file1.path);

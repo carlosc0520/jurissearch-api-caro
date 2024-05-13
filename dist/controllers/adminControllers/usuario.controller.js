@@ -15,8 +15,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.UsuarioController = void 0;
 const common_1 = require("@nestjs/common");
 const user_service_1 = require("../../services/User/user.service");
-const user_model_1 = require("../../models/admin/user.model");
 const DataTable_model_1 = require("../../models/DataTable.model.");
+class User {
+}
 let UsuarioController = class UsuarioController {
     constructor(userService) {
         this.userService = userService;
@@ -52,7 +53,7 @@ __decorate([
     __param(0, (0, common_1.Request)()),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, user_model_1.User]),
+    __metadata("design:paramtypes", [Object, User]),
     __metadata("design:returntype", Promise)
 ], UsuarioController.prototype, "addUser", null);
 __decorate([
@@ -76,7 +77,7 @@ __decorate([
     __param(0, (0, common_1.Request)()),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, user_model_1.User]),
+    __metadata("design:paramtypes", [Object, User]),
     __metadata("design:returntype", Promise)
 ], UsuarioController.prototype, "editUser", null);
 exports.UsuarioController = UsuarioController = __decorate([

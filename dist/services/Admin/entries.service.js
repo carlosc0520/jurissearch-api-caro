@@ -18,6 +18,7 @@ let EntriesService = class EntriesService {
         this.connection = connection;
     }
     async createEntries(entidad) {
+        var _a, _b, _c;
         let queryAsync = configMappers_1.default.ADMIN.ENTRIES.CRUD;
         queryAsync += ` @p_cData = ${entidad ? `'${JSON.stringify(entidad)}'` : null},`;
         queryAsync += ` @p_cUser = ${entidad.UCRCN},`;
@@ -25,18 +26,18 @@ let EntriesService = class EntriesService {
         queryAsync += ` @p_nId = ${0}`;
         try {
             const result = await this.connection.query(queryAsync);
-            const isSuccess = result?.[0]?.RESULT > 0;
+            const isSuccess = ((_a = result === null || result === void 0 ? void 0 : result[0]) === null || _a === void 0 ? void 0 : _a.RESULT) > 0;
             const MESSAGE = isSuccess ? "Entrada agregada correctamente" : "Ocurrió un error al intentar agregar la entrada";
             return { MESSAGE, STATUS: isSuccess };
         }
         catch (error) {
-            const MESSAGE = error.originalError?.info?.message || "Ocurrió un error al intentar agregar la entrada";
+            const MESSAGE = ((_c = (_b = error.originalError) === null || _b === void 0 ? void 0 : _b.info) === null || _c === void 0 ? void 0 : _c.message) || "Ocurrió un error al intentar agregar la entrada";
             return { MESSAGE, STATUS: false };
         }
     }
     async list(entidad, TITLE, TYPE, TIPO) {
         let queryAsync = configMappers_1.default.ADMIN.ENTRIES.CRUD;
-        queryAsync += ` @p_cData = ${entidad ? `'${JSON.stringify({ ...entidad, TITLE, TYPE, TIPO })}'` : null},`;
+        queryAsync += ` @p_cData = ${entidad ? `'${JSON.stringify(Object.assign(Object.assign({}, entidad), { TITLE, TYPE, TIPO }))}'` : null},`;
         queryAsync += ` @p_cUser = ${null},`;
         queryAsync += ` @p_nTipo = ${4},`;
         queryAsync += ` @p_nId = ${0}`;
@@ -63,6 +64,7 @@ let EntriesService = class EntriesService {
         }
     }
     async deleteFilter(id, UCRCN) {
+        var _a, _b, _c;
         let queryAsync = configMappers_1.default.ADMIN.ENTRIES.CRUD;
         queryAsync += ` @p_cData = ${null},`;
         queryAsync += ` @p_cUser = ${UCRCN},`;
@@ -70,29 +72,30 @@ let EntriesService = class EntriesService {
         queryAsync += ` @p_nId = ${id}`;
         try {
             const result = await this.connection.query(queryAsync);
-            const isSuccess = result?.[0]?.RESULT > 0;
+            const isSuccess = ((_a = result === null || result === void 0 ? void 0 : result[0]) === null || _a === void 0 ? void 0 : _a.RESULT) > 0;
             const MESSAGE = isSuccess ? "Entrada eliminada correctamente" : "Ocurrió un error al intentar eliminar la entrada";
             return { MESSAGE, STATUS: isSuccess };
         }
         catch (error) {
-            const MESSAGE = error.originalError?.info?.message || "Ocurrió un error al intentar eliminar la entrada";
+            const MESSAGE = ((_c = (_b = error.originalError) === null || _b === void 0 ? void 0 : _b.info) === null || _c === void 0 ? void 0 : _c.message) || "Ocurrió un error al intentar eliminar la entrada";
             return { MESSAGE, STATUS: false };
         }
     }
     async edit(entidad) {
+        var _a, _b, _c;
         let queryAsync = configMappers_1.default.ADMIN.ENTRIES.CRUD;
         queryAsync += ` @p_cData = ${entidad ? `'${JSON.stringify(entidad)}'` : null},`;
         queryAsync += ` @p_cUser = ${entidad.UCRCN},`;
         queryAsync += ` @p_nTipo = ${1},`;
-        queryAsync += ` @p_nId = ${entidad?.ID}`;
+        queryAsync += ` @p_nId = ${entidad === null || entidad === void 0 ? void 0 : entidad.ID}`;
         try {
             const result = await this.connection.query(queryAsync);
-            const isSuccess = result?.[0]?.RESULT > 0;
+            const isSuccess = ((_a = result === null || result === void 0 ? void 0 : result[0]) === null || _a === void 0 ? void 0 : _a.RESULT) > 0;
             const MESSAGE = isSuccess ? "Entrada editada correctamente" : "Ocurrió un error al intentar editar la entrada";
             return { MESSAGE, STATUS: isSuccess };
         }
         catch (error) {
-            const MESSAGE = error.originalError?.info?.message || "Ocurrió un error al intentar editar la entrada";
+            const MESSAGE = ((_c = (_b = error.originalError) === null || _b === void 0 ? void 0 : _b.info) === null || _c === void 0 ? void 0 : _c.message) || "Ocurrió un error al intentar editar la entrada";
             return { MESSAGE, STATUS: false };
         }
     }

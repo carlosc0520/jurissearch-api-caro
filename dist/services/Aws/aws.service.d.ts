@@ -1,4 +1,4 @@
-import { EntriesModel } from 'models/Admin/entries.model';
+import { EntriesModel } from 'src/models/Admin/entries.model';
 export declare class S3Service {
     private readonly s3;
     constructor();

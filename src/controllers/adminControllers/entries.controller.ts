@@ -170,7 +170,6 @@ export class EntriesController {
             }
 
             const [file1, file2] = files;
-            console.log(file1, file2)
 
             if(![undefined, null].includes(file1)){
                 await this.s3Service.deleteFile(entidad.ENTRIEFILE);

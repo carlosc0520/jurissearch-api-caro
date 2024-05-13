@@ -31,6 +31,9 @@ class EntriesModel {
         this.RESUMEN2 = '';
         this.TPONRMA = '';
         this.NMRCN = '';
+        this.DELITO = '';
+        this.RECURSO = '';
+        this.MATERIA = '';
     }
 }
 exports.EntriesModel = EntriesModel;

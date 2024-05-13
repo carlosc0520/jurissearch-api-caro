@@ -15,8 +15,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.LoginController = void 0;
 const common_1 = require("@nestjs/common");
 const user_service_1 = require("../services/User/user.service");
-const user_model_1 = require("../models/admin/user.model");
 const token_service_1 = require("../services/User/token.service");
+class User {
+}
 let LoginController = class LoginController {
     constructor(userService, tokenService) {
         this.userService = userService;
@@ -41,7 +42,7 @@ __decorate([
     (0, common_1.Post)('autenticar'),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [user_model_1.User]),
+    __metadata("design:paramtypes", [User]),
     __metadata("design:returntype", Promise)
 ], LoginController.prototype, "autenticarUsuario", null);
 exports.LoginController = LoginController = __decorate([

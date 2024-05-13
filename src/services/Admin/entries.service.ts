@@ -13,7 +13,6 @@ export class EntriesService {
 
 
     async createEntries(entidad: EntriesModel): Promise<Result> {
-
         let queryAsync = procedures.ADMIN.ENTRIES.CRUD;
         queryAsync += ` @p_cData = ${entidad ? `'${JSON.stringify(entidad)}'` : null},`;
         queryAsync += ` @p_cUser = ${entidad.UCRCN},`;
