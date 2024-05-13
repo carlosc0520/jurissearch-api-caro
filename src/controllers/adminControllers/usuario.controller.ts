@@ -1,8 +1,8 @@
 import { Request , Body, Controller, Get, Post, Query } from '@nestjs/common';
-import { UserService } from 'src/services/User/user.service';
-import { User } from 'src/models/admin/user.model';
-import { Result } from 'src/models/result.model';
-import { DataTable } from 'src/models/DataTable.model.';
+import { UserService } from 'services/User/user.service';
+import { User } from 'models/admin/user.model';
+import { Result } from 'models/result.model';
+import { DataTable } from 'models/DataTable.model.';
 
 @Controller('admin/user')
 export class UsuarioController {

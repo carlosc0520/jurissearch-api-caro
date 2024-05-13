@@ -1,8 +1,8 @@
 import { Body, Controller, Request, Get, Post, Query } from '@nestjs/common';
-import { Result } from '../../models/result.model';
-import { DataTable } from '../../models/DataTable.model.';
-import { MagistradosService } from 'src/services/Admin/magistrados.service';
-import { MagistradosModel } from 'src/models/Admin/magistrados.model';
+import { Result } from 'models/result.model';
+import { DataTable } from 'models/DataTable.model.';
+import { MagistradosService } from 'services/Admin/magistrados.service';
+import { MagistradosModel } from 'models/Admin/magistrados.model';
 
 @Controller('admin/magistrados')
 export class MagistradoController {

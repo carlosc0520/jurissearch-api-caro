@@ -1,12 +1,12 @@
 import { Body, Controller, Get, Request, Post, Query, Res, UploadedFiles, UseInterceptors } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
-import { EntriesModel } from 'src/models/Admin/entries.model';
-import { EntriesService } from 'src/services/Admin/entries.service';
-import { Result } from 'src/models/result.model';
+import { EntriesModel } from 'models/Admin/entries.model';
+import { EntriesService } from 'services/Admin/entries.service';
+import { Result } from 'models/result.model';
 import { diskStorage } from 'multer';
-import { S3Service } from 'src/services/Aws/aws.service';
+import { S3Service } from 'services/Aws/aws.service';
 import * as fs from 'fs';
-import { DataTable } from 'src/models/DataTable.model.';
+import { DataTable } from 'models/DataTable.model.';
 import { Response } from 'express';
 
 @Controller('admin/entries')

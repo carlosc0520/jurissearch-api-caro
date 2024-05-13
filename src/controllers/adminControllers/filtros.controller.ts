@@ -1,8 +1,8 @@
 import { Body, Controller, Request, Get, Post, Query } from '@nestjs/common';
-import { Result } from '../../models/result.model';
-import { DataTable } from '../../models/DataTable.model.';
-import { filtrosService } from '../../services/Filtros/filtros.service';
-import { FiltrosModel } from '../../models/Admin/filtros.model';
+import { Result } from 'models/result.model';
+import { DataTable } from 'models/DataTable.model.';
+import { filtrosService } from 'services/Filtros/filtros.service';
+import { FiltrosModel } from 'models/Admin/filtros.model';
 
 @Controller('admin/filtros')
 export class FiltrosController {
