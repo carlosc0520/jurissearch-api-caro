@@ -5,6 +5,28 @@ import procedures from '../configMappers';
 import { Result } from '../../models/result.model';
 import { DataTable } from '../../models/DataTable.model.';
 
+class User {
+    ID: number;
+    USER: string;
+    IDROLE: number;
+    EMAIL: string;
+    PASSWORD: string;
+    NOMBRES: string;
+    APELLIDO: string;
+    APATERNO: string;
+    AMATERNO: string;
+    TELEFONO: string;
+    FNACIMIENTO: Date;
+    EBLOQUEO: boolean;
+    FVCMNTO: Date;
+    INTENTOS: number;
+    UCRCN: string;
+    FCRCN: Date;
+    FEDCN: Date;
+    CDESTDO: string;
+    TOKEN: string;
+}
+
 @Injectable()
 export class UserService {
     constructor(
@@ -104,24 +126,3 @@ export class UserService {
     }
 }
 
-class User {
-    ID: number;
-    USER: string;
-    IDROLE: number;
-    EMAIL: string;
-    PASSWORD: string;
-    NOMBRES: string;
-    APELLIDO: string;
-    APATERNO: string;
-    AMATERNO: string;
-    TELEFONO: string;
-    FNACIMIENTO: Date;
-    EBLOQUEO: boolean;
-    FVCMNTO: Date;
-    INTENTOS: number;
-    UCRCN: string;
-    FCRCN: Date;
-    FEDCN: Date;
-    CDESTDO: string;
-    TOKEN: string;
-}

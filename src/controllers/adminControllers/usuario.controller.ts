@@ -4,6 +4,28 @@ import { UserService } from '../../services/User/user.service';
 import { Result } from '../../models/result.model';
 import { DataTable } from '../../models/DataTable.model.';
 
+class User {
+    ID: number;
+    USER: string;
+    IDROLE: number;
+    EMAIL: string;
+    PASSWORD: string;
+    NOMBRES: string;
+    APELLIDO: string;
+    APATERNO: string;
+    AMATERNO: string;
+    TELEFONO: string;
+    FNACIMIENTO: Date;
+    EBLOQUEO: boolean;
+    FVCMNTO: Date;
+    INTENTOS: number;
+    UCRCN: string;
+    FCRCN: Date;
+    FEDCN: Date;
+    CDESTDO: string;
+    TOKEN: string;
+}
+
 @Controller('admin/user')
 export class UsuarioController {
     constructor(
@@ -41,24 +63,3 @@ export class UsuarioController {
 
 }
 
-class User {
-    ID: number;
-    USER: string;
-    IDROLE: number;
-    EMAIL: string;
-    PASSWORD: string;
-    NOMBRES: string;
-    APELLIDO: string;
-    APATERNO: string;
-    AMATERNO: string;
-    TELEFONO: string;
-    FNACIMIENTO: Date;
-    EBLOQUEO: boolean;
-    FVCMNTO: Date;
-    INTENTOS: number;
-    UCRCN: string;
-    FCRCN: Date;
-    FEDCN: Date;
-    CDESTDO: string;
-    TOKEN: string;
-}
