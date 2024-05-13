@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import * as AWS from 'aws-sdk';
 import * as fs from 'fs';
-import { EntriesModel } from 'models/Admin/entries.model';
+import { EntriesModel } from 'src/models/Admin/entries.model';
 
 @Injectable()
 export class S3Service {

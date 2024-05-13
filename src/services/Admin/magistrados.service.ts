@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 import procedures from '../configMappers';
-import { Result } from 'models/result.model';
-import { DataTable } from 'models/DataTable.model.';
-import { MagistradosModel } from 'models/Admin/magistrados.model';
+import { Result } from '../../models/result.model';
+import { DataTable } from 'src/models/DataTable.model.';
+import { MagistradosModel } from 'src/models/Admin/magistrados.model';
 
 @Injectable()
 export class MagistradosService {
