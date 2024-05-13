@@ -1,10 +1,10 @@
-import { Body, Controller, Get, Post, Query } from '@nestjs/common';
+import { Body, Controller, Request, Get, Post, Query } from '@nestjs/common';
 import { Result } from '../../models/result.model';
 import { DataTable } from '../../models/DataTable.model.';
 import { MagistradosService } from 'src/services/Admin/magistrados.service';
 import { MagistradosModel } from 'src/models/Admin/magistrados.model';
 
-@Controller('admin-magistrados')
+@Controller('admin/magistrados')
 export class MagistradoController {
     constructor(
         private readonly magistradoService: MagistradosService,
@@ -16,17 +16,19 @@ export class MagistradoController {
     }
 
     @Post('delete')
-    async deleteUser(@Body('ID') ID: number): Promise<Result> {
-        return await this.magistradoService.delete(ID);
+    async deleteUser(@Request() req, @Body('ID') ID: number): Promise<Result> {
+        return await this.magistradoService.delete(ID, req.user.UCRCN);
     }
 
     @Post('add')
-    async addUser(@Body() entidad: MagistradosModel): Promise<Result> {
+    async addUser(@Request() req, @Body() entidad: MagistradosModel): Promise<Result> {
+        entidad.UCRCN = req.user.UCRCN;
         return await this.magistradoService.create(entidad);
     }
 
     @Post('edit')
-    async editUser(@Body() entidad: MagistradosModel): Promise<Result> {
+    async editUser(@Request() req, @Body() entidad: MagistradosModel): Promise<Result> {
+        entidad.UCRCN = req.user.UCRCN;
         return await this.magistradoService.edit(entidad);
     }
 }

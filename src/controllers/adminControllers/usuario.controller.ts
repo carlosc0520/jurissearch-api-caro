@@ -1,19 +1,24 @@
-import { BadRequestException, Body, Controller, Get, Post, Query } from '@nestjs/common';
+import { Request , Body, Controller, Get, Post, Query } from '@nestjs/common';
 import { UserService } from '../../services/User/user.service';
 import { User } from '../../models/admin/user.model';
 import { Result } from '../../models/result.model';
 import { DataTable } from '../../models/DataTable.model.';
 
-@Controller('admin-user')
+@Controller('admin/user')
 export class UsuarioController {
     constructor(
         private readonly userService: UserService,
     ) { }
 
+    @Get('validate-token')
+    async validateToken(): Promise<boolean> {
+        return true;
+    }
+
     @Post('add')
-    async addUser(@Body() entidad: User): Promise<Result> {
-        const admin = "ADMIN";
-        entidad.USER = entidad.EMAIL.split('@')?.[0] || entidad.EMAIL;
+    async addUser(@Request() req, @Body() entidad: User): Promise<Result> {
+        entidad.USER = req.user.UCRCN;
+        entidad.PASSWORD = entidad.APATERNO;
         return await this.userService.createUser(entidad);
     }
 
@@ -23,14 +28,13 @@ export class UsuarioController {
     }
 
     @Post('delete')
-    async deleteUser(@Body('ID') ID: number): Promise<Result> {
-        return await this.userService.deleteUser(ID);
+    async deleteUser(@Request() req, @Body('ID') ID: number): Promise<Result> {
+        return await this.userService.deleteUser(ID, req.user.UCRCN);
     }
 
     @Post('edit')
-    async editUser(@Body() entidad: User): Promise<Result> {
-        const admin = "ADMIN";
-        entidad.USER = entidad.EMAIL.split('@')?.[0] || entidad.EMAIL;
+    async editUser(@Request() req, @Body() entidad: User): Promise<Result> {
+        entidad.USER = req.user.UCRCN;
         return await this.userService.editUser(entidad);
     }
 

@@ -5,16 +5,17 @@ import { User } from '../../models/Admin/user.model';
 
 @Injectable()
 export class TokenService {
-    private readonly secretKey = '123456789'; // Cambia esto por tu propia clave secreta
+    private readonly secretKey = process.env.SECRET_KEY;
 
     generateToken(user: User): string {
-        const payload = { 
-            EMAIL: user.EMAIL, 
+        const payload = {
+            EMAIL: user.EMAIL,
             ID: user.ID,
             role: 1,
             NAME: user.NOMBRES,
-            APELLIDO: user.APELLIDO
-         }; // Puedes agregar más datos al payload si lo deseas
+            APELLIDO: user.APELLIDO,
+            UCRCN: user.EMAIL.split('@')[0] || ""
+        };
         return jwt.sign(payload, this.secretKey);
     }
 

@@ -1,10 +1,10 @@
-import { Body, Controller, Get, Post, Query } from '@nestjs/common';
+import { Body, Controller, Request, Get, Post, Query } from '@nestjs/common';
 import { Result } from '../../models/result.model';
 import { DataTable } from '../../models/DataTable.model.';
 import { filtrosService } from '../../services/Filtros/filtros.service';
 import { FiltrosModel } from '../../models/Admin/filtros.model';
 
-@Controller('admin-filtros')
+@Controller('admin/filtros')
 export class FiltrosController {
     constructor(
         private readonly filtrosService: filtrosService,
@@ -16,17 +16,19 @@ export class FiltrosController {
     }
 
     @Post('add')
-    async addUser(@Body() entidad: FiltrosModel): Promise<Result> {
+    async addUser(@Request() req, @Body() entidad: FiltrosModel): Promise<Result> {
+        entidad.UCRCN = req.user.UCRCN;
         return await this.filtrosService.createFilter(entidad);
     }
 
     @Post('delete')
-    async deleteUser(@Body('ID') ID: number): Promise<Result> {
-        return await this.filtrosService.deleteFilter(ID);
+    async deleteUser(@Request() req, @Body('ID') ID: number): Promise<Result> {
+        return await this.filtrosService.deleteFilter(ID, req.user.UCRCN);
     }
 
     @Post('edit')
-    async editUser(@Body() entidad: FiltrosModel): Promise<Result> {
+    async editUser(@Request() req, @Body() entidad: FiltrosModel): Promise<Result> {
+        entidad.UCRCN = req.user.UCRCN;
         return await this.filtrosService.editFilter(entidad);
     }
 

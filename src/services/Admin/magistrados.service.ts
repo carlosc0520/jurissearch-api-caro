@@ -15,7 +15,7 @@ export class MagistradosService {
 
         let queryAsync = procedures.ADMIN.MAGISTRADOS.CRUD;
         queryAsync += ` @p_cData = ${entidad ? `'${JSON.stringify(entidad)}'` : null},`;
-        queryAsync += ` @p_cUser = ${'ADMIN' ? `'${'ADMIN'}'` : null},`;
+        queryAsync += ` @p_cUser = ${entidad.UCRCN},`;
         queryAsync += ` @p_nTipo = ${1},`;
         queryAsync += ` @p_nId = ${0}`;
 
@@ -45,10 +45,10 @@ export class MagistradosService {
         }
     }
 
-    async delete(id: number): Promise<Result> {
+    async delete(id: number, UCRCN: string): Promise<Result> {
         let queryAsync = procedures.ADMIN.MAGISTRADOS.CRUD;
         queryAsync += ` @p_cData = ${null},`;
-        queryAsync += ` @p_cUser = ${null},`;
+        queryAsync += ` @p_cUser = ${UCRCN},`;
         queryAsync += ` @p_nTipo = ${2},`;
         queryAsync += ` @p_nId = ${id}`;
 
@@ -66,7 +66,7 @@ export class MagistradosService {
     async edit(entidad: MagistradosModel): Promise<Result> {
         let queryAsync = procedures.ADMIN.MAGISTRADOS.CRUD;
         queryAsync += ` @p_cData = ${entidad ? `'${JSON.stringify(entidad)}'` : null},`;
-        queryAsync += ` @p_cUser = ${'ADMIN' ? `'${'ADMIN'}'` : null},`;
+        queryAsync += ` @p_cUser = ${entidad?.UCRCN},`;
         queryAsync += ` @p_nTipo = ${1},`;
         queryAsync += ` @p_nId = ${entidad?.ID}`;
 

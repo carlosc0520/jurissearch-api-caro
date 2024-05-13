@@ -70,10 +70,10 @@ export class UserService {
         }
     }
 
-    async deleteUser(id: number): Promise<Result> {
+    async deleteUser(id: number, UCRCN: string): Promise<Result> {
         let queryAsync = procedures.ADMIN.USUARIO.CRUD;
         queryAsync += ` @p_cData = ${null},`;
-        queryAsync += ` @p_cUser = ${null},`;
+        queryAsync += ` @p_cUser = ${UCRCN},`;
         queryAsync += ` @p_nTipo = ${2},`;
         queryAsync += ` @p_nId = ${id}`;
 

@@ -12,6 +12,7 @@ export class LoginController {
 
     @Post('autenticar')
     async autenticarUsuario(@Body() entidad: User): Promise<User> {
+        console.log("usuario")
         const usuario: User = await this.userService.loguearUsuario(entidad);
 
         if (!usuario) {
