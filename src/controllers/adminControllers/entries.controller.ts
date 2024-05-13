@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Request, Post, Query, Res, UploadedFiles, UseInterceptors } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { EntriesModel } from 'src/models/Admin/entries.model';
-import { EntriesService } from '../../services/Admin/entries.service';
+import { EntriesService } from 'src/services/Admin/entries.service';
 import { Result } from 'src/models/result.model';
 import { diskStorage } from 'multer';
 import { S3Service } from 'src/services/Aws/aws.service';
