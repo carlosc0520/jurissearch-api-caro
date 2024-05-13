@@ -1,7 +1,7 @@
 import { DataSource } from 'typeorm';
-import { User } from '../../models/admin/user.model';
-import { Result } from '../../models/result.model';
-import { DataTable } from '../../models/DataTable.model.';
+import { User } from 'models/admin/user.model';
+import { Result } from 'models/result.model';
+import { DataTable } from 'models/DataTable.model.';
 export declare class UserService {
     private connection;
     constructor(connection: DataSource);

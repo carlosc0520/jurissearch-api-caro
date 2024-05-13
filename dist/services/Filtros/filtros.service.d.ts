@@ -1,7 +1,7 @@
 import { DataSource } from 'typeorm';
-import { Result } from '../../models/result.model';
-import { DataTable } from '../../models/DataTable.model.';
-import { FiltrosModel } from 'src/models/Admin/filtros.model';
+import { Result } from 'models/result.model';
+import { DataTable } from 'models/DataTable.model.';
+import { FiltrosModel } from 'models/Admin/filtros.model';
 export declare class filtrosService {
     private connection;
     constructor(connection: DataSource);

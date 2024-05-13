@@ -1,9 +1,9 @@
 import { Injectable, Query } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 import procedures from '../configMappers';
-import { Result } from '../../models/result.model';
-import { EntriesModel } from 'src/models/Admin/entries.model';
-import { DataTable } from 'src/models/DataTable.model.';
+import { Result } from 'models/result.model';
+import { EntriesModel } from 'models/Admin/entries.model';
+import { DataTable } from 'models/DataTable.model.'
 
 @Injectable()
 export class EntriesService {

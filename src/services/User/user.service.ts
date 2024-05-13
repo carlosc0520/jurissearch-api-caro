@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 import procedures from '../configMappers';
-import { User } from '../../models/admin/user.model'
-import { Result } from '../../models/result.model';
-import { DataTable } from '../../models/DataTable.model.';
+import { User } from 'models/admin/user.model'
+import { Result } from 'models/result.model';
+import { DataTable } from 'models/DataTable.model.';
 
 @Injectable()
 export class UserService {

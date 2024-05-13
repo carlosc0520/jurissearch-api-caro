@@ -1,7 +1,7 @@
-import { UserService } from '../../services/User/user.service';
-import { User } from '../../models/admin/user.model';
-import { Result } from '../../models/result.model';
-import { DataTable } from '../../models/DataTable.model.';
+import { UserService } from 'services/User/user.service';
+import { User } from 'models/admin/user.model';
+import { Result } from 'models/result.model';
+import { DataTable } from 'models/DataTable.model.';
 export declare class UsuarioController {
     private readonly userService;
     constructor(userService: UserService);

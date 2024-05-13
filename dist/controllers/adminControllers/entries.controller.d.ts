@@ -1,8 +1,8 @@
-import { EntriesModel } from 'src/models/Admin/entries.model';
-import { EntriesService } from '../../services/Admin/entries.service';
-import { Result } from 'src/models/result.model';
-import { S3Service } from 'src/services/Aws/aws.service';
-import { DataTable } from 'src/models/DataTable.model.';
+import { EntriesModel } from 'models/Admin/entries.model';
+import { EntriesService } from 'services/Admin/entries.service';
+import { Result } from 'models/result.model';
+import { S3Service } from 'services/Aws/aws.service';
+import { DataTable } from 'models/DataTable.model.';
 import { Response } from 'express';
 export declare class EntriesController {
     private readonly entriesService;
