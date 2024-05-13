@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 import procedures from '../configMappers';
-import { User } from '../../models/admin/user.model'
+// import { User } from '../../models/admin/user.model'
 import { Result } from '../../models/result.model';
 import { DataTable } from '../../models/DataTable.model.';
 
@@ -102,4 +102,26 @@ export class UserService {
             return error;
         }
     }
+}
+
+class User {
+    ID: number;
+    USER: string;
+    IDROLE: number;
+    EMAIL: string;
+    PASSWORD: string;
+    NOMBRES: string;
+    APELLIDO: string;
+    APATERNO: string;
+    AMATERNO: string;
+    TELEFONO: string;
+    FNACIMIENTO: Date;
+    EBLOQUEO: boolean;
+    FVCMNTO: Date;
+    INTENTOS: number;
+    UCRCN: string;
+    FCRCN: Date;
+    FEDCN: Date;
+    CDESTDO: string;
+    TOKEN: string;
 }
