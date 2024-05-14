@@ -4,6 +4,7 @@ import { Result } from 'src/models/result.model';
 import { S3Service } from 'src/services/Aws/aws.service';
 import { DataTable } from 'src/models/DataTable.model.';
 import { Response } from 'express';
+import { BusquedaModel } from 'src/models/Admin/busqueda.model';
 export declare class EntriesController {
     private readonly entriesService;
     private readonly s3Service;
@@ -16,4 +17,5 @@ export declare class EntriesController {
     deleteUser(req: any, ID: number): Promise<Result>;
     Obtener(ID: number): Promise<EntriesModel>;
     downloadFile(PATH: string, res: Response): Promise<any>;
+    busqueda(req: any, busqueda: BusquedaModel): Promise<EntriesModel[]>;
 }

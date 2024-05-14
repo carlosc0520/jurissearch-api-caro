@@ -14,7 +14,10 @@ const procedures = {
         },
         "MAGISTRADOS": {
             "CRUD": "EXEC JURIS.USP_CRUD_MAGISTRADOS"
-        }
+        },
+        "BUSQUEDAS": {
+            "CRUD": "EXEC JURIS.USP_CRUD_ENTRIES_BUSQUEDA"
+        },
     }
 }
 

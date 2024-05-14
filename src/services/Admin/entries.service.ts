@@ -4,6 +4,7 @@ import procedures from '../configMappers';
 import { Result } from '../../models/result.model';
 import { EntriesModel } from 'src/models/Admin/entries.model';
 import { DataTable } from 'src/models/DataTable.model.';
+import { BusquedaModel } from 'src/models/Admin/busqueda.model';
 
 @Injectable()
 export class EntriesService {
@@ -29,7 +30,6 @@ export class EntriesService {
             return { MESSAGE, STATUS: false };
         }
     }
-
 
     async list(entidad: DataTable, TITLE: string, TYPE: string, TIPO: string): Promise<EntriesModel[]> {
         let queryAsync = procedures.ADMIN.ENTRIES.CRUD;
@@ -96,6 +96,20 @@ export class EntriesService {
         }
     }
 
-
+    // ************************** PARTE 2 BUSQUEDAS **************************
+    async busqueda(entidad: BusquedaModel): Promise<EntriesModel[]> {
+        let queryAsync = procedures.ADMIN.BUSQUEDAS.CRUD;
+        queryAsync += ` @p_cData = ${entidad ? `'${JSON.stringify(entidad)}'` : null},`;
+        queryAsync += ` @p_cUser = ${entidad.UEDCN},`;
+        queryAsync += ` @p_nTipo = ${entidad.INDICADOR},`
+        queryAsync += ` @p_nId = ${0}`;
+        console.log(queryAsync)
+        try {
+            const result = await this.connection.query(queryAsync);
+            return result;
+        } catch (error) {
+            return error;
+        }
+    }
 
 }

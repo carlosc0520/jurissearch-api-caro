@@ -99,6 +99,21 @@ let EntriesService = class EntriesService {
             return { MESSAGE, STATUS: false };
         }
     }
+    async busqueda(entidad) {
+        let queryAsync = configMappers_1.default.ADMIN.BUSQUEDAS.CRUD;
+        queryAsync += ` @p_cData = ${entidad ? `'${JSON.stringify(entidad)}'` : null},`;
+        queryAsync += ` @p_cUser = ${entidad.UEDCN},`;
+        queryAsync += ` @p_nTipo = ${entidad.INDICADOR},`;
+        queryAsync += ` @p_nId = ${0}`;
+        console.log(queryAsync);
+        try {
+            const result = await this.connection.query(queryAsync);
+            return result;
+        }
+        catch (error) {
+            return error;
+        }
+    }
 };
 exports.EntriesService = EntriesService;
 exports.EntriesService = EntriesService = __decorate([

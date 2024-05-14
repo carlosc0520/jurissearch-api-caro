@@ -8,6 +8,7 @@ import { S3Service } from 'src/services/Aws/aws.service';
 import * as fs from 'fs';
 import { DataTable } from 'src/models/DataTable.model.';
 import { Response } from 'express';
+import { BusquedaModel } from 'src/models/Admin/busqueda.model';
 
 @Controller('admin/entries')
 export class EntriesController {
@@ -296,6 +297,12 @@ export class EntriesController {
         } catch (error) {
             res.status(500).send('Error al descargar el archivo');
         }
+    }
+
+    @Get("busqueda")
+    async busqueda(@Request() req, @Query() busqueda: BusquedaModel): Promise<EntriesModel[]> {
+        busqueda.UEDCN = req.user.UCRCN;
+        return await this.entriesService.busqueda(busqueda);
     }
 
 }

@@ -21,6 +21,7 @@ const multer_1 = require("multer");
 const aws_service_1 = require("../../services/Aws/aws.service");
 const fs = require("fs");
 const DataTable_model_1 = require("../../models/DataTable.model.");
+const busqueda_model_1 = require("../../models/Admin/busqueda.model");
 let EntriesController = class EntriesController {
     constructor(entriesService, s3Service) {
         this.entriesService = entriesService;
@@ -173,6 +174,10 @@ let EntriesController = class EntriesController {
             res.status(500).send('Error al descargar el archivo');
         }
     }
+    async busqueda(req, busqueda) {
+        busqueda.UEDCN = req.user.UCRCN;
+        return await this.entriesService.busqueda(busqueda);
+    }
 };
 exports.EntriesController = EntriesController;
 __decorate([
@@ -314,6 +319,14 @@ __decorate([
     __metadata("design:paramtypes", [String, Object]),
     __metadata("design:returntype", Promise)
 ], EntriesController.prototype, "downloadFile", null);
+__decorate([
+    (0, common_1.Get)("busqueda"),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Query)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, busqueda_model_1.BusquedaModel]),
+    __metadata("design:returntype", Promise)
+], EntriesController.prototype, "busqueda", null);
 exports.EntriesController = EntriesController = __decorate([
     (0, common_1.Controller)('admin/entries'),
     __metadata("design:paramtypes", [entries_service_1.EntriesService,

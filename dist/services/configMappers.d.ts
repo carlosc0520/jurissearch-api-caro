@@ -15,6 +15,9 @@ declare const procedures: {
         MAGISTRADOS: {
             CRUD: string;
         };
+        BUSQUEDAS: {
+            CRUD: string;
+        };
     };
 };
 export default procedures;
