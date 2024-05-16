@@ -28,7 +28,9 @@ export declare class UsuarioController {
     validateToken(): Promise<boolean>;
     addUser(req: any, entidad: User): Promise<Result>;
     listUsers(entidad: DataTable, IDROLE: string): Promise<User[]>;
+    getUser(req: any): Promise<User>;
     deleteUser(req: any, ID: number): Promise<Result>;
     editUser(req: any, entidad: User): Promise<Result>;
+    addFavoriteUser(req: any, IDENTRIE: number): Promise<any>;
 }
 export {};

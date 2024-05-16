@@ -124,5 +124,43 @@ export class UserService {
             return error;
         }
     }
+
+    async addFavoriteUser(USER: string, IDUSER: number, IDENTRIE: number): Promise<Result> {
+        let queryAsync = procedures.ADMIN.USUARIO.CRUD;
+        let data = {
+            IDUSER,
+            IDENTRIE
+        }
+
+        queryAsync += ` @p_cData = ${data ? `'${JSON.stringify(data)}'` : null},`;
+        queryAsync += ` @p_cUser = '${USER}',`;
+        queryAsync += ` @p_nTipo = ${5},`;
+        queryAsync += ` @p_nId = ${IDENTRIE}`;
+        try {
+            const result = await this.connection.query(queryAsync);
+            console.log(result)
+            const isSuccess = result?.[0]?.RESULT > 0;
+            const MESSAGE = isSuccess ? "Entrada agregada a favoritos correctamente" : "Ocurrió un error al intentar agregar la entrada a favoritos";
+            return { MESSAGE, STATUS: isSuccess };
+        } catch (error) {
+            const MESSAGE = error.originalError?.info?.message || "Ocurrió un error al intentar agregar la entrada a favoritos";
+            return { MESSAGE, STATUS: false };
+        }
+    }
+
+    async getUser(ID: number): Promise<User> {
+        let queryAsync = procedures.ADMIN.USUARIO.CRUD;
+        queryAsync += ` @p_cData = ${null},`;
+        queryAsync += ` @p_cUser = ${null},`;
+        queryAsync += ` @p_nTipo = ${6},`;
+        queryAsync += ` @p_nId = ${ID}`;
+
+        try {
+            const result = await this.connection.query(queryAsync);
+            return result[0] || {};
+        } catch (error) {
+            return error;
+        }
+    }
 }
 

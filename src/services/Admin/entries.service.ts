@@ -103,12 +103,30 @@ export class EntriesService {
         queryAsync += ` @p_cUser = ${entidad.UEDCN},`;
         queryAsync += ` @p_nTipo = ${entidad.INDICADOR},`
         queryAsync += ` @p_nId = ${0}`;
-
+        console.log(queryAsync)
         try {
             const result = await this.connection.query(queryAsync);
             return result;
         } catch (error) {
             return error;
+        }
+    }
+
+    async addFavorite(IDUSER: number, IDENTRIE: number): Promise<Result> {
+        let queryAsync = procedures.ADMIN.ENTRIES.CRUD;
+        queryAsync += ` @p_cData = ${null},`;
+        queryAsync += ` @p_cUser = ${IDUSER},`;
+        queryAsync += ` @p_nTipo = ${1},`;
+        queryAsync += ` @p_nId = ${IDENTRIE}`;
+
+        try {
+            const result = await this.connection.query(queryAsync);
+            const isSuccess = result?.[0]?.RESULT > 0;
+            const MESSAGE = isSuccess ? "Entrada agregada a favoritos correctamente" : "Ocurrió un error al intentar agregar la entrada a favoritos";
+            return { MESSAGE, STATUS: isSuccess };
+        } catch (error) {
+            const MESSAGE = error.originalError?.info?.message || "Ocurrió un error al intentar agregar la entrada a favoritos";
+            return { MESSAGE, STATUS: false };
         }
     }
 

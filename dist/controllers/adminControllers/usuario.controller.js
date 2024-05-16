@@ -33,12 +33,18 @@ let UsuarioController = class UsuarioController {
     async listUsers(entidad, IDROLE) {
         return await this.userService.list(entidad, IDROLE);
     }
+    async getUser(req) {
+        return await this.userService.getUser(req.user.ID);
+    }
     async deleteUser(req, ID) {
         return await this.userService.deleteUser(ID, req.user.UCRCN);
     }
     async editUser(req, entidad) {
         entidad.USER = req.user.UCRCN;
         return await this.userService.editUser(entidad);
+    }
+    async addFavoriteUser(req, IDENTRIE) {
+        return await this.userService.addFavoriteUser(req.user.UCRCN, req.user.ID, IDENTRIE);
     }
 };
 exports.UsuarioController = UsuarioController;
@@ -65,6 +71,13 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], UsuarioController.prototype, "listUsers", null);
 __decorate([
+    (0, common_1.Get)('get'),
+    __param(0, (0, common_1.Request)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], UsuarioController.prototype, "getUser", null);
+__decorate([
     (0, common_1.Post)('delete'),
     __param(0, (0, common_1.Request)()),
     __param(1, (0, common_1.Body)('ID')),
@@ -80,6 +93,14 @@ __decorate([
     __metadata("design:paramtypes", [Object, User]),
     __metadata("design:returntype", Promise)
 ], UsuarioController.prototype, "editUser", null);
+__decorate([
+    (0, common_1.Get)('add-favorite'),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Query)("IDENTRIE")),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Number]),
+    __metadata("design:returntype", Promise)
+], UsuarioController.prototype, "addFavoriteUser", null);
 exports.UsuarioController = UsuarioController = __decorate([
     (0, common_1.Controller)('admin/user'),
     __metadata("design:paramtypes", [user_service_1.UserService])

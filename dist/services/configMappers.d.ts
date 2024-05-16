@@ -18,6 +18,9 @@ declare const procedures: {
         BUSQUEDAS: {
             CRUD: string;
         };
+        HELP: {
+            CRUD: string;
+        };
     };
 };
 export default procedures;

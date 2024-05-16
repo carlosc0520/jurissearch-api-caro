@@ -16,6 +16,7 @@ class BusquedaModel {
         this.JURISDICCION = '';
         this.TPONRMA = '';
         this.NMRCN = '';
+        this.DESC = null;
         this.ID = 0;
         this.UEDCN = '';
     }

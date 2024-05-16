@@ -1,6 +1,5 @@
 import { BadRequestException, Body, Controller, Get, Post, Query } from '@nestjs/common';
 import { UserService } from '../services/User/user.service';
-// import { User } from '../models/admin/user.model';
 import { TokenService } from '../services/User/token.service';
 
 class User {
@@ -35,7 +34,6 @@ export class LoginController {
 
     @Post('autenticar')
     async autenticarUsuario(@Body() entidad: User): Promise<User> {
-        console.log("usuario")
         const usuario: User = await this.userService.loguearUsuario(entidad);
 
         if (!usuario) {

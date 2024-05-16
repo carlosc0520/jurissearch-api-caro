@@ -1,6 +1,5 @@
 import { Request , Body, Controller, Get, Post, Query } from '@nestjs/common';
 import { UserService } from '../../services/User/user.service';
-// import { User } from '../../models/admin/user.model';
 import { Result } from '../../models/result.model';
 import { DataTable } from '../../models/DataTable.model.';
 
@@ -49,6 +48,12 @@ export class UsuarioController {
         return await this.userService.list(entidad, IDROLE);
     }
 
+
+    @Get('get')
+    async getUser(@Request() req): Promise<User> {
+        return await this.userService.getUser(req.user.ID);
+    }
+
     @Post('delete')
     async deleteUser(@Request() req, @Body('ID') ID: number): Promise<Result> {
         return await this.userService.deleteUser(ID, req.user.UCRCN);
@@ -60,6 +65,10 @@ export class UsuarioController {
         return await this.userService.editUser(entidad);
     }
 
-
+    // **** FAVORITOS ****
+    @Get('add-favorite')
+    async addFavoriteUser(@Request() req, @Query("IDENTRIE") IDENTRIE: number): Promise<any> {
+        return await this.userService.addFavoriteUser(req.user.UCRCN, req.user.ID, IDENTRIE);
+    }
 }
 

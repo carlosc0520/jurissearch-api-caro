@@ -18,6 +18,9 @@ const procedures = {
         "BUSQUEDAS": {
             "CRUD": "EXEC JURIS.USP_CRUD_ENTRIES_BUSQUEDA"
         },
+        "HELP": {
+            "CRUD": "EXEC JURIS.USP_CRUD_HELP"
+        }
     }
 }
 

@@ -105,6 +105,43 @@ let UserService = class UserService {
             return error;
         }
     }
+    async addFavoriteUser(USER, IDUSER, IDENTRIE) {
+        var _a, _b, _c;
+        let queryAsync = configMappers_1.default.ADMIN.USUARIO.CRUD;
+        let data = {
+            IDUSER,
+            IDENTRIE
+        };
+        queryAsync += ` @p_cData = ${data ? `'${JSON.stringify(data)}'` : null},`;
+        queryAsync += ` @p_cUser = '${USER}',`;
+        queryAsync += ` @p_nTipo = ${5},`;
+        queryAsync += ` @p_nId = ${IDENTRIE}`;
+        try {
+            const result = await this.connection.query(queryAsync);
+            console.log(result);
+            const isSuccess = ((_a = result === null || result === void 0 ? void 0 : result[0]) === null || _a === void 0 ? void 0 : _a.RESULT) > 0;
+            const MESSAGE = isSuccess ? "Entrada agregada a favoritos correctamente" : "Ocurrió un error al intentar agregar la entrada a favoritos";
+            return { MESSAGE, STATUS: isSuccess };
+        }
+        catch (error) {
+            const MESSAGE = ((_c = (_b = error.originalError) === null || _b === void 0 ? void 0 : _b.info) === null || _c === void 0 ? void 0 : _c.message) || "Ocurrió un error al intentar agregar la entrada a favoritos";
+            return { MESSAGE, STATUS: false };
+        }
+    }
+    async getUser(ID) {
+        let queryAsync = configMappers_1.default.ADMIN.USUARIO.CRUD;
+        queryAsync += ` @p_cData = ${null},`;
+        queryAsync += ` @p_cUser = ${null},`;
+        queryAsync += ` @p_nTipo = ${6},`;
+        queryAsync += ` @p_nId = ${ID}`;
+        try {
+            const result = await this.connection.query(queryAsync);
+            return result[0] || {};
+        }
+        catch (error) {
+            return error;
+        }
+    }
 };
 exports.UserService = UserService;
 exports.UserService = UserService = __decorate([

@@ -14,7 +14,7 @@ export class BusquedaModel {
     NMRCN: string = '';
     INIT: number;
     ROWS: number;
-    DESC: string;
+    DESC: string = null;
     CESTDO: string;
     ID?: number = 0;
     UEDCN?: string = '';

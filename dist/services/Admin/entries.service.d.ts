@@ -12,4 +12,5 @@ export declare class EntriesService {
     deleteFilter(id: number, UCRCN: string): Promise<Result>;
     edit(entidad: EntriesModel): Promise<Result>;
     busqueda(entidad: BusquedaModel): Promise<EntriesModel[]>;
+    addFavorite(IDUSER: number, IDENTRIE: number): Promise<Result>;
 }

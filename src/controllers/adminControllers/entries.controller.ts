@@ -155,7 +155,7 @@ export class EntriesController {
             }
         }),
     )
-    async editMultipleFiles(@Request() req,@Body() entidad: EntriesModel, @UploadedFiles() files? : any[]): Promise<Result> {
+    async editMultipleFiles(@Request() req, @Body() entidad: EntriesModel, @UploadedFiles() files?: any[]): Promise<Result> {
         try {
             const table: DataTable = {
                 INIT: 0,
@@ -172,19 +172,19 @@ export class EntriesController {
 
             const [file1, file2] = files;
 
-            if(![undefined, null].includes(file1)){
+            if (![undefined, null].includes(file1)) {
                 await this.s3Service.deleteFile(entidad.ENTRIEFILE);
                 const keysLocation: string = await this.s3Service.uploadFile(
                     entidad,
                     file1.filename,
                     file1.path
                 );
-    
+
                 entidad.ENTRIEFILE = keysLocation;
             }
 
 
-            if(![undefined, null].includes(file2)){
+            if (![undefined, null].includes(file2)) {
                 await this.s3Service.deleteFile(entidad.ENTRIEFILERESUMEN);
                 const keysLocation: string = await this.s3Service.uploadFile(
                     entidad,
@@ -231,7 +231,7 @@ export class EntriesController {
             }
         }),
     )
-    async editSingleFile(@Request() req,@Body() entidad: EntriesModel, @UploadedFiles() files? : any[]): Promise<Result> {
+    async editSingleFile(@Request() req, @Body() entidad: EntriesModel, @UploadedFiles() files?: any[]): Promise<Result> {
         try {
             const table: DataTable = {
                 INIT: 0,
@@ -248,14 +248,14 @@ export class EntriesController {
 
             const [file1] = files;
 
-            if(![undefined, null].includes(file1)){
+            if (![undefined, null].includes(file1)) {
                 await this.s3Service.deleteFile(entidad.ENTRIEFILE);
                 const keysLocation: string = await this.s3Service.uploadFile(
                     entidad,
                     file1.filename,
                     file1.path
                 );
-    
+
                 entidad.ENTRIEFILE = keysLocation;
             }
 
@@ -304,5 +304,4 @@ export class EntriesController {
         busqueda.UEDCN = req.user.UCRCN;
         return await this.entriesService.busqueda(busqueda);
     }
-
 }

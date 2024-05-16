@@ -17,7 +17,7 @@ let TokenService = class TokenService {
         const payload = {
             EMAIL: user.EMAIL,
             ID: user.ID,
-            role: 1,
+            role: user.IDROLE,
             NAME: user.NOMBRES,
             APELLIDO: user.APELLIDO,
             UCRCN: user.EMAIL.split('@')[0] || ""

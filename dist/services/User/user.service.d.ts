@@ -30,5 +30,7 @@ export declare class UserService {
     editUser(entidad: User): Promise<Result>;
     deleteUser(id: number, UCRCN: string): Promise<Result>;
     list(entidad: DataTable, IDROLE: string): Promise<User[]>;
+    addFavoriteUser(USER: string, IDUSER: number, IDENTRIE: number): Promise<Result>;
+    getUser(ID: number): Promise<User>;
 }
 export {};
