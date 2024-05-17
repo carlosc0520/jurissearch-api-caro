@@ -34,6 +34,8 @@ class EntriesModel {
         this.DELITO = '';
         this.RECURSO = '';
         this.MATERIA = '';
+        this.TITLEALT = '';
+        this.IDFAV = 0;
     }
 }
 exports.EntriesModel = EntriesModel;

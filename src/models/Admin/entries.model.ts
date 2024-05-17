@@ -30,4 +30,6 @@ export class EntriesModel {
     DELITO: string = '';
     RECURSO: string = '';
     MATERIA: string = '';
+    TITLEALT: string = '';
+    IDFAV: number = 0;
 }

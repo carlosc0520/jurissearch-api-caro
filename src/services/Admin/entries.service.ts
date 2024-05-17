@@ -103,7 +103,24 @@ export class EntriesService {
         queryAsync += ` @p_cUser = ${entidad.UEDCN},`;
         queryAsync += ` @p_nTipo = ${entidad.INDICADOR},`
         queryAsync += ` @p_nId = ${0}`;
+
+        try {
+            const result = await this.connection.query(queryAsync);
+            return result;
+        } catch (error) {
+            return error;
+        }
+    }
+
+    async busquedaFavorites(entidad: BusquedaModel): Promise<EntriesModel[]> {
+        let queryAsync = procedures.ADMIN.BUSQUEDAS.CRUD;
+        queryAsync += ` @p_cData = ${entidad ? `'${JSON.stringify(entidad)}'` : null},`;
+        queryAsync += ` @p_cUser = ${entidad.UEDCN},`;
+        queryAsync += ` @p_nTipo = ${3},`
+        queryAsync += ` @p_nId = ${0}`;
+
         console.log(queryAsync)
+
         try {
             const result = await this.connection.query(queryAsync);
             return result;
@@ -126,6 +143,25 @@ export class EntriesService {
             return { MESSAGE, STATUS: isSuccess };
         } catch (error) {
             const MESSAGE = error.originalError?.info?.message || "Ocurrió un error al intentar agregar la entrada a favoritos";
+            return { MESSAGE, STATUS: false };
+        }
+    }
+
+    async saveTitleEntrie(entidad: EntriesModel): Promise<Result> {
+        let queryAsync = procedures.ADMIN.BUSQUEDAS.CRUD;
+        queryAsync += ` @p_cData = ${entidad ? `'${JSON.stringify(entidad)}'` : null},`;
+        queryAsync += ` @p_cUser = '${entidad.UCRCN}',`;
+        queryAsync += ` @p_nTipo = ${4},`;
+        queryAsync += ` @p_nId = ${entidad.ID}`;
+        console.log(queryAsync)
+
+        try {
+            const result = await this.connection.query(queryAsync);
+            const isSuccess = result?.[0]?.RESULT > 0;
+            const MESSAGE = isSuccess ? "Título guardado correctamente" : "Ocurrió un error al intentar guardar el título";
+            return { MESSAGE, STATUS: isSuccess };
+        } catch (error) {
+            const MESSAGE = error.originalError?.info?.message || "Ocurrió un error al intentar guardar el título";
             return { MESSAGE, STATUS: false };
         }
     }

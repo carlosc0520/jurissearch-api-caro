@@ -65,6 +65,13 @@ export class UsuarioController {
         return await this.userService.editUser(entidad);
     }
 
+    @Post('edit-force')
+    async editUserForce(@Request() req, @Body() entidad: User): Promise<Result> {
+        entidad.USER = req.user.UCRCN;
+        entidad.ID = req.user.ID;
+        return await this.userService.editUser(entidad);
+    }
+
     // **** FAVORITOS ****
     @Get('add-favorite')
     async addFavoriteUser(@Request() req, @Query("IDENTRIE") IDENTRIE: number): Promise<any> {

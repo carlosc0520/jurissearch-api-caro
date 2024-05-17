@@ -43,6 +43,11 @@ let UsuarioController = class UsuarioController {
         entidad.USER = req.user.UCRCN;
         return await this.userService.editUser(entidad);
     }
+    async editUserForce(req, entidad) {
+        entidad.USER = req.user.UCRCN;
+        entidad.ID = req.user.ID;
+        return await this.userService.editUser(entidad);
+    }
     async addFavoriteUser(req, IDENTRIE) {
         return await this.userService.addFavoriteUser(req.user.UCRCN, req.user.ID, IDENTRIE);
     }
@@ -93,6 +98,14 @@ __decorate([
     __metadata("design:paramtypes", [Object, User]),
     __metadata("design:returntype", Promise)
 ], UsuarioController.prototype, "editUser", null);
+__decorate([
+    (0, common_1.Post)('edit-force'),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, User]),
+    __metadata("design:returntype", Promise)
+], UsuarioController.prototype, "editUserForce", null);
 __decorate([
     (0, common_1.Get)('add-favorite'),
     __param(0, (0, common_1.Request)()),

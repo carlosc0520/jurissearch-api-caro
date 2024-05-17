@@ -31,6 +31,7 @@ export declare class UsuarioController {
     getUser(req: any): Promise<User>;
     deleteUser(req: any, ID: number): Promise<Result>;
     editUser(req: any, entidad: User): Promise<Result>;
+    editUserForce(req: any, entidad: User): Promise<Result>;
     addFavoriteUser(req: any, IDENTRIE: number): Promise<any>;
 }
 export {};

@@ -18,4 +18,6 @@ export declare class EntriesController {
     Obtener(ID: number): Promise<EntriesModel>;
     downloadFile(PATH: string, res: Response): Promise<any>;
     busqueda(req: any, busqueda: BusquedaModel): Promise<EntriesModel[]>;
+    busquedaFavorites(req: any, busqueda: BusquedaModel): Promise<EntriesModel[]>;
+    saveTitleEntrie(req: any, entidad: EntriesModel): Promise<Result>;
 }

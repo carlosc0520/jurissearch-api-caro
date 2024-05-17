@@ -18,4 +18,5 @@ export declare class BusquedaModel {
     CESTDO: string;
     ID?: number;
     UEDCN?: string;
+    IDUSR?: number;
 }

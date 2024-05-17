@@ -178,6 +178,15 @@ let EntriesController = class EntriesController {
         busqueda.UEDCN = req.user.UCRCN;
         return await this.entriesService.busqueda(busqueda);
     }
+    async busquedaFavorites(req, busqueda) {
+        busqueda.UEDCN = req.user.UCRCN;
+        busqueda.IDUSR = req.user.ID;
+        return await this.entriesService.busquedaFavorites(busqueda);
+    }
+    async saveTitleEntrie(req, entidad) {
+        entidad.UCRCN = req.user.UCRCN;
+        return await this.entriesService.saveTitleEntrie(entidad);
+    }
 };
 exports.EntriesController = EntriesController;
 __decorate([
@@ -327,6 +336,22 @@ __decorate([
     __metadata("design:paramtypes", [Object, busqueda_model_1.BusquedaModel]),
     __metadata("design:returntype", Promise)
 ], EntriesController.prototype, "busqueda", null);
+__decorate([
+    (0, common_1.Get)("busqueda-favorites"),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Query)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, busqueda_model_1.BusquedaModel]),
+    __metadata("design:returntype", Promise)
+], EntriesController.prototype, "busquedaFavorites", null);
+__decorate([
+    (0, common_1.Post)("save-title-entrie"),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, entries_model_1.EntriesModel]),
+    __metadata("design:returntype", Promise)
+], EntriesController.prototype, "saveTitleEntrie", null);
 exports.EntriesController = EntriesController = __decorate([
     (0, common_1.Controller)('admin/entries'),
     __metadata("design:paramtypes", [entries_service_1.EntriesService,

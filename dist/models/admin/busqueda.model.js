@@ -19,6 +19,7 @@ class BusquedaModel {
         this.DESC = null;
         this.ID = 0;
         this.UEDCN = '';
+        this.IDUSR = 0;
     }
 }
 exports.BusquedaModel = BusquedaModel;
