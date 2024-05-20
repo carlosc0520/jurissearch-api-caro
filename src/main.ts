@@ -9,7 +9,7 @@ async function bootstrap() {
   app.enableCors();
   console.log(`Server running on ${3000}`)
 
-  // aumentar memoria de node
+  // aumentar memoria de node;
   
 
   await app.listen(3000);

@@ -17,6 +17,8 @@ import { MagistradoController } from 'src/controllers/adminControllers/magistrad
 import { MagistradosService } from './Admin/magistrados.service';
 import { HelpController } from 'src/controllers/mantenimientoControllers/help.controller';
 import { HelpService } from './mantenimiento/help.service';
+import { NoticiaController } from 'src/controllers/adminControllers/noticia.controller';
+import { NoticiaService } from './mantenimiento/noticia.service';
 
 @Module({
     imports: [TypeOrmModule.forFeature([])],
@@ -26,7 +28,8 @@ import { HelpService } from './mantenimiento/help.service';
         FiltrosController, 
         EntriesController,
         MagistradoController,
-        HelpController
+        HelpController,
+        NoticiaController
     ],
     providers: [
         UserService, 
@@ -35,7 +38,8 @@ import { HelpService } from './mantenimiento/help.service';
         EntriesService, 
         S3Service,
         MagistradosService,
-        HelpService
+        HelpService,
+        NoticiaService
     ],
 })
 export class UserModule { }

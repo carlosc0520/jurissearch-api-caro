@@ -22,6 +22,9 @@ const procedures = {
         },
         "HELP": {
             "CRUD": "EXEC JURIS.USP_CRUD_HELP"
+        },
+        "NOTICIA": {
+            "CRUD": "EXEC JURIS.USP_CRUD_NOTICIAS"
         }
     }
 };
