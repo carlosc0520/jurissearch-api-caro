@@ -14,12 +14,17 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.NoticiaController = void 0;
 const common_1 = require("@nestjs/common");
+const platform_express_1 = require("@nestjs/platform-express");
+const multer_1 = require("multer");
+const aws_service_1 = require("../../services/Aws/aws.service");
+const fs = require("fs");
 const DataTable_model_1 = require("../../models/DataTable.model.");
 const noticia_model_1 = require("../../models/Admin/noticia.model");
 const noticia_service_1 = require("../../services/mantenimiento/noticia.service");
 let NoticiaController = class NoticiaController {
-    constructor(noticiaService) {
+    constructor(noticiaService, s3Service) {
         this.noticiaService = noticiaService;
+        this.s3Service = s3Service;
     }
     async listaAll(entidad) {
         return await this.noticiaService.list(entidad);
@@ -27,9 +32,38 @@ let NoticiaController = class NoticiaController {
     async deleteUser(req, ID) {
         return await this.noticiaService.delete(ID, req.user.UCRCN);
     }
-    async addUser(req, entidad) {
+    async addUser(req, entidad, files) {
         entidad.UCRCN = req.user.UCRCN;
-        return await this.noticiaService.create(entidad);
+        try {
+            const table = {
+                INIT: 0,
+                ROWS: 1,
+                DESC: entidad.TITULO,
+                CESTDO: null,
+                ID: 0
+            };
+            const obtener = await this.noticiaService.list(table);
+            if (obtener.length > 0) {
+                return {
+                    MESSAGE: `Ya existe una noticia con el titulo ${entidad.TITULO}`,
+                    STATUS: false
+                };
+            }
+            const [file1] = files;
+            const keysLocation = await this.s3Service.uploadImage(entidad, file1.filename, file1.path);
+            entidad.IMAGEN = keysLocation;
+            entidad.UCRCN = req.user.UCRCN;
+            const result = await this.noticiaService.create(entidad);
+            return result;
+        }
+        catch (error) {
+            return { MESSAGE: error.message, STATUS: false };
+        }
+        finally {
+            await files.forEach(file => {
+                fs.unlinkSync(file.path);
+            });
+        }
     }
     async editUser(req, entidad) {
         entidad.UCRCN = req.user.UCRCN;
@@ -54,10 +88,28 @@ __decorate([
 ], NoticiaController.prototype, "deleteUser", null);
 __decorate([
     (0, common_1.Post)('add'),
+    (0, common_1.UseInterceptors)((0, platform_express_1.FilesInterceptor)('files', 20, {
+        storage: (0, multer_1.diskStorage)({
+            destination: './uploads',
+            filename: function (req, file, cb) {
+                const filename = `${Date.now()}-${file.originalname.replace(/\s/g, '')}`;
+                return cb(null, filename);
+            }
+        }),
+        fileFilter: (req, file, cb) => {
+            if (file.mimetype.match(/\/(jpg|jpeg|png|gif)$/)) {
+                cb(null, true);
+            }
+            else {
+                cb(new Error('Solo se permiten imagenes'), false);
+            }
+        }
+    })),
     __param(0, (0, common_1.Request)()),
     __param(1, (0, common_1.Body)()),
+    __param(2, (0, common_1.UploadedFiles)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, noticia_model_1.NoticiaModel]),
+    __metadata("design:paramtypes", [Object, noticia_model_1.NoticiaModel, Object]),
     __metadata("design:returntype", Promise)
 ], NoticiaController.prototype, "addUser", null);
 __decorate([
@@ -70,6 +122,7 @@ __decorate([
 ], NoticiaController.prototype, "editUser", null);
 exports.NoticiaController = NoticiaController = __decorate([
     (0, common_1.Controller)('admin/noticias'),
-    __metadata("design:paramtypes", [noticia_service_1.NoticiaService])
+    __metadata("design:paramtypes", [noticia_service_1.NoticiaService,
+        aws_service_1.S3Service])
 ], NoticiaController);
 //# sourceMappingURL=noticia.controller.js.map

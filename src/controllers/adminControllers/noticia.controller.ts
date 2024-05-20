@@ -1,4 +1,8 @@
-import { Body, Controller, Request, Get, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, Request, Post, Query, Res, UploadedFiles, UseInterceptors } from '@nestjs/common';
+import { FilesInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
+import { S3Service } from 'src/services/Aws/aws.service';
+import * as fs from 'fs';
 import { Result } from '../../models/result.model';
 import { DataTable } from '../../models/DataTable.model.';
 import { NoticiaModel } from 'src/models/Admin/noticia.model';
@@ -8,6 +12,7 @@ import { NoticiaService } from 'src/services/mantenimiento/noticia.service';
 export class NoticiaController {
     constructor(
         private readonly noticiaService: NoticiaService,
+        private readonly s3Service: S3Service
     ) { }
 
     @Get('list')
@@ -21,9 +26,64 @@ export class NoticiaController {
     }
 
     @Post('add')
-    async addUser(@Request() req, @Body() entidad: NoticiaModel): Promise<Result> {
+    @UseInterceptors(
+        FilesInterceptor('files', 20, {
+            storage: diskStorage({
+                destination: './uploads',
+                filename: function (req, file, cb) {
+                    const filename = `${Date.now()}-${file.originalname.replace(/\s/g, '')}`;
+                    return cb(null, filename);
+                }
+            }),
+            fileFilter: (req, file, cb) => {
+                if (file.mimetype.match(/\/(jpg|jpeg|png|gif)$/)) {
+                    cb(null, true);
+                } else {
+                    cb(new Error('Solo se permiten imagenes'), false);
+                }
+            }
+        }),
+    )
+    async addUser(@Request() req, @Body() entidad: NoticiaModel, @UploadedFiles() files): Promise<Result> {
         entidad.UCRCN = req.user.UCRCN;
-        return await this.noticiaService.create(entidad);
+        try {
+
+            const table: DataTable = {
+                INIT: 0,
+                ROWS: 1,
+                DESC: entidad.TITULO,
+                CESTDO: null,
+                ID: 0
+            };
+            const obtener = await this.noticiaService.list(table);
+            if (obtener.length > 0) {
+                return {
+                    MESSAGE: `Ya existe una noticia con el titulo ${entidad.TITULO}`,
+                    STATUS: false
+                };
+            }
+
+            const [file1] = files;
+
+            const keysLocation: string = await this.s3Service.uploadImage(
+                entidad,
+                file1.filename,
+                file1.path
+            );
+
+            entidad.IMAGEN = keysLocation;
+            entidad.UCRCN = req.user.UCRCN;
+            const result = await this.noticiaService.create(entidad);
+            return result
+        }
+        catch (error) {
+            return { MESSAGE: error.message, STATUS: false };
+        }
+        finally {
+            await files.forEach(file => {
+                fs.unlinkSync(file.path);
+            });
+        }
     }
 
     @Post('edit')

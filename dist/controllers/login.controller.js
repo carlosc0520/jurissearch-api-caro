@@ -16,12 +16,15 @@ exports.LoginController = void 0;
 const common_1 = require("@nestjs/common");
 const user_service_1 = require("../services/User/user.service");
 const token_service_1 = require("../services/User/token.service");
+const noticia_service_1 = require("../services/mantenimiento/noticia.service");
+const DataTable_model_1 = require("../models/DataTable.model.");
 class User {
 }
 let LoginController = class LoginController {
-    constructor(userService, tokenService) {
+    constructor(userService, tokenService, noticiaService) {
         this.userService = userService;
         this.tokenService = tokenService;
+        this.noticiaService = noticiaService;
     }
     async autenticarUsuario(entidad) {
         const usuario = await this.userService.loguearUsuario(entidad);
@@ -35,6 +38,9 @@ let LoginController = class LoginController {
         usuario.TOKEN = token;
         return usuario;
     }
+    async listaAll(entidad) {
+        return await this.noticiaService.list(entidad);
+    }
 };
 exports.LoginController = LoginController;
 __decorate([
@@ -44,9 +50,17 @@ __decorate([
     __metadata("design:paramtypes", [User]),
     __metadata("design:returntype", Promise)
 ], LoginController.prototype, "autenticarUsuario", null);
+__decorate([
+    (0, common_1.Get)('noticias'),
+    __param(0, (0, common_1.Query)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [DataTable_model_1.DataTable]),
+    __metadata("design:returntype", Promise)
+], LoginController.prototype, "listaAll", null);
 exports.LoginController = LoginController = __decorate([
     (0, common_1.Controller)('login'),
     __metadata("design:paramtypes", [user_service_1.UserService,
-        token_service_1.TokenService])
+        token_service_1.TokenService,
+        noticia_service_1.NoticiaService])
 ], LoginController);
 //# sourceMappingURL=login.controller.js.map

@@ -67,6 +67,20 @@ let S3Service = class S3Service {
             throw new Error(error);
         }
     }
+    async uploadImage(entidad, file1Key, file1Path) {
+        try {
+            const params1 = {
+                Bucket: `${process.env.AWS_BUCKET_NAME}/noticias/${entidad.TITULO}`,
+                Key: file1Key,
+                Body: fs.createReadStream(file1Path),
+            };
+            const result = await this.s3.upload(params1).promise();
+            return result.Location;
+        }
+        catch (error) {
+            throw new Error(error);
+        }
+    }
     async downloadFile(PATH) {
         var _a, e_1, _b, _c;
         try {

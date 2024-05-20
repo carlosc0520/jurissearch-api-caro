@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import * as AWS from 'aws-sdk';
 import * as fs from 'fs';
 import { EntriesModel } from 'src/models/Admin/entries.model';
+import { NoticiaModel } from 'src/models/Admin/noticia.model';
 
 @Injectable()
 export class S3Service {
@@ -55,6 +56,22 @@ export class S3Service {
             const result = await this.s3.upload(params1).promise();
             console.log(result.Key)
             return result.Key;
+
+        } catch (error) {
+            throw new Error(error);
+        }
+    }
+
+    async uploadImage(entidad: NoticiaModel, file1Key: string, file1Path: string): Promise<string> {
+        try {
+            const params1 = {
+                Bucket: `${process.env.AWS_BUCKET_NAME}/noticias/${entidad.TITULO}`,
+                Key: file1Key,
+                Body: fs.createReadStream(file1Path),
+            };
+
+            const result = await this.s3.upload(params1).promise();
+            return result.Location;
 
         } catch (error) {
             throw new Error(error);

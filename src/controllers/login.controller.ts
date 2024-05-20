@@ -1,6 +1,9 @@
 import { BadRequestException, Body, Controller, Get, Post, Query } from '@nestjs/common';
 import { UserService } from '../services/User/user.service';
 import { TokenService } from '../services/User/token.service';
+import { NoticiaService } from 'src/services/mantenimiento/noticia.service';
+import { NoticiaModel } from 'src/models/Admin/noticia.model';
+import { DataTable } from 'src/models/DataTable.model.';
 
 class User {
     ID: number;
@@ -29,7 +32,9 @@ class User {
 export class LoginController {
     constructor(
         private readonly userService: UserService,
-        private readonly tokenService: TokenService
+        private readonly tokenService: TokenService,
+        private readonly noticiaService: NoticiaService,
+
     ) { }
 
     @Post('autenticar')
@@ -47,6 +52,11 @@ export class LoginController {
         const token = this.tokenService.generateToken(usuario);
         usuario.TOKEN = token;
         return usuario;
+    }
+
+    @Get('noticias')
+    async listaAll(@Query() entidad: DataTable): Promise<NoticiaModel[]> {
+        return await this.noticiaService.list(entidad);
     }
 }
 
