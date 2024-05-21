@@ -70,23 +70,24 @@ let S3Service = class S3Service {
     async uploadImage(entidad, file1Key, file1Path) {
         try {
             const params1 = {
-                Bucket: `${process.env.AWS_BUCKET_NAME}/noticias/${entidad.TITULO}`,
+                Bucket: `${process.env.AWS_BUCKET_NAME}/${entidad.TITULO}`,
                 Key: file1Key,
                 Body: fs.createReadStream(file1Path),
             };
             const result = await this.s3.upload(params1).promise();
-            return result.Location;
+            console.log(result);
+            return result.Key;
         }
         catch (error) {
             throw new Error(error);
         }
     }
-    async downloadFile(PATH) {
+    async getImage(key) {
         var _a, e_1, _b, _c;
         try {
             const params = {
                 Bucket: process.env.AWS_BUCKET_NAME,
-                Key: PATH,
+                Key: key,
             };
             const stream = this.s3.getObject(params).createReadStream();
             const chunks = [];
@@ -104,6 +105,37 @@ let S3Service = class S3Service {
                     if (!_d && !_a && (_b = stream_1.return)) await _b.call(stream_1);
                 }
                 finally { if (e_1) throw e_1.error; }
+            }
+            const buffer = Buffer.concat(chunks);
+            return buffer;
+        }
+        catch (error) {
+            throw new Error(error);
+        }
+    }
+    async downloadFile(PATH) {
+        var _a, e_2, _b, _c;
+        try {
+            const params = {
+                Bucket: process.env.AWS_BUCKET_NAME,
+                Key: PATH,
+            };
+            const stream = this.s3.getObject(params).createReadStream();
+            const chunks = [];
+            try {
+                for (var _d = true, stream_2 = __asyncValues(stream), stream_2_1; stream_2_1 = await stream_2.next(), _a = stream_2_1.done, !_a; _d = true) {
+                    _c = stream_2_1.value;
+                    _d = false;
+                    const chunk = _c;
+                    chunks.push(chunk);
+                }
+            }
+            catch (e_2_1) { e_2 = { error: e_2_1 }; }
+            finally {
+                try {
+                    if (!_d && !_a && (_b = stream_2.return)) await _b.call(stream_2);
+                }
+                finally { if (e_2) throw e_2.error; }
             }
             const buffer = Buffer.concat(chunks);
             return buffer;

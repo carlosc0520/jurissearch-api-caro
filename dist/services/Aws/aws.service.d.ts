@@ -6,6 +6,7 @@ export declare class S3Service {
     uploadFiles(entidad: EntriesModel, file1Key: string, file1Path: string, file2Key: string, file2Path: string): Promise<string[]>;
     uploadFile(entidad: EntriesModel, file1Key: string, file1Path: string): Promise<string>;
     uploadImage(entidad: NoticiaModel, file1Key: string, file1Path: string): Promise<string>;
+    getImage(key: string): Promise<any>;
     downloadFile(PATH: string): Promise<any>;
     deleteFile(PATH: string): Promise<any>;
 }

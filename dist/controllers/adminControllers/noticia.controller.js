@@ -29,6 +29,16 @@ let NoticiaController = class NoticiaController {
     async listaAll(entidad) {
         return await this.noticiaService.list(entidad);
     }
+    async downloadFile(KEY, res) {
+        try {
+            const file = await this.s3Service.getImage(KEY);
+            res.set('Content-Type', 'application/octet-stream');
+            res.send(file);
+        }
+        catch (error) {
+            res.status(500).send('Error al descargar el archivo');
+        }
+    }
     async deleteUser(req, ID) {
         return await this.noticiaService.delete(ID, req.user.UCRCN);
     }
@@ -78,6 +88,14 @@ __decorate([
     __metadata("design:paramtypes", [DataTable_model_1.DataTable]),
     __metadata("design:returntype", Promise)
 ], NoticiaController.prototype, "listaAll", null);
+__decorate([
+    (0, common_1.Post)("get-image"),
+    __param(0, (0, common_1.Body)('KEY')),
+    __param(1, (0, common_1.Res)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", Promise)
+], NoticiaController.prototype, "downloadFile", null);
 __decorate([
     (0, common_1.Post)('delete'),
     __param(0, (0, common_1.Request)()),

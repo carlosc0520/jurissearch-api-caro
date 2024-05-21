@@ -7,6 +7,7 @@ import { Result } from '../../models/result.model';
 import { DataTable } from '../../models/DataTable.model.';
 import { NoticiaModel } from 'src/models/Admin/noticia.model';
 import { NoticiaService } from 'src/services/mantenimiento/noticia.service';
+import { Response } from 'express';
 
 @Controller('admin/noticias')
 export class NoticiaController {
@@ -18,6 +19,18 @@ export class NoticiaController {
     @Get('list')
     async listaAll(@Query() entidad: DataTable): Promise<NoticiaModel[]> {
         return await this.noticiaService.list(entidad);
+    }
+
+
+    @Post("get-image")
+    async downloadFile(@Body('KEY') KEY: string, @Res() res: Response): Promise<any> {
+        try {
+            const file = await this.s3Service.getImage(KEY);
+            res.set('Content-Type', 'application/octet-stream');
+            res.send(file);
+        } catch (error) {
+            res.status(500).send('Error al descargar el archivo');
+        }
     }
 
     @Post('delete')
