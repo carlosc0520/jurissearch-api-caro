@@ -9,17 +9,35 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.filtrosService = void 0;
+exports.PreguntasService = void 0;
 const common_1 = require("@nestjs/common");
 const typeorm_1 = require("typeorm");
 const configMappers_1 = require("../configMappers");
-let filtrosService = class filtrosService {
+let PreguntasService = class PreguntasService {
     constructor(connection) {
         this.connection = connection;
     }
-    async list(entidad, TIPO) {
-        let queryAsync = configMappers_1.default.ADMIN.FILTROS.CRUD;
-        queryAsync += ` @p_cData = ${entidad ? `'${JSON.stringify(Object.assign(Object.assign({}, entidad), { TIPO }))}'` : null},`;
+    async create(entidad) {
+        var _a, _b, _c;
+        let queryAsync = configMappers_1.default.ADMIN.PREGUNTAS.CRUD;
+        queryAsync += ` @p_cData = ${entidad ? `'${JSON.stringify(entidad)}'` : null},`;
+        queryAsync += ` @p_cUser = ${entidad.UCRCN},`;
+        queryAsync += ` @p_nTipo = ${1},`;
+        queryAsync += ` @p_nId = ${0}`;
+        try {
+            const result = await this.connection.query(queryAsync);
+            const isSuccess = ((_a = result === null || result === void 0 ? void 0 : result[0]) === null || _a === void 0 ? void 0 : _a.RESULT) > 0;
+            const MESSAGE = isSuccess ? "Pregunta frecuente agregada correctamente" : "Ocurrió un error al intentar agregar la pregunta frecuente";
+            return { MESSAGE, STATUS: isSuccess };
+        }
+        catch (error) {
+            const MESSAGE = ((_c = (_b = error.originalError) === null || _b === void 0 ? void 0 : _b.info) === null || _c === void 0 ? void 0 : _c.message) || "Ocurrió un error al intentar agregar la pregunta frecuente";
+            return { MESSAGE, STATUS: false };
+        }
+    }
+    async list(entidad) {
+        let queryAsync = configMappers_1.default.ADMIN.PREGUNTAS.CRUD;
+        queryAsync += ` @p_cData = ${entidad ? `'${JSON.stringify(entidad)}'` : null},`;
         queryAsync += ` @p_cUser = ${null},`;
         queryAsync += ` @p_nTipo = ${4},`;
         queryAsync += ` @p_nId = ${0}`;
@@ -31,9 +49,9 @@ let filtrosService = class filtrosService {
             return error;
         }
     }
-    async deleteFilter(id, UCRCN) {
+    async delete(id, UCRCN) {
         var _a, _b, _c;
-        let queryAsync = configMappers_1.default.ADMIN.FILTROS.CRUD;
+        let queryAsync = configMappers_1.default.ADMIN.PREGUNTAS.CRUD;
         queryAsync += ` @p_cData = ${null},`;
         queryAsync += ` @p_cUser = ${UCRCN},`;
         queryAsync += ` @p_nTipo = ${2},`;
@@ -41,54 +59,36 @@ let filtrosService = class filtrosService {
         try {
             const result = await this.connection.query(queryAsync);
             const isSuccess = ((_a = result === null || result === void 0 ? void 0 : result[0]) === null || _a === void 0 ? void 0 : _a.RESULT) > 0;
-            const MESSAGE = isSuccess ? "Filtro eliminado correctamente" : "Ocurrió un error al intentar eliminar el filtro";
+            const MESSAGE = isSuccess ? "Registro eliminado correctamente" : "Ocurrió un error al intentar eliminar el registro";
             return { MESSAGE, STATUS: isSuccess };
         }
         catch (error) {
-            const MESSAGE = ((_c = (_b = error.originalError) === null || _b === void 0 ? void 0 : _b.info) === null || _c === void 0 ? void 0 : _c.message) || "Ocurrió un error al intentar eliminar el usuario";
+            const MESSAGE = ((_c = (_b = error.originalError) === null || _b === void 0 ? void 0 : _b.info) === null || _c === void 0 ? void 0 : _c.message) || "Ocurrió un error al intentar eliminar el registro";
             return { MESSAGE, STATUS: false };
         }
     }
-    async createFilter(entidad) {
+    async edit(entidad) {
         var _a, _b, _c;
-        let queryAsync = configMappers_1.default.ADMIN.FILTROS.CRUD;
+        let queryAsync = configMappers_1.default.ADMIN.PREGUNTAS.CRUD;
         queryAsync += ` @p_cData = ${entidad ? `'${JSON.stringify(entidad)}'` : null},`;
-        queryAsync += ` @p_cUser = ${entidad.UCRCN},`;
-        queryAsync += ` @p_nTipo = ${1},`;
-        queryAsync += ` @p_nId = ${0}`;
-        try {
-            const result = await this.connection.query(queryAsync);
-            const isSuccess = ((_a = result === null || result === void 0 ? void 0 : result[0]) === null || _a === void 0 ? void 0 : _a.RESULT) > 0;
-            const MESSAGE = isSuccess ? "Filtro agregado correctamente" : "Ocurrió un error al intentar agregar el filtro";
-            return { MESSAGE, STATUS: isSuccess };
-        }
-        catch (error) {
-            const MESSAGE = ((_c = (_b = error.originalError) === null || _b === void 0 ? void 0 : _b.info) === null || _c === void 0 ? void 0 : _c.message) || "Ocurrió un error al intentar agregar el filtro";
-            return { MESSAGE, STATUS: false };
-        }
-    }
-    async editFilter(entidad) {
-        var _a, _b, _c;
-        let queryAsync = configMappers_1.default.ADMIN.FILTROS.CRUD;
-        queryAsync += ` @p_cData = ${entidad ? `'${JSON.stringify(entidad)}'` : null},`;
-        queryAsync += ` @p_cUser = ${entidad.UCRCN},`;
+        queryAsync += ` @p_cUser = ${entidad === null || entidad === void 0 ? void 0 : entidad.UCRCN},`;
         queryAsync += ` @p_nTipo = ${1},`;
         queryAsync += ` @p_nId = ${entidad === null || entidad === void 0 ? void 0 : entidad.ID}`;
         try {
             const result = await this.connection.query(queryAsync);
             const isSuccess = ((_a = result === null || result === void 0 ? void 0 : result[0]) === null || _a === void 0 ? void 0 : _a.RESULT) > 0;
-            const MESSAGE = isSuccess ? "Filtro editado correctamente" : "Ocurrió un error al intentar editar el filtro";
+            const MESSAGE = isSuccess ? "Pregunta frecuente editada correctamente" : "Ocurrió un error al intentar editar la pregunta frecuente";
             return { MESSAGE, STATUS: isSuccess };
         }
         catch (error) {
-            const MESSAGE = ((_c = (_b = error.originalError) === null || _b === void 0 ? void 0 : _b.info) === null || _c === void 0 ? void 0 : _c.message) || "Ocurrió un error al intentar editar el filtro";
+            const MESSAGE = ((_c = (_b = error.originalError) === null || _b === void 0 ? void 0 : _b.info) === null || _c === void 0 ? void 0 : _c.message) || "Ocurrió un error al intentar editar la pregunta frecuente";
             return { MESSAGE, STATUS: false };
         }
     }
 };
-exports.filtrosService = filtrosService;
-exports.filtrosService = filtrosService = __decorate([
+exports.PreguntasService = PreguntasService;
+exports.PreguntasService = PreguntasService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [typeorm_1.DataSource])
-], filtrosService);
-//# sourceMappingURL=filtros.service.js.map
+], PreguntasService);
+//# sourceMappingURL=preguntas.service.js.map

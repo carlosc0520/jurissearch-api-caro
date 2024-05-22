@@ -59,11 +59,11 @@ let NoticiaService = class NoticiaService {
         try {
             const result = await this.connection.query(queryAsync);
             const isSuccess = ((_a = result === null || result === void 0 ? void 0 : result[0]) === null || _a === void 0 ? void 0 : _a.RESULT) > 0;
-            const MESSAGE = isSuccess ? "Estado cambiado correctamente" : "Ocurrió un error al intentar cambiar el estado de la noticia";
+            const MESSAGE = isSuccess ? "Registro eliminado correctamente" : "Ocurrió un error al intentar eliminar el registro";
             return { MESSAGE, STATUS: isSuccess };
         }
         catch (error) {
-            const MESSAGE = ((_c = (_b = error.originalError) === null || _b === void 0 ? void 0 : _b.info) === null || _c === void 0 ? void 0 : _c.message) || "Ocurrió un error al intentar cambiar el estado de la noticia";
+            const MESSAGE = ((_c = (_b = error.originalError) === null || _b === void 0 ? void 0 : _b.info) === null || _c === void 0 ? void 0 : _c.message) || "Ocurrió un error al intentar eliminar el registro";
             return { MESSAGE, STATUS: false };
         }
     }

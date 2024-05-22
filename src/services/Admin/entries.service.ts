@@ -119,7 +119,6 @@ export class EntriesService {
         queryAsync += ` @p_nTipo = ${3},`
         queryAsync += ` @p_nId = ${0}`;
 
-        console.log(queryAsync)
 
         try {
             const result = await this.connection.query(queryAsync);
@@ -153,7 +152,6 @@ export class EntriesService {
         queryAsync += ` @p_cUser = '${entidad.UCRCN}',`;
         queryAsync += ` @p_nTipo = ${4},`;
         queryAsync += ` @p_nId = ${entidad.ID}`;
-        console.log(queryAsync)
 
         try {
             const result = await this.connection.query(queryAsync);

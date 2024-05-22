@@ -11,6 +11,6 @@ export declare class NoticiaController {
     listaAll(entidad: DataTable): Promise<NoticiaModel[]>;
     downloadFile(KEY: string, res: Response): Promise<any>;
     deleteUser(req: any, ID: number): Promise<Result>;
-    addUser(req: any, entidad: NoticiaModel, files: any): Promise<Result>;
-    editUser(req: any, entidad: NoticiaModel): Promise<Result>;
+    addNoticia(req: any, entidad: NoticiaModel, files: any): Promise<Result>;
+    editNoticia(req: any, entidad: NoticiaModel, files?: any[]): Promise<Result>;
 }

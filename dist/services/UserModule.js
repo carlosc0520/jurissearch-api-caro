@@ -24,6 +24,8 @@ const help_controller_1 = require("../controllers/mantenimientoControllers/help.
 const help_service_1 = require("./mantenimiento/help.service");
 const noticia_controller_1 = require("../controllers/adminControllers/noticia.controller");
 const noticia_service_1 = require("./mantenimiento/noticia.service");
+const preguntas_controller_1 = require("../controllers/adminControllers/preguntas.controller");
+const preguntas_service_1 = require("./mantenimiento/preguntas.service");
 let UserModule = class UserModule {
 };
 exports.UserModule = UserModule;
@@ -37,7 +39,8 @@ exports.UserModule = UserModule = __decorate([
             entries_controller_1.EntriesController,
             magistrados_controller_1.MagistradoController,
             help_controller_1.HelpController,
-            noticia_controller_1.NoticiaController
+            noticia_controller_1.NoticiaController,
+            preguntas_controller_1.PreguntasController
         ],
         providers: [
             user_service_1.UserService,
@@ -47,7 +50,8 @@ exports.UserModule = UserModule = __decorate([
             aws_service_1.S3Service,
             magistrados_service_1.MagistradosService,
             help_service_1.HelpService,
-            noticia_service_1.NoticiaService
+            noticia_service_1.NoticiaService,
+            preguntas_service_1.PreguntasService
         ],
     })
 ], UserModule);

@@ -138,7 +138,6 @@ export class UserService {
         queryAsync += ` @p_nId = ${IDENTRIE}`;
         try {
             const result = await this.connection.query(queryAsync);
-            console.log(result)
             const isSuccess = result?.[0]?.RESULT > 0;
             const MESSAGE = isSuccess ? "Entrada agregada a favoritos correctamente" : "Ocurrió un error al intentar agregar la entrada a favoritos";
             return { MESSAGE, STATUS: isSuccess };

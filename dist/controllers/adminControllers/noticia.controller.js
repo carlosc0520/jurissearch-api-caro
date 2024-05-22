@@ -40,9 +40,13 @@ let NoticiaController = class NoticiaController {
         }
     }
     async deleteUser(req, ID) {
+        const entidad = await this.noticiaService.list({ INIT: 0, ROWS: 1, DESC: null, CESTDO: null, ID });
+        if (entidad.length === 0) {
+            return { MESSAGE: 'La noticia no existe', STATUS: false };
+        }
         return await this.noticiaService.delete(ID, req.user.UCRCN);
     }
-    async addUser(req, entidad, files) {
+    async addNoticia(req, entidad, files) {
         entidad.UCRCN = req.user.UCRCN;
         try {
             const table = {
@@ -75,9 +79,36 @@ let NoticiaController = class NoticiaController {
             });
         }
     }
-    async editUser(req, entidad) {
-        entidad.UCRCN = req.user.UCRCN;
-        return await this.noticiaService.edit(entidad);
+    async editNoticia(req, entidad, files) {
+        try {
+            const table = {
+                INIT: 0,
+                ROWS: 1,
+                DESC: entidad.TITULO,
+                CESTDO: null,
+                ID: entidad.ID
+            };
+            const obtener = await this.noticiaService.list(table);
+            if (obtener.length > 0) {
+                return { MESSAGE: `Ya existe una noticia con el titulo ${entidad.TITULO}`, STATUS: false };
+            }
+            const [file1] = files;
+            if (![undefined, null].includes(file1)) {
+                const keysLocation = await this.s3Service.uploadImage(entidad, file1.filename, file1.path);
+                entidad.IMAGEN = keysLocation;
+            }
+            entidad.UCRCN = req.user.UCRCN;
+            const result = await this.noticiaService.edit(entidad);
+            return result;
+        }
+        catch (error) {
+            return { MESSAGE: error.message, STATUS: false };
+        }
+        finally {
+            await files.forEach(file => {
+                fs.unlinkSync(file.path);
+            });
+        }
     }
 };
 exports.NoticiaController = NoticiaController;
@@ -129,15 +160,33 @@ __decorate([
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, noticia_model_1.NoticiaModel, Object]),
     __metadata("design:returntype", Promise)
-], NoticiaController.prototype, "addUser", null);
+], NoticiaController.prototype, "addNoticia", null);
 __decorate([
     (0, common_1.Post)('edit'),
+    (0, common_1.UseInterceptors)((0, platform_express_1.FilesInterceptor)('files', 20, {
+        storage: (0, multer_1.diskStorage)({
+            destination: './uploads',
+            filename: function (req, file, cb) {
+                const filename = `${Date.now()}-${file.originalname.replace(/\s/g, '')}`;
+                return cb(null, filename);
+            }
+        }),
+        fileFilter: (req, file, cb) => {
+            if (file.mimetype.match(/\/(jpg|jpeg|png|gif)$/)) {
+                cb(null, true);
+            }
+            else {
+                cb(new Error('Solo se permiten imagenes'), false);
+            }
+        }
+    })),
     __param(0, (0, common_1.Request)()),
     __param(1, (0, common_1.Body)()),
+    __param(2, (0, common_1.UploadedFiles)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, noticia_model_1.NoticiaModel]),
+    __metadata("design:paramtypes", [Object, noticia_model_1.NoticiaModel, Array]),
     __metadata("design:returntype", Promise)
-], NoticiaController.prototype, "editUser", null);
+], NoticiaController.prototype, "editNoticia", null);
 exports.NoticiaController = NoticiaController = __decorate([
     (0, common_1.Controller)('admin/noticias'),
     __metadata("design:paramtypes", [noticia_service_1.NoticiaService,

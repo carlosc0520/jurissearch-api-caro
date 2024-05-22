@@ -24,6 +24,9 @@ declare const procedures: {
         NOTICIA: {
             CRUD: string;
         };
+        PREGUNTAS: {
+            CRUD: string;
+        };
     };
 };
 export default procedures;

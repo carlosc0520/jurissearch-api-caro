@@ -14,6 +14,7 @@ export class S3Service {
             secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
             region: 'us-east-1'
         });
+        this.s3.config.update({ signatureVersion: 'v4', region: 'us-east-1' });
     }
 
     async uploadFiles(entidad: EntriesModel, file1Key: string, file1Path: string, file2Key: string, file2Path: string): Promise<string[]> {
@@ -54,7 +55,6 @@ export class S3Service {
             };
 
             const result = await this.s3.upload(params1).promise();
-            console.log(result.Key)
             return result.Key;
 
         } catch (error) {
@@ -65,13 +65,12 @@ export class S3Service {
     async uploadImage(entidad: NoticiaModel, file1Key: string, file1Path: string): Promise<string> {
         try {
             const params1 = {
-                Bucket: `${process.env.AWS_BUCKET_NAME}/${entidad.TITULO}`,
+                Bucket: `${process.env.AWS_BUCKET_NAME}/noticias`,
                 Key: file1Key,
                 Body: fs.createReadStream(file1Path),
             };
 
             const result = await this.s3.upload(params1).promise();
-            console.log(result)
             return result.Key;
 
         } catch (error) {
@@ -87,7 +86,6 @@ export class S3Service {
             };
 
             const stream = this.s3.getObject(params).createReadStream();
-
             const chunks = [];
             for await (const chunk of stream) {
                 chunks.push(chunk);
@@ -127,9 +125,8 @@ export class S3Service {
                 Bucket: process.env.AWS_BUCKET_NAME,
                 Key: PATH,
             };
-
-            await this.s3.deleteObject(params).promise();
-
+            const result = await this.s3.deleteObject(params).promise();
+            return result;
         } catch (error) {
             throw new Error(error);
         }

@@ -19,6 +19,8 @@ import { HelpController } from 'src/controllers/mantenimientoControllers/help.co
 import { HelpService } from './mantenimiento/help.service';
 import { NoticiaController } from 'src/controllers/adminControllers/noticia.controller';
 import { NoticiaService } from './mantenimiento/noticia.service';
+import { PreguntasController } from 'src/controllers/adminControllers/preguntas.controller';
+import { PreguntasService } from './mantenimiento/preguntas.service';
 
 @Module({
     imports: [TypeOrmModule.forFeature([])],
@@ -29,7 +31,8 @@ import { NoticiaService } from './mantenimiento/noticia.service';
         EntriesController,
         MagistradoController,
         HelpController,
-        NoticiaController
+        NoticiaController,
+        PreguntasController
     ],
     providers: [
         UserService, 
@@ -39,7 +42,8 @@ import { NoticiaService } from './mantenimiento/noticia.service';
         S3Service,
         MagistradosService,
         HelpService,
-        NoticiaService
+        NoticiaService,
+        PreguntasService
     ],
 })
 export class UserModule { }

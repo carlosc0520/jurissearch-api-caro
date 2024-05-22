@@ -27,6 +27,7 @@ let S3Service = class S3Service {
             secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
             region: 'us-east-1'
         });
+        this.s3.config.update({ signatureVersion: 'v4', region: 'us-east-1' });
     }
     async uploadFiles(entidad, file1Key, file1Path, file2Key, file2Path) {
         try {
@@ -60,7 +61,6 @@ let S3Service = class S3Service {
                 Body: fs.createReadStream(file1Path),
             };
             const result = await this.s3.upload(params1).promise();
-            console.log(result.Key);
             return result.Key;
         }
         catch (error) {
@@ -70,12 +70,11 @@ let S3Service = class S3Service {
     async uploadImage(entidad, file1Key, file1Path) {
         try {
             const params1 = {
-                Bucket: `${process.env.AWS_BUCKET_NAME}/${entidad.TITULO}`,
+                Bucket: `${process.env.AWS_BUCKET_NAME}/noticias`,
                 Key: file1Key,
                 Body: fs.createReadStream(file1Path),
             };
             const result = await this.s3.upload(params1).promise();
-            console.log(result);
             return result.Key;
         }
         catch (error) {
@@ -150,7 +149,8 @@ let S3Service = class S3Service {
                 Bucket: process.env.AWS_BUCKET_NAME,
                 Key: PATH,
             };
-            await this.s3.deleteObject(params).promise();
+            const result = await this.s3.deleteObject(params).promise();
+            return result;
         }
         catch (error) {
             throw new Error(error);
