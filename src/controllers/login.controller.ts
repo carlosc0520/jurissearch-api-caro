@@ -4,6 +4,7 @@ import { TokenService } from '../services/User/token.service';
 import { NoticiaService } from 'src/services/mantenimiento/noticia.service';
 import { NoticiaModel } from 'src/models/Admin/noticia.model';
 import { DataTable } from 'src/models/DataTable.model.';
+import { S3Service } from 'src/services/Aws/aws.service';
 
 class User {
     ID: number;
@@ -34,7 +35,7 @@ export class LoginController {
         private readonly userService: UserService,
         private readonly tokenService: TokenService,
         private readonly noticiaService: NoticiaService,
-
+        private readonly s3Service: S3Service
     ) { }
 
     @Post('autenticar')
@@ -56,7 +57,15 @@ export class LoginController {
 
     @Get('noticias')
     async listaAll(@Query() entidad: DataTable): Promise<NoticiaModel[]> {
-        return await this.noticiaService.list(entidad);
+        const noticias = await this.noticiaService.list(entidad);
+
+        const noticiasConImagenes = await Promise.all(noticias.map(async noticia => {
+            noticia.IMAGEN2 = await this.s3Service.getImage(noticia.IMAGEN);
+            return noticia; 
+        }));
+        
+        
+        return noticiasConImagenes;
     }
 }
 

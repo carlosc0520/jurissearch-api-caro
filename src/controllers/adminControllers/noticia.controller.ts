@@ -35,10 +35,10 @@ export class NoticiaController {
 
     @Post('delete')
     async deleteUser(@Request() req, @Body('ID') ID: number): Promise<Result> {
-        const entidad = await this.noticiaService.list({ INIT: 0, ROWS: 1, DESC: null, CESTDO: null, ID });
-        if (entidad.length === 0) {
-            return { MESSAGE: 'La noticia no existe', STATUS: false };
-        }
+        // const entidad = await this.noticiaService.list({ INIT: 0, ROWS: 1, DESC: null, CESTDO: null, ID });
+        // if (entidad.length === 0) {
+        //     return { MESSAGE: 'La noticia no existe', STATUS: false };
+        // }
 
 
         // let IMAGEN = entidad[0].IMAGEN;

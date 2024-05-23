@@ -3,6 +3,7 @@ import { TokenService } from '../services/User/token.service';
 import { NoticiaService } from 'src/services/mantenimiento/noticia.service';
 import { NoticiaModel } from 'src/models/Admin/noticia.model';
 import { DataTable } from 'src/models/DataTable.model.';
+import { S3Service } from 'src/services/Aws/aws.service';
 declare class User {
     ID: number;
     USER: string;
@@ -28,7 +29,8 @@ export declare class LoginController {
     private readonly userService;
     private readonly tokenService;
     private readonly noticiaService;
-    constructor(userService: UserService, tokenService: TokenService, noticiaService: NoticiaService);
+    private readonly s3Service;
+    constructor(userService: UserService, tokenService: TokenService, noticiaService: NoticiaService, s3Service: S3Service);
     autenticarUsuario(entidad: User): Promise<User>;
     listaAll(entidad: DataTable): Promise<NoticiaModel[]>;
 }

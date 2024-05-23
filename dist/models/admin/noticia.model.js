@@ -7,6 +7,7 @@ class NoticiaModel {
         this.TITULO = '';
         this.DESCRIPCION = '';
         this.IMAGEN = '';
+        this.IMAGEN2 = '';
         this.UCRCN = '';
         this.FCRCN = new Date();
         this.FEDCN = new Date();

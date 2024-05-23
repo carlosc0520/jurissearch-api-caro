@@ -18,13 +18,15 @@ const user_service_1 = require("../services/User/user.service");
 const token_service_1 = require("../services/User/token.service");
 const noticia_service_1 = require("../services/mantenimiento/noticia.service");
 const DataTable_model_1 = require("../models/DataTable.model.");
+const aws_service_1 = require("../services/Aws/aws.service");
 class User {
 }
 let LoginController = class LoginController {
-    constructor(userService, tokenService, noticiaService) {
+    constructor(userService, tokenService, noticiaService, s3Service) {
         this.userService = userService;
         this.tokenService = tokenService;
         this.noticiaService = noticiaService;
+        this.s3Service = s3Service;
     }
     async autenticarUsuario(entidad) {
         const usuario = await this.userService.loguearUsuario(entidad);
@@ -39,7 +41,13 @@ let LoginController = class LoginController {
         return usuario;
     }
     async listaAll(entidad) {
-        return await this.noticiaService.list(entidad);
+        const noticias = await this.noticiaService.list(entidad);
+        const noticiasConImagenes = await Promise.all(noticias.map(async (noticia) => {
+            noticia.IMAGEN2 = await this.s3Service.getImage(noticia.IMAGEN);
+            return noticia;
+        }));
+        console.log(noticiasConImagenes);
+        return noticiasConImagenes;
     }
 };
 exports.LoginController = LoginController;
@@ -61,6 +69,7 @@ exports.LoginController = LoginController = __decorate([
     (0, common_1.Controller)('login'),
     __metadata("design:paramtypes", [user_service_1.UserService,
         token_service_1.TokenService,
-        noticia_service_1.NoticiaService])
+        noticia_service_1.NoticiaService,
+        aws_service_1.S3Service])
 ], LoginController);
 //# sourceMappingURL=login.controller.js.map

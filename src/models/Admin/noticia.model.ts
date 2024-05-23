@@ -3,6 +3,7 @@ export class NoticiaModel {
     TITULO: string = '';
     DESCRIPCION: string = '';
     IMAGEN: string = '';
+    IMAGEN2?: string = '';
     UCRCN: string = '';
     FCRCN: Date = new Date();
     FEDCN: Date = new Date();

@@ -40,10 +40,6 @@ let NoticiaController = class NoticiaController {
         }
     }
     async deleteUser(req, ID) {
-        const entidad = await this.noticiaService.list({ INIT: 0, ROWS: 1, DESC: null, CESTDO: null, ID });
-        if (entidad.length === 0) {
-            return { MESSAGE: 'La noticia no existe', STATUS: false };
-        }
         return await this.noticiaService.delete(ID, req.user.UCRCN);
     }
     async addNoticia(req, entidad, files) {
