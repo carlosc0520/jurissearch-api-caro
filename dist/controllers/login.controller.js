@@ -19,13 +19,15 @@ const token_service_1 = require("../services/User/token.service");
 const noticia_service_1 = require("../services/mantenimiento/noticia.service");
 const DataTable_model_1 = require("../models/DataTable.model.");
 const aws_service_1 = require("../services/Aws/aws.service");
+const preguntas_service_1 = require("../services/mantenimiento/preguntas.service");
 class User {
 }
 let LoginController = class LoginController {
-    constructor(userService, tokenService, noticiaService, s3Service) {
+    constructor(userService, tokenService, noticiaService, preguntaService, s3Service) {
         this.userService = userService;
         this.tokenService = tokenService;
         this.noticiaService = noticiaService;
+        this.preguntaService = preguntaService;
         this.s3Service = s3Service;
     }
     async autenticarUsuario(entidad) {
@@ -46,8 +48,13 @@ let LoginController = class LoginController {
             noticia.IMAGEN2 = await this.s3Service.getImage(noticia.IMAGEN);
             return noticia;
         }));
-        console.log(noticiasConImagenes);
         return noticiasConImagenes;
+    }
+    async listaPreguntas(entidad) {
+        entidad.CESTDO = 'A';
+        const preguntas = await this.preguntaService.list(entidad);
+        console.log(preguntas);
+        return preguntas;
     }
 };
 exports.LoginController = LoginController;
@@ -65,11 +72,19 @@ __decorate([
     __metadata("design:paramtypes", [DataTable_model_1.DataTable]),
     __metadata("design:returntype", Promise)
 ], LoginController.prototype, "listaAll", null);
+__decorate([
+    (0, common_1.Get)('preguntas'),
+    __param(0, (0, common_1.Query)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [DataTable_model_1.DataTable]),
+    __metadata("design:returntype", Promise)
+], LoginController.prototype, "listaPreguntas", null);
 exports.LoginController = LoginController = __decorate([
     (0, common_1.Controller)('login'),
     __metadata("design:paramtypes", [user_service_1.UserService,
         token_service_1.TokenService,
         noticia_service_1.NoticiaService,
+        preguntas_service_1.PreguntasService,
         aws_service_1.S3Service])
 ], LoginController);
 //# sourceMappingURL=login.controller.js.map
