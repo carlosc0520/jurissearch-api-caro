@@ -4,4 +4,5 @@ export declare class DataTable {
     DESC: string;
     CESTDO: string;
     ID?: number;
+    NIVEL?: number;
 }

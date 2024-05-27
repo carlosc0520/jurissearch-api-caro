@@ -17,7 +17,8 @@ export class filtrosService {
         queryAsync += ` @p_cData = ${entidad ? `'${JSON.stringify({ ...entidad, TIPO })}'` : null},`;
         queryAsync += ` @p_cUser = ${null},`;
         queryAsync += ` @p_nTipo = ${4},`;
-        queryAsync += ` @p_nId = ${0}`;
+        queryAsync += ` @p_nId = ${entidad.ID || 0}`; // ID de la
+
         try {
             const result = await this.connection.query(queryAsync);
             return result;
@@ -29,7 +30,7 @@ export class filtrosService {
     async deleteFilter(id: number, UCRCN: string): Promise<Result> {
         let queryAsync = procedures.ADMIN.FILTROS.CRUD;
         queryAsync += ` @p_cData = ${null},`;
-        queryAsync += ` @p_cUser = ${UCRCN},`;
+        queryAsync += ` @p_cUser = '${UCRCN}',`;
         queryAsync += ` @p_nTipo = ${2},`;
         queryAsync += ` @p_nId = ${id}`;
 
@@ -65,7 +66,7 @@ export class filtrosService {
     async editFilter(entidad: FiltrosModel): Promise<Result> {
         let queryAsync = procedures.ADMIN.FILTROS.CRUD;
         queryAsync += ` @p_cData = ${entidad ? `'${JSON.stringify(entidad)}'` : null},`;
-        queryAsync += ` @p_cUser = ${entidad.UCRCN},`;
+        queryAsync += ` @p_cUser = '${entidad.UCRCN}',`;
         queryAsync += ` @p_nTipo = ${1},`;
         queryAsync += ` @p_nId = ${entidad?.ID}`;
 

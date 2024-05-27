@@ -22,7 +22,7 @@ let filtrosService = class filtrosService {
         queryAsync += ` @p_cData = ${entidad ? `'${JSON.stringify(Object.assign(Object.assign({}, entidad), { TIPO }))}'` : null},`;
         queryAsync += ` @p_cUser = ${null},`;
         queryAsync += ` @p_nTipo = ${4},`;
-        queryAsync += ` @p_nId = ${0}`;
+        queryAsync += ` @p_nId = ${entidad.ID || 0}`;
         try {
             const result = await this.connection.query(queryAsync);
             return result;
@@ -35,9 +35,10 @@ let filtrosService = class filtrosService {
         var _a, _b, _c;
         let queryAsync = configMappers_1.default.ADMIN.FILTROS.CRUD;
         queryAsync += ` @p_cData = ${null},`;
-        queryAsync += ` @p_cUser = ${UCRCN},`;
+        queryAsync += ` @p_cUser = '${UCRCN}',`;
         queryAsync += ` @p_nTipo = ${2},`;
         queryAsync += ` @p_nId = ${id}`;
+
         try {
             const result = await this.connection.query(queryAsync);
             const isSuccess = ((_a = result === null || result === void 0 ? void 0 : result[0]) === null || _a === void 0 ? void 0 : _a.RESULT) > 0;
@@ -71,7 +72,7 @@ let filtrosService = class filtrosService {
         var _a, _b, _c;
         let queryAsync = configMappers_1.default.ADMIN.FILTROS.CRUD;
         queryAsync += ` @p_cData = ${entidad ? `'${JSON.stringify(entidad)}'` : null},`;
-        queryAsync += ` @p_cUser = ${entidad.UCRCN},`;
+        queryAsync += ` @p_cUser = '${entidad.UCRCN}',`;
         queryAsync += ` @p_nTipo = ${1},`;
         queryAsync += ` @p_nId = ${entidad === null || entidad === void 0 ? void 0 : entidad.ID}`;
         try {

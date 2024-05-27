@@ -53,7 +53,6 @@ let LoginController = class LoginController {
     async listaPreguntas(entidad) {
         entidad.CESTDO = 'A';
         const preguntas = await this.preguntaService.list(entidad);
-        console.log(preguntas);
         return preguntas;
     }
 };

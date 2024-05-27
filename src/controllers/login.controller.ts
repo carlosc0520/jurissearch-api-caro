@@ -75,7 +75,6 @@ export class LoginController {
     async listaPreguntas(@Query() entidad: DataTable): Promise<PreguntaModel[]> {
         entidad.CESTDO = 'A';
         const preguntas = await this.preguntaService.list(entidad);
-        console.log(preguntas)
         return preguntas;
     }
 }
