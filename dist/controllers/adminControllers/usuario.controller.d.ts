@@ -25,7 +25,13 @@ declare class User {
 export declare class UsuarioController {
     private readonly userService;
     constructor(userService: UserService);
-    validateToken(): Promise<boolean>;
+    validateToken(req: any): Promise<{
+        STATUS: boolean;
+        DATA: {
+            IDR: number;
+            ROLE: string;
+        };
+    }>;
     addUser(req: any, entidad: User): Promise<Result>;
     listUsers(entidad: DataTable, IDROLE: string): Promise<User[]>;
     getUser(req: any): Promise<User>;

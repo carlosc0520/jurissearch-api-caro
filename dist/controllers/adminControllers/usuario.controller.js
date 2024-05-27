@@ -22,8 +22,15 @@ let UsuarioController = class UsuarioController {
     constructor(userService) {
         this.userService = userService;
     }
-    async validateToken() {
-        return true;
+    async validateToken(req) {
+        const IDR = req.user.role;
+        return {
+            STATUS: true,
+            DATA: {
+                IDR,
+                ROLE: IDR === 0 ? "ADMINISTRADOR" : IDR === 1 ? "DIGITADOR" : "USUARIO"
+            }
+        };
     }
     async addUser(req, entidad) {
         entidad.USER = req.user.UCRCN;
@@ -55,8 +62,9 @@ let UsuarioController = class UsuarioController {
 exports.UsuarioController = UsuarioController;
 __decorate([
     (0, common_1.Get)('validate-token'),
+    __param(0, (0, common_1.Request)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], UsuarioController.prototype, "validateToken", null);
 __decorate([

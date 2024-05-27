@@ -32,8 +32,15 @@ export class UsuarioController {
     ) { }
 
     @Get('validate-token')
-    async validateToken(): Promise<boolean> {
-        return true;
+    async validateToken(@Request() req): Promise<{ STATUS: boolean, DATA: { IDR: number, ROLE: string } }> {
+        const IDR = req.user.role;
+        return {
+            STATUS: true,
+            DATA: {
+                IDR,
+                ROLE: IDR === 0 ? "ADMINISTRADOR" : IDR === 1 ? "DIGITADOR" : "USUARIO"
+            }
+        };
     }
 
     @Post('add')
