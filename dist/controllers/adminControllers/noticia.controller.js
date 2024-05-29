@@ -27,6 +27,7 @@ let NoticiaController = class NoticiaController {
         this.s3Service = s3Service;
     }
     async listaAll(entidad) {
+        console.log("list");
         return await this.noticiaService.list(entidad);
     }
     async downloadFile(KEY, res) {

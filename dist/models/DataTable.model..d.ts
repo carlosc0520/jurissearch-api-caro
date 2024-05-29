@@ -5,4 +5,6 @@ export declare class DataTable {
     CESTDO: string;
     ID?: number;
     NIVEL?: number;
+    URL?: string;
+    TABLA?: string;
 }

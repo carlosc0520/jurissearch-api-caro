@@ -18,6 +18,7 @@ export class NoticiaController {
 
     @Get('list')
     async listaAll(@Query() entidad: DataTable): Promise<NoticiaModel[]> {
+        console.log("list")
         return await this.noticiaService.list(entidad);
     }
 

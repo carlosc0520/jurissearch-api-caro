@@ -27,6 +27,9 @@ declare const procedures: {
         PREGUNTAS: {
             CRUD: string;
         };
+        AUDITORIA: {
+            CRUD: string;
+        };
     };
 };
 export default procedures;

@@ -29,6 +29,9 @@ const procedures = {
         "PREGUNTAS": {
             "CRUD": "EXEC JURIS.USP_CRUD_PREGUNTAS"
         },
+        "AUDITORIA": {
+            "CRUD": "EXEC JURIS.USP_CRUD_AUDITORIA"
+        },
     }
 };
 exports.default = procedures;

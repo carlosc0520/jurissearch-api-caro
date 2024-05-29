@@ -26,6 +26,8 @@ const noticia_controller_1 = require("../controllers/adminControllers/noticia.co
 const noticia_service_1 = require("./mantenimiento/noticia.service");
 const preguntas_controller_1 = require("../controllers/adminControllers/preguntas.controller");
 const preguntas_service_1 = require("./mantenimiento/preguntas.service");
+const auditoria_service_1 = require("./Admin/auditoria.service");
+const auditoria_controller_1 = require("../controllers/adminControllers/auditoria.controller");
 let UserModule = class UserModule {
 };
 exports.UserModule = UserModule;
@@ -40,7 +42,8 @@ exports.UserModule = UserModule = __decorate([
             magistrados_controller_1.MagistradoController,
             help_controller_1.HelpController,
             noticia_controller_1.NoticiaController,
-            preguntas_controller_1.PreguntasController
+            preguntas_controller_1.PreguntasController,
+            auditoria_controller_1.AuditoriaController
         ],
         providers: [
             user_service_1.UserService,
@@ -51,7 +54,8 @@ exports.UserModule = UserModule = __decorate([
             magistrados_service_1.MagistradosService,
             help_service_1.HelpService,
             noticia_service_1.NoticiaService,
-            preguntas_service_1.PreguntasService
+            preguntas_service_1.PreguntasService,
+            auditoria_service_1.AuditoriaService
         ],
     })
 ], UserModule);
