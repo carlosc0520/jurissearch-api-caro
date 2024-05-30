@@ -32,6 +32,10 @@ export class AuditoriaService {
     async obtenerTabla(nombre: string): Promise<string> {
         let mappers = {
             "NOTICIAS": "JURIS.NOTICIA",
+            "PREGUNTAS": "JURIS.PREGUNTAS",
+            "USUARIOS": "JURIS.USUARIOS",
+            "MAGISTRADOS": "JURIS.MAGISTRADOS",
+            "FILTROS": "JURIS.FILTROS",
         }
 
         return mappers[nombre];
