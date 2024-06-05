@@ -23,6 +23,8 @@ import { PreguntasController } from 'src/controllers/adminControllers/preguntas.
 import { PreguntasService } from './mantenimiento/preguntas.service';
 import { AuditoriaService } from './Admin/auditoria.service';
 import { AuditoriaController } from 'src/controllers/adminControllers/auditoria.controller';
+import { EmailController } from 'src/controllers/acompliance/email.controller';
+import { EmailService } from './acompliance/email.service';
 
 @Module({
     imports: [TypeOrmModule.forFeature([])],
@@ -35,7 +37,10 @@ import { AuditoriaController } from 'src/controllers/adminControllers/auditoria.
         HelpController,
         NoticiaController,
         PreguntasController,
-        AuditoriaController
+        AuditoriaController,
+
+        // COMPLIANCE
+        EmailController
     ],
     providers: [
         UserService, 
@@ -47,7 +52,10 @@ import { AuditoriaController } from 'src/controllers/adminControllers/auditoria.
         HelpService,
         NoticiaService,
         PreguntasService,
-        AuditoriaService
+        AuditoriaService,
+
+        // COMPLIANCE
+        EmailService
     ],
 })
 export class UserModule { }
