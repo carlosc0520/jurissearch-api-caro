@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { EmailModel } from 'src/models/acompliance/Email.model';
+import { EmailModel } from 'src/models/acompliance/email.model';
 import { Result } from 'src/models/result.model';
 import * as nodemailer from 'nodemailer';
 

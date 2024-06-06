@@ -1,6 +1,6 @@
 import { Controller, Get, Query } from '@nestjs/common';
 import { EmailService } from 'src/services/acompliance/email.service';
-import { EmailModel } from 'src/models/acompliance/Email.model';
+import { EmailModel } from 'src/models/acompliance/email.model';
 import { Result } from 'src/models/result.model';
 
 @Controller('acompliance/emailSend')
