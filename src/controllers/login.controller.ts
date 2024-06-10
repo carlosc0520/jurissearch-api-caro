@@ -77,5 +77,7 @@ export class LoginController {
         const preguntas = await this.preguntaService.list(entidad);
         return preguntas;
     }
+
+    
 }
 

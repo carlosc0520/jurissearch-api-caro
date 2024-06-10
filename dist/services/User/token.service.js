@@ -12,6 +12,7 @@ const jwt = require("jsonwebtoken");
 let TokenService = class TokenService {
     constructor() {
         this.secretKey = process.env.SECRET_KEY;
+        this.SECRET_KEY_SOLICITUD = process.env.SECRET_KEY_SOLICITUD;
     }
     generateToken(user) {
         const payload = {
@@ -24,9 +25,26 @@ let TokenService = class TokenService {
         };
         return jwt.sign(payload, this.secretKey);
     }
+    generateTokenSolicitud(user) {
+        const payload = {
+            NOMBRES: user.NOMBRES,
+            ID: user.ID || 0,
+            EMAIL: user.CORREO,
+        };
+        return jwt.sign(payload, this.SECRET_KEY_SOLICITUD);
+    }
     validateToken(token) {
         try {
             jwt.verify(token, this.secretKey);
+            return true;
+        }
+        catch (error) {
+            return false;
+        }
+    }
+    validateTokenSolicitud(token) {
+        try {
+            jwt.verify(token, this.SECRET_KEY_SOLICITUD);
             return true;
         }
         catch (error) {

@@ -2,10 +2,12 @@
 import { Injectable } from '@nestjs/common';
 import * as jwt from 'jsonwebtoken';
 import { User } from '../../models/Admin/user.model';
+import { SolicitudModel } from 'src/models/public/Solicitud.model';
 
 @Injectable()
 export class TokenService {
     private readonly secretKey = process.env.SECRET_KEY;
+    private readonly SECRET_KEY_SOLICITUD = process.env.SECRET_KEY_SOLICITUD;
 
     generateToken(user: User): string {
         const payload = {
@@ -19,6 +21,16 @@ export class TokenService {
         return jwt.sign(payload, this.secretKey);
     }
 
+    generateTokenSolicitud(user: SolicitudModel): string {
+        const payload = {
+            NOMBRES: user.NOMBRES,
+            ID: user.ID || 0,
+            EMAIL:  user.CORREO,
+        };
+        return jwt.sign(payload, this.SECRET_KEY_SOLICITUD);
+    }
+
+
     validateToken(token: string): boolean {
         try {
             jwt.verify(token, this.secretKey);
@@ -27,4 +39,14 @@ export class TokenService {
             return false;
         }
     }
+
+    validateTokenSolicitud(token: string): boolean {
+        try {
+            jwt.verify(token, this.SECRET_KEY_SOLICITUD);
+            return true;
+        } catch (error) {
+            return false;
+        }
+    }    
+
 }
