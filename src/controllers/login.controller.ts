@@ -7,6 +7,9 @@ import { DataTable } from 'src/models/DataTable.model.';
 import { S3Service } from 'src/services/Aws/aws.service';
 import { PreguntasService } from 'src/services/mantenimiento/preguntas.service';
 import { PreguntaModel } from 'src/models/Admin/preguntas.model';
+import { EmailJurisService } from 'src/services/acompliance/emailJurisserivce';
+import { SolicitudModel } from 'src/models/public/Solicitud.model';
+import { Result } from 'src/models/result.model';
 
 class User {
     ID: number;
@@ -30,7 +33,6 @@ class User {
     TOKEN: string;
 }
 
-
 @Controller('login')
 export class LoginController {
     constructor(
@@ -38,6 +40,7 @@ export class LoginController {
         private readonly tokenService: TokenService,
         private readonly noticiaService: NoticiaService,
         private readonly preguntaService: PreguntasService,
+        private readonly emailJurisService: EmailJurisService,
         private readonly s3Service: S3Service
     ) { }
 
@@ -78,6 +81,10 @@ export class LoginController {
         return preguntas;
     }
 
-    
+    @Post('solicitudUser')
+    async sendEmail(@Body() entidad: SolicitudModel): Promise<Result> {
+        const result = await this.emailJurisService.sendEmail(entidad);
+        return result;
+    }
 }
 

@@ -25,6 +25,7 @@ import { AuditoriaService } from './Admin/auditoria.service';
 import { AuditoriaController } from 'src/controllers/adminControllers/auditoria.controller';
 import { EmailController } from 'src/controllers/acompliance/email.controller';
 import { EmailService } from './acompliance/email.service';
+import { EmailJurisService } from './acompliance/emailJurisserivce';
 
 @Module({
     imports: [TypeOrmModule.forFeature([])],
@@ -40,7 +41,7 @@ import { EmailService } from './acompliance/email.service';
         AuditoriaController,
 
         // COMPLIANCE
-        EmailController
+        EmailController,
     ],
     providers: [
         UserService, 
@@ -55,7 +56,8 @@ import { EmailService } from './acompliance/email.service';
         AuditoriaService,
 
         // COMPLIANCE
-        EmailService
+        EmailService,
+        EmailJurisService
     ],
 })
 export class UserModule { }

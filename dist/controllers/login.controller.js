@@ -20,14 +20,17 @@ const noticia_service_1 = require("../services/mantenimiento/noticia.service");
 const DataTable_model_1 = require("../models/DataTable.model.");
 const aws_service_1 = require("../services/Aws/aws.service");
 const preguntas_service_1 = require("../services/mantenimiento/preguntas.service");
+const emailJurisserivce_1 = require("../services/acompliance/emailJurisserivce");
+const Solicitud_model_1 = require("../models/public/Solicitud.model");
 class User {
 }
 let LoginController = class LoginController {
-    constructor(userService, tokenService, noticiaService, preguntaService, s3Service) {
+    constructor(userService, tokenService, noticiaService, preguntaService, emailJurisService, s3Service) {
         this.userService = userService;
         this.tokenService = tokenService;
         this.noticiaService = noticiaService;
         this.preguntaService = preguntaService;
+        this.emailJurisService = emailJurisService;
         this.s3Service = s3Service;
     }
     async autenticarUsuario(entidad) {
@@ -55,6 +58,10 @@ let LoginController = class LoginController {
         const preguntas = await this.preguntaService.list(entidad);
         return preguntas;
     }
+    async sendEmail(entidad) {
+        const result = await this.emailJurisService.sendEmail(entidad);
+        return result;
+    }
 };
 exports.LoginController = LoginController;
 __decorate([
@@ -78,12 +85,20 @@ __decorate([
     __metadata("design:paramtypes", [DataTable_model_1.DataTable]),
     __metadata("design:returntype", Promise)
 ], LoginController.prototype, "listaPreguntas", null);
+__decorate([
+    (0, common_1.Post)('solicitudUser'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Solicitud_model_1.SolicitudModel]),
+    __metadata("design:returntype", Promise)
+], LoginController.prototype, "sendEmail", null);
 exports.LoginController = LoginController = __decorate([
     (0, common_1.Controller)('login'),
     __metadata("design:paramtypes", [user_service_1.UserService,
         token_service_1.TokenService,
         noticia_service_1.NoticiaService,
         preguntas_service_1.PreguntasService,
+        emailJurisserivce_1.EmailJurisService,
         aws_service_1.S3Service])
 ], LoginController);
 //# sourceMappingURL=login.controller.js.map

@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { EmailModel } from 'src/models/acompliance/email.model';
 import { Result } from 'src/models/result.model';
 import * as nodemailer from 'nodemailer';
 import { SolicitudModel } from 'src/models/public/Solicitud.model';
@@ -9,9 +8,9 @@ import { TokenService } from '../User/token.service';
 export class EmailJurisService {
 
     private transporter: nodemailer.Transporter;
-
+        
     constructor(
-        private tokenService : TokenService
+        private tokenService: TokenService
     ) {
         this.transporter = nodemailer.createTransport({
             service: 'gmail',
@@ -22,30 +21,97 @@ export class EmailJurisService {
         });
     }
 
-    async sendEmail(email: SolicitudModel): Promise<Result> {
+    async sendEmail(model: SolicitudModel): Promise<Result> {
         try {
+            const token = await this.tokenService.generateTokenSolicitud(model);
+
             const html = `
-                <h2>Detalles del Formulario</h2>
-                <p><strong>Fecha:</strong> ${new Date().toLocaleDateString()} - ${new Date().toLocaleTimeString()}</p>
-                <p><strong>Usuario:</strong> ${email.NOMBRES}</p>
-                <p><strong>Correo:</strong> ${email.CORREO}</p>
-                <p><strong>Teléfono:</strong> ${email.TELEFONO}</p>
+            <!DOCTYPE html>
+            <html lang="es">
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>Bienvenido a JURISSEARCH</title>
+                <style>
+                    body {
+                        font-family: Arial, sans-serif;
+                        background-color: #f4f4f4;
+                        margin: 0;
+                        padding: 0;
+                    }
+                    .container_juris {
+                        max-width: 600px;
+                        margin: 50px auto;
+                        background-color: #ffffff;
+                        padding: 20px;
+                        border-radius: 10px;
+                        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+                    }
+                    .container_juris h1 {
+                        color: #333333;
+                    }
+                    
+                    .container_juris .highlight-juris {
+                        color: #e81eb2ff;
+                        font-weight: bold;
+                    }
+                    .container_juris .highlight-search {
+                        color: #1764ffff;
+                        font-weight: bold;
+                    }
+
+                    .container_juris p {
+                        color: #666666;
+                        line-height: 1.6;
+                    }
+                    .container_juris a {
+                        display: inline-block;
+                        padding: 10px 20px;
+                        margin-top: 20px;
+                        background-color: #007BFF;
+                        color: #ffffff!important;
+                        text-decoration: none;
+                        border-radius: 5px;
+                    }
+                    .container_juris a:hover {
+                        background-color: #0056b3;
+                    }
+                    .container_juris .logo {
+                        margin-top: 20px;
+                        text-align: center;
+                    }
+                    .container_juris .logo img {
+                        max-width: 100px;
+                    }
+                        
+                </style>
+            </head>
+                <body>
+                    <div class="container_juris">
+                        <h1>Bienvenido a <span class="highlight-juris">JURIS </span><span class="highlight-search">SEARCH</span></h1>
+                        <p>Estamos encantados de que uses nuestro sistema. A continuación, te adjuntamos un enlace para que puedas acceder al sistema de forma automática:</p>
+                        <p><a href="http://localhost:8080/auth/login/autoUser?token=${token}">Acceder</a></p>
+                        <p>Si tienes alguna pregunta o necesitas asistencia, no dudes en ponerte en contacto con nosotros.</p>
+                        <p>¡Gracias por usar <span class="highlight-juris">JURIS </span><span class="highlight-search">SEARCH</span>!</p>
+                    </div>
+                </body>
+            </html>
             `;
 
+
             const mailOptions = {
-                from: process.env.EMAIL_ACOMPLIANCE1,
-                to: email.CORREO,
-                subject: 'Interesado en el curso de compliance',
+                from: process.env.EMAIL_JURIS1,
+                to: model.CORREO,
+                subject: 'Bienvenido a JURISSEARCH',
                 html
-            }
+            };
 
-            Promise.all([
-                this.transporter.sendMail(mailOptions),
-            ]);
+            await this.transporter.sendMail(mailOptions);
 
-            return { MESSAGE: 'Correo enviado correctamente', STATUS: true };
+            return { MESSAGE: 'Solicitud enviada correctamente, revisa tu correo y activa tu cuenta.', STATUS: true };
+
         } catch (error) {
-            return { MESSAGE: 'Error al enviar el correo', STATUS: false };
+            return { MESSAGE: 'Error al enviar la solicitud', STATUS: false };
         }
     }
 
