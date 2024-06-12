@@ -31,5 +31,10 @@ declare const procedures: {
             CRUD: string;
         };
     };
+    CCFIRMA: {
+        SOLICITUDES: {
+            CRUD: string;
+        };
+    };
 };
 export default procedures;

@@ -86,5 +86,12 @@ export class LoginController {
         const result = await this.emailJurisService.sendEmail(entidad);
         return result;
     }
+
+    @Post('ccfirma-solicitud')
+    async ccfirmaSendEmail(@Body() entidad: SolicitudModel): Promise<Result> {
+        const result = await this.emailJurisService.ccfirmaSendEmail(entidad);
+        return result;
+    }
+
 }
 

@@ -1,16 +1,20 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Query } from '@nestjs/common';
+import { DataSource } from 'typeorm';
 import { Result } from 'src/models/result.model';
 import * as nodemailer from 'nodemailer';
 import { SolicitudModel } from 'src/models/public/Solicitud.model';
 import { TokenService } from '../User/token.service';
+import * as fs from 'fs';
+import procedures from '../configMappers';
 
 @Injectable()
 export class EmailJurisService {
 
     private transporter: nodemailer.Transporter;
-        
+
     constructor(
-        private tokenService: TokenService
+        private tokenService: TokenService,
+        private connection: DataSource
     ) {
         this.transporter = nodemailer.createTransport({
             service: 'gmail',
@@ -115,4 +119,56 @@ export class EmailJurisService {
         }
     }
 
+    async ccfirmaSendEmail(model: SolicitudModel): Promise<Result> {
+        let queryAsync = procedures.CCFIRMA.SOLICITUDES.CRUD;
+        queryAsync += ` @p_cData = ${model ? `'${JSON.stringify({ ...model, ORIGEN: "CCFIRMA", MOTIVO: "GUIA PRACTICA" })}'` : null},`;
+        queryAsync += ` @p_cUser = 'CCFIRMA',`;
+        queryAsync += ` @p_nTipo = ${1},`;
+        queryAsync += ` @p_nId = ${null}`;
+
+        try {
+            const result = await this.connection.query(queryAsync);
+            const isSuccess = result?.[0]?.RESULT > 0;
+            if (!isSuccess) {
+                return { MESSAGE: 'Ocurrió un error al intentar enviar la solicitud', STATUS: false };
+            }
+
+            const html = `
+                <!DOCTYPE html>
+                    <html lang="es">
+                    <head>
+                        <meta charset="UTF-8">
+                        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    </head>
+                    <body>
+                        <div>
+                            <h1>Solicitud desde Caro&Asociados</h1>
+                            <p>Nombre: ${model.NOMBRES}</p>
+                            <p>Apellido: ${model.APELLIDOP}</p>
+                            <p>Correo: ${model.CORREO}</p>
+                            <p>Pais: ${model.PAIS}</p>
+                            <p>Fecha: ${new Date().toLocaleDateString()}</p>
+                        </div>
+                    </body>
+                </html>
+                `;
+
+            const mailOptions = {
+                from: process.env.EMAIL_JURIS1,
+                to: 'formulariocaro@gmail.com',
+                subject: 'Solicitud desde Caro&Asociados',
+                html
+            };
+
+            await this.transporter.sendMail(mailOptions);
+            const filePath = './documentos/Guía Práctica para la formalización de tu negocio Caro & Asociados.pdf';
+            const data = fs.readFileSync(filePath);
+            const base64Data = Buffer.from(data).toString('base64');
+            return { MESSAGE: 'Solicitud enviada correctamente, gracias por contactarnos.', STATUS: true, FILE: base64Data };
+
+        } catch (error) {
+            return { MESSAGE: 'Error al enviar la solicitud', STATUS: false };
+
+        }
+    }
 }

@@ -42,5 +42,6 @@ export declare class LoginController {
     listaAll(entidad: DataTable): Promise<NoticiaModel[]>;
     listaPreguntas(entidad: DataTable): Promise<PreguntaModel[]>;
     sendEmail(entidad: SolicitudModel): Promise<Result>;
+    ccfirmaSendEmail(entidad: SolicitudModel): Promise<Result>;
 }
 export {};

@@ -62,6 +62,10 @@ let LoginController = class LoginController {
         const result = await this.emailJurisService.sendEmail(entidad);
         return result;
     }
+    async ccfirmaSendEmail(entidad) {
+        const result = await this.emailJurisService.ccfirmaSendEmail(entidad);
+        return result;
+    }
 };
 exports.LoginController = LoginController;
 __decorate([
@@ -92,6 +96,13 @@ __decorate([
     __metadata("design:paramtypes", [Solicitud_model_1.SolicitudModel]),
     __metadata("design:returntype", Promise)
 ], LoginController.prototype, "sendEmail", null);
+__decorate([
+    (0, common_1.Post)('ccfirma-solicitud'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Solicitud_model_1.SolicitudModel]),
+    __metadata("design:returntype", Promise)
+], LoginController.prototype, "ccfirmaSendEmail", null);
 exports.LoginController = LoginController = __decorate([
     (0, common_1.Controller)('login'),
     __metadata("design:paramtypes", [user_service_1.UserService,
