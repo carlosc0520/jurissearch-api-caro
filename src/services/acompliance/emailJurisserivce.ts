@@ -177,6 +177,7 @@ export class EmailJurisService {
                     <body>
                         <div>
                             <h1>Solicitud desde ${origen}</h1>
+                            <p>Motivo: ${model?.MOTIVO || ""}</p>
                             ${contenido}
                             <p>Fecha: ${new Date().toLocaleDateString()}</p>
                         </div>
