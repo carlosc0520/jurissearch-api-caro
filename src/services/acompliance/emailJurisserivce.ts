@@ -120,9 +120,20 @@ export class EmailJurisService {
     }
 
     async ccfirmaSendEmail(model: SolicitudModel): Promise<Result> {
+        
+        let origen: string = '';
+        switch (model.IDENTIFICADOR) {
+            case "1": origen = "Caro & Asociados";break;
+            case "2": origen = "Juris Search";break;
+            case "3": origen = "AIC COMPLIANCE";break;
+            case "4": origen = "CEDPE";break;
+            case "5": origen = "Origen desconocido";break;
+            default: origen = "Origen desconocido";break;
+        }
+
         let queryAsync = procedures.CCFIRMA.SOLICITUDES.CRUD;
-        queryAsync += ` @p_cData = ${model ? `'${JSON.stringify({ ...model, ORIGEN: "CCFIRMA", MOTIVO: "GUIA PRACTICA" })}'` : null},`;
-        queryAsync += ` @p_cUser = 'CCFIRMA',`;
+        queryAsync += ` @p_cData = ${model ? `'${JSON.stringify({ ...model, ORIGEN: origen, MOTIVO: model.MOTIVO })}'` : null},`;
+        queryAsync += ` @p_cUser = '${origen}',`;
         queryAsync += ` @p_nTipo = ${1},`;
         queryAsync += ` @p_nId = ${null}`;
 
@@ -133,6 +144,29 @@ export class EmailJurisService {
                 return { MESSAGE: 'Ocurrió un error al intentar enviar la solicitud', STATUS: false };
             }
 
+
+
+            let contenido = '';
+            if(model.IDENTIFICADOR == "1"){
+                contenido += `<p>Nombre: ${model?.NOMBRES || ""}</p>`;
+                contenido += `<p>Apellido: ${model?.APELLIDOP || ""}</p>`;
+                contenido += `<p>Correo: ${model?.CORREO || ""}</p>`;
+                contenido += `<p>Pais: ${model?.PAIS || ""}</p>`;
+            } 
+
+            if(model.IDENTIFICADOR == "2"){
+                contenido = `Gracias por contactarnos, a continuación te adjuntamos un documento con la guía práctica para la formalización de tu negocio.`;
+            } 
+
+            if(model.IDENTIFICADOR == "4"){
+                contenido += `<p>Nombres: ${model?.NOMBRES || ""}</p>`;
+                contenido += `<p>Correo: ${model?.CORREO || ""}</p>`;
+                contenido += `<p>Teléfono: ${model?.TELEFONO || ""}</p>`;
+                contenido += `<p>Provincia: ${model?.PROVINCIA || ""}</p>`;
+            } 
+
+
+
             const html = `
                 <!DOCTYPE html>
                     <html lang="es">
@@ -142,11 +176,8 @@ export class EmailJurisService {
                     </head>
                     <body>
                         <div>
-                            <h1>Solicitud desde Caro&Asociados</h1>
-                            <p>Nombre: ${model.NOMBRES}</p>
-                            <p>Apellido: ${model.APELLIDOP}</p>
-                            <p>Correo: ${model.CORREO}</p>
-                            <p>Pais: ${model.PAIS}</p>
+                            <h1>Solicitud desde ${origen}</h1>
+                            ${contenido}
                             <p>Fecha: ${new Date().toLocaleDateString()}</p>
                         </div>
                     </body>
@@ -156,14 +187,19 @@ export class EmailJurisService {
             const mailOptions = {
                 from: process.env.EMAIL_JURIS1,
                 to: 'formulariocaro@gmail.com',
-                subject: 'Solicitud desde Caro&Asociados',
+                subject: `Solicitud desde ${origen}`, 
                 html
             };
 
             await this.transporter.sendMail(mailOptions);
-            const filePath = './documentos/Guía Práctica para la formalización de tu negocio Caro & Asociados.pdf';
-            const data = fs.readFileSync(filePath);
-            const base64Data = Buffer.from(data).toString('base64');
+            let base64Data = '';
+
+            if(model.IDENTIFICADOR == "1"){
+                const filePath = './documentos/Guía Práctica para la formalización de tu negocio Caro & Asociados.pdf';
+                const data = fs.readFileSync(filePath);
+                base64Data = Buffer.from(data).toString('base64');
+            }
+
             return { MESSAGE: 'Solicitud enviada correctamente, gracias por contactarnos.', STATUS: true, FILE: base64Data };
 
         } catch (error) {

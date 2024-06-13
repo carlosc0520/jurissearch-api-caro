@@ -81,6 +81,7 @@ export class LoginController {
         return preguntas;
     }
 
+
     @Post('solicitudUser')
     async sendEmail(@Body() entidad: SolicitudModel): Promise<Result> {
         const result = await this.emailJurisService.sendEmail(entidad);
