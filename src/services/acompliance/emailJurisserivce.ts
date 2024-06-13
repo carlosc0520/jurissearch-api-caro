@@ -158,7 +158,7 @@ export class EmailJurisService {
                 contenido = `Gracias por contactarnos, a continuación te adjuntamos un documento con la guía práctica para la formalización de tu negocio.`;
             } 
 
-            if(model.IDENTIFICADOR == "4"){
+            if(model.IDENTIFICADOR == "3" || model.IDENTIFICADOR == "4"){
                 contenido += `<p>Nombres: ${model?.NOMBRES || ""}</p>`;
                 contenido += `<p>Correo: ${model?.CORREO || ""}</p>`;
                 contenido += `<p>Teléfono: ${model?.TELEFONO || ""}</p>`;
