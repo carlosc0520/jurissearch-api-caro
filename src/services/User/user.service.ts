@@ -20,11 +20,16 @@ class User {
     EBLOQUEO: boolean;
     FVCMNTO: Date;
     INTENTOS: number;
+    CARGO: string;
+    DIRECCION: string;
+    PROFESION: string;
     UCRCN: string;
     FCRCN: Date;
     FEDCN: Date;
     CDESTDO: string;
     TOKEN: string;
+    PLAN?: string;
+    DATOS?: string;
 }
 
 @Injectable()

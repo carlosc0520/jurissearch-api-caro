@@ -23,13 +23,19 @@ export class TokenService {
 
     generateTokenSolicitud(user: SolicitudModel): string {
         const payload = {
-            NOMBRES: user.NOMBRES,
             ID: user.ID || 0,
-            EMAIL:  user.CORREO,
+            NOMBRES: user.NOMBRES,
+            CORREO:  user.CORREO,
+            APELLIDOP: user.APELLIDOP,
+            APELLIDOM: user.APELLIDOM,
+            TELEFONO: user.TELEFONO,
+            FNACIMIENTO: user.FNACIMIENTO,
+            PROFESION: user.PROFESION,
+            CARGO: user.CARGO,
+            DIRECCION: user.DIRECCION,
         };
         return jwt.sign(payload, this.SECRET_KEY_SOLICITUD);
     }
-
 
     validateToken(token: string): boolean {
         try {

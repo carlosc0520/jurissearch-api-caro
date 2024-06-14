@@ -32,6 +32,9 @@ const procedures = {
         "AUDITORIA": {
             "CRUD": "EXEC JURIS.USP_CRUD_AUDITORIA"
         },
+        "PLANES": {
+            "CRUD": "EXEC JURIS.USP_CRUD_PLANES"
+        },
     },
     "CCFIRMA": {
         "SOLICITUDES": {

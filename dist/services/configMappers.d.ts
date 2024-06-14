@@ -30,6 +30,9 @@ declare const procedures: {
         AUDITORIA: {
             CRUD: string;
         };
+        PLANES: {
+            CRUD: string;
+        };
     };
     CCFIRMA: {
         SOLICITUDES: {

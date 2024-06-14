@@ -24,11 +24,16 @@ declare class User {
     EBLOQUEO: boolean;
     FVCMNTO: Date;
     INTENTOS: number;
+    CARGO: string;
+    DIRECCION: string;
+    PROFESION: string;
     UCRCN: string;
     FCRCN: Date;
     FEDCN: Date;
     CDESTDO: string;
     TOKEN: string;
+    PLAN?: string;
+    DATOS?: string;
 }
 export declare class LoginController {
     private readonly userService;
@@ -41,6 +46,8 @@ export declare class LoginController {
     autenticarUsuario(entidad: User): Promise<User>;
     listaAll(entidad: DataTable): Promise<NoticiaModel[]>;
     listaPreguntas(entidad: DataTable): Promise<PreguntaModel[]>;
+    validateToken(token: string): Promise<boolean>;
+    generateUser(entidad: User): Promise<Result>;
     sendEmail(entidad: SolicitudModel): Promise<Result>;
     ccfirmaSendEmail(entidad: SolicitudModel): Promise<Result>;
 }

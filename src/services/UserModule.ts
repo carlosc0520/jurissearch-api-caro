@@ -26,6 +26,8 @@ import { AuditoriaController } from 'src/controllers/adminControllers/auditoria.
 import { EmailController } from 'src/controllers/acompliance/email.controller';
 import { EmailService } from './acompliance/email.service';
 import { EmailJurisService } from './acompliance/emailJurisserivce';
+import { PlanesController } from 'src/controllers/adminControllers/planes.controller';
+import { PlanesService } from './mantenimiento/planes.service';
 
 @Module({
     imports: [TypeOrmModule.forFeature([])],
@@ -39,6 +41,7 @@ import { EmailJurisService } from './acompliance/emailJurisserivce';
         NoticiaController,
         PreguntasController,
         AuditoriaController,
+        PlanesController,
 
         // COMPLIANCE
         EmailController,
@@ -54,6 +57,7 @@ import { EmailJurisService } from './acompliance/emailJurisserivce';
         NoticiaService,
         PreguntasService,
         AuditoriaService,
+        PlanesService,
 
         // COMPLIANCE
         EmailService,

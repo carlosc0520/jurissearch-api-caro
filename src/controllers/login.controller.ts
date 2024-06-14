@@ -26,11 +26,16 @@ class User {
     EBLOQUEO: boolean;
     FVCMNTO: Date;
     INTENTOS: number;
+    CARGO: string;
+    DIRECCION: string;
+    PROFESION: string;
     UCRCN: string;
     FCRCN: Date;
     FEDCN: Date;
     CDESTDO: string;
     TOKEN: string;
+    PLAN?: string;
+    DATOS?: string;
 }
 
 @Controller('login')
@@ -81,6 +86,24 @@ export class LoginController {
         return preguntas;
     }
 
+    @Get("validateToken")
+    async validateToken(@Query('token') token: string): Promise<boolean> {
+        return this.tokenService.validateTokenSolicitud(token);
+    }
+
+    @Post('generateUser')
+    async generateUser(@Body() entidad: User): Promise<Result> {
+        const result = await  this.tokenService.validateTokenSolicitud(entidad.TOKEN);
+        if(result){
+            entidad.IDROLE = 2;
+            entidad.USER = "AUTOLOGIN"
+            entidad.PLAN = "1";
+            return await this.userService.createUser(entidad);
+        }else{
+            return {MESSAGE: "Token invalido", STATUS: false}
+        }
+       
+    }
 
     @Post('solicitudUser')
     async sendEmail(@Body() entidad: SolicitudModel): Promise<Result> {

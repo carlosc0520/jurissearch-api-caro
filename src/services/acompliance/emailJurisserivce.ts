@@ -11,6 +11,7 @@ import procedures from '../configMappers';
 export class EmailJurisService {
 
     private transporter: nodemailer.Transporter;
+    private transporter2: nodemailer.Transporter;
 
     constructor(
         private tokenService: TokenService,
@@ -21,6 +22,14 @@ export class EmailJurisService {
             auth: {
                 user: process.env.EMAIL_JURIS1,
                 pass: process.env.EMAIL_JURIS1_PASSWORD1
+            }
+        });
+
+        this.transporter2 = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+                user: process.env.EMAIL_JURISEARCH,
+                pass: process.env.EMAIL_JURISEARCH_PASSWORD1
             }
         });
     }
@@ -94,7 +103,7 @@ export class EmailJurisService {
                     <div class="container_juris">
                         <h1>Bienvenido a <span class="highlight-juris">JURIS </span><span class="highlight-search">SEARCH</span></h1>
                         <p>Estamos encantados de que uses nuestro sistema. A continuación, te adjuntamos un enlace para que puedas acceder al sistema de forma automática:</p>
-                        <p><a href="http://localhost:8080/auth/login/autoUser?token=${token}">Acceder</a></p>
+                        <p><a href="http://localhost:8080/auth/autoUser/${token}">Acceder</a></p>
                         <p>Si tienes alguna pregunta o necesitas asistencia, no dudes en ponerte en contacto con nosotros.</p>
                         <p>¡Gracias por usar <span class="highlight-juris">JURIS </span><span class="highlight-search">SEARCH</span>!</p>
                     </div>
@@ -104,13 +113,13 @@ export class EmailJurisService {
 
 
             const mailOptions = {
-                from: process.env.EMAIL_JURIS1,
+                from: process.env.EMAIL_ACOMPLIANCE1,
                 to: model.CORREO,
                 subject: 'Bienvenido a JURISSEARCH',
                 html
             };
 
-            await this.transporter.sendMail(mailOptions);
+            await this.transporter2.sendMail(mailOptions);
 
             return { MESSAGE: 'Solicitud enviada correctamente, revisa tu correo y activa tu cuenta.', STATUS: true };
 

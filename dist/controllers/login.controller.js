@@ -58,6 +58,21 @@ let LoginController = class LoginController {
         const preguntas = await this.preguntaService.list(entidad);
         return preguntas;
     }
+    async validateToken(token) {
+        return this.tokenService.validateTokenSolicitud(token);
+    }
+    async generateUser(entidad) {
+        const result = await this.tokenService.validateTokenSolicitud(entidad.TOKEN);
+        if (result) {
+            entidad.IDROLE = 2;
+            entidad.USER = "AUTOLOGIN";
+            entidad.PLAN = "1";
+            return await this.userService.createUser(entidad);
+        }
+        else {
+            return { MESSAGE: "Token invalido", STATUS: false };
+        }
+    }
     async sendEmail(entidad) {
         const result = await this.emailJurisService.sendEmail(entidad);
         return result;
@@ -89,6 +104,20 @@ __decorate([
     __metadata("design:paramtypes", [DataTable_model_1.DataTable]),
     __metadata("design:returntype", Promise)
 ], LoginController.prototype, "listaPreguntas", null);
+__decorate([
+    (0, common_1.Get)("validateToken"),
+    __param(0, (0, common_1.Query)('token')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], LoginController.prototype, "validateToken", null);
+__decorate([
+    (0, common_1.Post)('generateUser'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [User]),
+    __metadata("design:returntype", Promise)
+], LoginController.prototype, "generateUser", null);
 __decorate([
     (0, common_1.Post)('solicitudUser'),
     __param(0, (0, common_1.Body)()),
