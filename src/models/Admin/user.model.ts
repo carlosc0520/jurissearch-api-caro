@@ -9,6 +9,7 @@ export class User {
     APATERNO: string;
     AMATERNO: string;
     TELEFONO: string;
+    RESTRICIONES: string;
     FNACIMIENTO: Date;
     EBLOQUEO: boolean;
     FVCMNTO: Date;

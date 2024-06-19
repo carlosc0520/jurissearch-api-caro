@@ -21,6 +21,7 @@ class User {
     FVCMNTO: Date;
     INTENTOS: number;
     CARGO: string;
+    RESTRICIONES: string;
     DIRECCION: string;
     PROFESION: string;
     UCRCN: string;
@@ -30,6 +31,8 @@ class User {
     TOKEN: string;
     PLAN?: string;
     DATOS?: string;
+    STATUS?: number;
+    MESSAGE?: string;
 }
 
 @Injectable()
@@ -49,11 +52,6 @@ export class UserService {
             const usuario: User = await this.connection.query(queryAsync)
                 .then((result) => result?.[0] ? result[0] : null)
                 .catch((error) => error);
-
-            // VALIDAR QUE EXISTA EL USUARIO
-            if (!usuario) {
-                throw new Error('Usuario no encontrado');
-            }
 
             return usuario;
         } catch (error) {

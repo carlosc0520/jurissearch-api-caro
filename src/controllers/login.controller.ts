@@ -29,6 +29,7 @@ class User {
     CARGO: string;
     DIRECCION: string;
     PROFESION: string;
+    RESTRICIONES: string;
     UCRCN: string;
     FCRCN: Date;
     FEDCN: Date;
@@ -36,6 +37,8 @@ class User {
     TOKEN: string;
     PLAN?: string;
     DATOS?: string;
+    STATUS?: number;
+    MESSAGE?: string;
 }
 
 @Controller('login')
@@ -54,12 +57,17 @@ export class LoginController {
         const usuario: User = await this.userService.loguearUsuario(entidad);
 
         if (!usuario) {
-            throw new BadRequestException('Usuario no encontrado');
+            throw new BadRequestException({ MESSAGE: 'Usuario no encontrado', STATUS: false });
         }
 
-        if (usuario.PASSWORD !== entidad.PASSWORD) {
-            throw new BadRequestException('Contraseña incorrecta');
+        if (usuario?.STATUS === 0) {
+            throw new BadRequestException({ MESSAGE: usuario.MESSAGE, STATUS: false });
         }
+    
+        if (usuario.PASSWORD !== entidad.PASSWORD) {
+            throw new BadRequestException({ MESSAGE: 'Contraseña incorrecta', STATUS: false });
+        }
+
 
         const token = this.tokenService.generateToken(usuario);
         usuario.TOKEN = token;
@@ -93,16 +101,16 @@ export class LoginController {
 
     @Post('generateUser')
     async generateUser(@Body() entidad: User): Promise<Result> {
-        const result = await  this.tokenService.validateTokenSolicitud(entidad.TOKEN);
-        if(result){
+        const result = await this.tokenService.validateTokenSolicitud(entidad.TOKEN);
+        if (result) {
             entidad.IDROLE = 2;
             entidad.USER = "AUTOLOGIN"
             entidad.PLAN = "1";
             return await this.userService.createUser(entidad);
-        }else{
-            return {MESSAGE: "Token invalido", STATUS: false}
+        } else {
+            return { MESSAGE: "Token invalido", STATUS: false }
         }
-       
+
     }
 
     @Post('solicitudUser')

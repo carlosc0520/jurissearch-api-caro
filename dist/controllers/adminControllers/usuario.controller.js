@@ -23,13 +23,15 @@ let UsuarioController = class UsuarioController {
         this.userService = userService;
     }
     async validateToken(req) {
+        var _a;
         const IDR = req.user.role;
         return {
             STATUS: true,
             DATA: {
                 IDR,
-                ROLE: IDR === 0 ? "ADMINISTRADOR" : IDR === 1 ? "DIGITADOR" : "USUARIO"
-            }
+                ROLE: IDR === 0 ? "ADMINISTRADOR" : IDR === 1 ? "DIGITADOR" : "USUARIO",
+                PERM: ((_a = req === null || req === void 0 ? void 0 : req.user) === null || _a === void 0 ? void 0 : _a.PERM) || []
+            },
         };
     }
     async addUser(req, entidad) {

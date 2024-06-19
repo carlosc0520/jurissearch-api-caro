@@ -17,6 +17,7 @@ declare class User {
     FVCMNTO: Date;
     INTENTOS: number;
     CARGO: string;
+    RESTRICIONES: string;
     DIRECCION: string;
     PROFESION: string;
     UCRCN: string;
@@ -26,6 +27,8 @@ declare class User {
     TOKEN: string;
     PLAN?: string;
     DATOS?: string;
+    STATUS?: number;
+    MESSAGE?: string;
 }
 export declare class UserService {
     private connection;

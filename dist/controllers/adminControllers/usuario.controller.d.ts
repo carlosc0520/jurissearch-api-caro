@@ -15,6 +15,7 @@ declare class User {
     FNACIMIENTO: Date;
     EBLOQUEO: boolean;
     FVCMNTO: Date;
+    RESTRICIONES: string;
     INTENTOS: number;
     CARGO: string;
     DIRECCION: string;
@@ -34,6 +35,7 @@ export declare class UsuarioController {
         DATA: {
             IDR: number;
             ROLE: string;
+            PERM: string[];
         };
     }>;
     addUser(req: any, entidad: User): Promise<Result>;

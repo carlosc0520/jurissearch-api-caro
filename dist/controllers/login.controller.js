@@ -36,10 +36,13 @@ let LoginController = class LoginController {
     async autenticarUsuario(entidad) {
         const usuario = await this.userService.loguearUsuario(entidad);
         if (!usuario) {
-            throw new common_1.BadRequestException('Usuario no encontrado');
+            throw new common_1.BadRequestException({ MESSAGE: 'Usuario no encontrado', STATUS: false });
+        }
+        if ((usuario === null || usuario === void 0 ? void 0 : usuario.STATUS) === 0) {
+            throw new common_1.BadRequestException({ MESSAGE: usuario.MESSAGE, STATUS: false });
         }
         if (usuario.PASSWORD !== entidad.PASSWORD) {
-            throw new common_1.BadRequestException('Contraseña incorrecta');
+            throw new common_1.BadRequestException({ MESSAGE: 'Contraseña incorrecta', STATUS: false });
         }
         const token = this.tokenService.generateToken(usuario);
         usuario.TOKEN = token;

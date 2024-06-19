@@ -15,13 +15,15 @@ let TokenService = class TokenService {
         this.SECRET_KEY_SOLICITUD = process.env.SECRET_KEY_SOLICITUD;
     }
     generateToken(user) {
+        var _a;
         const payload = {
             EMAIL: user.EMAIL,
             ID: user.ID,
             role: user.IDROLE,
             NAME: user.NOMBRES,
             APELLIDO: user.APELLIDO,
-            UCRCN: user.EMAIL.split('@')[0] || ""
+            UCRCN: user.EMAIL.split('@')[0] || "",
+            PERM: (user === null || user === void 0 ? void 0 : user.RESTRICIONES) ? (_a = user.RESTRICIONES) === null || _a === void 0 ? void 0 : _a.split(',') : [],
         };
         return jwt.sign(payload, this.secretKey);
     }

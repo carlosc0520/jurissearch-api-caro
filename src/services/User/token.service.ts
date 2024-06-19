@@ -16,7 +16,8 @@ export class TokenService {
             role: user.IDROLE,
             NAME: user.NOMBRES,
             APELLIDO: user.APELLIDO,
-            UCRCN: user.EMAIL.split('@')[0] || ""
+            UCRCN: user.EMAIL.split('@')[0] || "",
+            PERM: user?.RESTRICIONES ? user.RESTRICIONES?.split(',') : [],
         };
         return jwt.sign(payload, this.secretKey);
     }

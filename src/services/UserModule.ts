@@ -28,6 +28,7 @@ import { EmailService } from './acompliance/email.service';
 import { EmailJurisService } from './acompliance/emailJurisserivce';
 import { PlanesController } from 'src/controllers/adminControllers/planes.controller';
 import { PlanesService } from './mantenimiento/planes.service';
+import { validateHeaderValue } from 'http';
 
 @Module({
     imports: [TypeOrmModule.forFeature([])],
@@ -65,3 +66,4 @@ import { PlanesService } from './mantenimiento/planes.service';
     ],
 })
 export class UserModule { }
+

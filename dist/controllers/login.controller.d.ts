@@ -27,6 +27,7 @@ declare class User {
     CARGO: string;
     DIRECCION: string;
     PROFESION: string;
+    RESTRICIONES: string;
     UCRCN: string;
     FCRCN: Date;
     FEDCN: Date;
@@ -34,6 +35,8 @@ declare class User {
     TOKEN: string;
     PLAN?: string;
     DATOS?: string;
+    STATUS?: number;
+    MESSAGE?: string;
 }
 export declare class LoginController {
     private readonly userService;

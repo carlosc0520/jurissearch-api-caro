@@ -1,4 +1,4 @@
-import { Request , Body, Controller, Get, Post, Query } from '@nestjs/common';
+import { Request, Body, Controller, Get, Post, Query } from '@nestjs/common';
 import { UserService } from '../../services/User/user.service';
 import { Result } from '../../models/result.model';
 import { DataTable } from '../../models/DataTable.model.';
@@ -17,6 +17,7 @@ class User {
     FNACIMIENTO: Date;
     EBLOQUEO: boolean;
     FVCMNTO: Date;
+    RESTRICIONES: string;
     INTENTOS: number;
     CARGO: string;
     DIRECCION: string;
@@ -36,14 +37,15 @@ export class UsuarioController {
     ) { }
 
     @Get('validate-token')
-    async validateToken(@Request() req): Promise<{ STATUS: boolean, DATA: { IDR: number, ROLE: string } }> {
+    async validateToken(@Request() req): Promise<{ STATUS: boolean, DATA: { IDR: number, ROLE: string, PERM: string[] } }> {
         const IDR = req.user.role;
         return {
             STATUS: true,
             DATA: {
                 IDR,
-                ROLE: IDR === 0 ? "ADMINISTRADOR" : IDR === 1 ? "DIGITADOR" : "USUARIO"
-            }
+                ROLE: IDR === 0 ? "ADMINISTRADOR" : IDR === 1 ? "DIGITADOR" : "USUARIO",
+                PERM: req?.user?.PERM || []
+            },
         };
     }
 
@@ -55,7 +57,7 @@ export class UsuarioController {
     }
 
     @Get('list')
-    async listUsers(@Query() entidad : DataTable, @Query('IDROLE') IDROLE: string): Promise<User[]> {
+    async listUsers(@Query() entidad: DataTable, @Query('IDROLE') IDROLE: string): Promise<User[]> {
         return await this.userService.list(entidad, IDROLE);
     }
 

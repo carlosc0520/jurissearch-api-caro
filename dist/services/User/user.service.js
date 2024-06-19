@@ -28,9 +28,6 @@ let UserService = class UserService {
             const usuario = await this.connection.query(queryAsync)
                 .then((result) => (result === null || result === void 0 ? void 0 : result[0]) ? result[0] : null)
                 .catch((error) => error);
-            if (!usuario) {
-                throw new Error('Usuario no encontrado');
-            }
             return usuario;
         }
         catch (error) {
