@@ -16,6 +16,7 @@ export declare class EntriesController {
     listUsers(entidad: DataTable, TYPE: string): Promise<EntriesModel[]>;
     deleteUser(req: any, ID: number): Promise<Result>;
     Obtener(ID: number): Promise<EntriesModel>;
+    getPrint(ID: number): Promise<EntriesModel>;
     downloadFile(PATH: string, res: Response): Promise<any>;
     busqueda(req: any, busqueda: BusquedaModel): Promise<EntriesModel[]>;
     busquedaFavorites(req: any, busqueda: BusquedaModel): Promise<EntriesModel[]>;

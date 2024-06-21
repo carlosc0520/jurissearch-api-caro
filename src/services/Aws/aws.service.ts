@@ -106,7 +106,6 @@ export class S3Service {
             };
 
             const stream = this.s3.getObject(params).createReadStream();
-
             const chunks = [];
             for await (const chunk of stream) {
                 chunks.push(chunk);

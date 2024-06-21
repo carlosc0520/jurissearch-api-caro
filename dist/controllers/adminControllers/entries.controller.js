@@ -101,12 +101,10 @@ let EntriesController = class EntriesController {
             }
             const [file1, file2] = files;
             if (![undefined, null].includes(file1)) {
-                await this.s3Service.deleteFile(entidad.ENTRIEFILE);
                 const keysLocation = await this.s3Service.uploadFile(entidad, file1.filename, file1.path);
                 entidad.ENTRIEFILE = keysLocation;
             }
             if (![undefined, null].includes(file2)) {
-                await this.s3Service.deleteFile(entidad.ENTRIEFILERESUMEN);
                 const keysLocation = await this.s3Service.uploadFile(entidad, file2.filename, file2.path);
                 entidad.ENTRIEFILERESUMEN = keysLocation;
             }
@@ -163,6 +161,9 @@ let EntriesController = class EntriesController {
     }
     async Obtener(ID) {
         return await this.entriesService.get(ID);
+    }
+    async getPrint(ID) {
+        return await this.entriesService.getPrint(ID);
     }
     async downloadFile(PATH, res) {
         try {
@@ -320,6 +321,13 @@ __decorate([
     __metadata("design:paramtypes", [Number]),
     __metadata("design:returntype", Promise)
 ], EntriesController.prototype, "Obtener", null);
+__decorate([
+    (0, common_1.Get)('getPrint'),
+    __param(0, (0, common_1.Query)('ID')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number]),
+    __metadata("design:returntype", Promise)
+], EntriesController.prototype, "getPrint", null);
 __decorate([
     (0, common_1.Post)('download-file'),
     __param(0, (0, common_1.Body)('PATH')),

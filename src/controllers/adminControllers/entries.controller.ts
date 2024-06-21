@@ -173,7 +173,7 @@ export class EntriesController {
             const [file1, file2] = files;
 
             if (![undefined, null].includes(file1)) {
-                await this.s3Service.deleteFile(entidad.ENTRIEFILE);
+                // await this.s3Service.deleteFile(entidad.ENTRIEFILE);
                 const keysLocation: string = await this.s3Service.uploadFile(
                     entidad,
                     file1.filename,
@@ -185,7 +185,7 @@ export class EntriesController {
 
 
             if (![undefined, null].includes(file2)) {
-                await this.s3Service.deleteFile(entidad.ENTRIEFILERESUMEN);
+                // await this.s3Service.deleteFile(entidad.ENTRIEFILERESUMEN);
                 const keysLocation: string = await this.s3Service.uploadFile(
                     entidad,
                     file2.filename,
@@ -286,6 +286,11 @@ export class EntriesController {
     @Get('get')
     async Obtener(@Query('ID') ID: number): Promise<EntriesModel> {
         return await this.entriesService.get(ID);
+    }
+
+    @Get('getPrint')
+    async getPrint(@Query('ID') ID: number): Promise<EntriesModel> {
+        return await this.entriesService.getPrint(ID);
     }
 
     @Post('download-file')

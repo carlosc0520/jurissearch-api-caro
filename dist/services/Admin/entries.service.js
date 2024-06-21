@@ -63,6 +63,20 @@ let EntriesService = class EntriesService {
             return error;
         }
     }
+    async getPrint(ID) {
+        let queryAsync = configMappers_1.default.ADMIN.ENTRIES.CRUD;
+        queryAsync += ` @p_cData = ${null},`;
+        queryAsync += ` @p_cUser = ${null},`;
+        queryAsync += ` @p_nTipo = ${6},`;
+        queryAsync += ` @p_nId = ${ID}`;
+        try {
+            const result = await this.connection.query(queryAsync);
+            return result[0] || {};
+        }
+        catch (error) {
+            return error;
+        }
+    }
     async deleteFilter(id, UCRCN) {
         var _a, _b, _c;
         let queryAsync = configMappers_1.default.ADMIN.ENTRIES.CRUD;
