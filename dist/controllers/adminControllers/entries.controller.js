@@ -40,10 +40,11 @@ let EntriesController = class EntriesController {
             if (obtener.length > 0) {
                 return { MESSAGE: `Ya existe una entrada con el mismo título para ${entidad.TYPE} - ${entidad.TIPO}`, STATUS: false };
             }
-            const [file1, file2] = files;
+            const [file1] = files;
+            const file2 = { filename: null, path: null };
             const keysLocation = await this.s3Service.uploadFiles(entidad, file1.filename, file1.path, file2.filename, file2.path);
             entidad.ENTRIEFILE = keysLocation[0];
-            entidad.ENTRIEFILERESUMEN = keysLocation[1];
+            entidad.ENTRIEFILERESUMEN = "";
             entidad.UCRCN = req.user.UCRCN;
             const result = await this.entriesService.createEntries(entidad);
             return result;
@@ -103,10 +104,6 @@ let EntriesController = class EntriesController {
             if (![undefined, null].includes(file1)) {
                 const keysLocation = await this.s3Service.uploadFile(entidad, file1.filename, file1.path);
                 entidad.ENTRIEFILE = keysLocation;
-            }
-            if (![undefined, null].includes(file2)) {
-                const keysLocation = await this.s3Service.uploadFile(entidad, file2.filename, file2.path);
-                entidad.ENTRIEFILERESUMEN = keysLocation;
             }
             entidad.UCRCN = req.user.UCRCN;
             const result = await this.entriesService.edit(entidad);
@@ -168,6 +165,7 @@ let EntriesController = class EntriesController {
     async downloadFile(PATH, res) {
         try {
             const file = await this.s3Service.downloadFile(PATH);
+            console.log(file);
             res.set('Content-Type', 'application/pdf');
             res.send(file);
         }

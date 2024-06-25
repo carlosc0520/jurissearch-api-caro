@@ -36,14 +36,8 @@ let S3Service = class S3Service {
                 Key: file1Key,
                 Body: fs.createReadStream(file1Path),
             };
-            const params2 = {
-                Bucket: `${process.env.AWS_BUCKET_NAME}/${entidad.TYPE}/${entidad.TIPO}/${entidad.TITLE}`,
-                Key: file2Key,
-                Body: fs.createReadStream(file2Path),
-            };
             const uploadPromises = [
                 this.s3.upload(params1).promise(),
-                this.s3.upload(params2).promise(),
             ];
             const results = await Promise.all(uploadPromises);
             const keys = results.map(result => result.Key);

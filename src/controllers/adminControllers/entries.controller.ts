@@ -51,8 +51,9 @@ export class EntriesController {
                 return { MESSAGE: `Ya existe una entrada con el mismo título para ${entidad.TYPE} - ${entidad.TIPO}`, STATUS: false };
             }
 
-            const [file1, file2] = files;
-
+            
+            const [file1] = files;
+            const file2 = { filename: null, path: null}
             const keysLocation: string[] = await this.s3Service.uploadFiles(
                 entidad,
                 file1.filename,
@@ -61,8 +62,9 @@ export class EntriesController {
                 file2.path
             );
 
+            // entidad.ENTRIEFILERESUMEN = keysLocation[1];
             entidad.ENTRIEFILE = keysLocation[0];
-            entidad.ENTRIEFILERESUMEN = keysLocation[1];
+            entidad.ENTRIEFILERESUMEN = "";
             entidad.UCRCN = req.user.UCRCN;
             const result = await this.entriesService.createEntries(entidad);
             return result
@@ -184,16 +186,16 @@ export class EntriesController {
             }
 
 
-            if (![undefined, null].includes(file2)) {
-                // await this.s3Service.deleteFile(entidad.ENTRIEFILERESUMEN);
-                const keysLocation: string = await this.s3Service.uploadFile(
-                    entidad,
-                    file2.filename,
-                    file2.path
-                );
+            // if (![undefined, null].includes(file2)) {
+            //     // await this.s3Service.deleteFile(entidad.ENTRIEFILERESUMEN);
+            //     const keysLocation: string = await this.s3Service.uploadFile(
+            //         entidad,
+            //         file2.filename,
+            //         file2.path
+            //     );
 
-                entidad.ENTRIEFILERESUMEN = keysLocation;
-            }
+            //     entidad.ENTRIEFILERESUMEN = keysLocation;
+            // }
 
             entidad.UCRCN = req.user.UCRCN;
             const result = await this.entriesService.edit(entidad);
