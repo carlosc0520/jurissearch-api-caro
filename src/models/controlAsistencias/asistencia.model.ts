@@ -14,4 +14,6 @@ export class AsistenciaModel {
     FCRCN?: Date = null;
     ASISTENTES?: string = null;
     FEDCN?: Date = null;
+    FINGRESO?: Date = null;
+    FSALIDA?: Date = null;
 }

@@ -20,8 +20,8 @@ export class AsistenciaController {
     ) { }
 
     @Get('list')
-    async listFilters(@Query() entidad: DataTable): Promise<AsistenciaModel[]> {
-        return await this.asistenciaService.list(entidad);
+    async listFilters(@Query() entidad: DataTable, @Query('IDEVENTO') IDEVENTO: number): Promise<AsistenciaModel[]> {
+        return await this.asistenciaService.list(entidad, IDEVENTO);
     }
 
 
@@ -79,7 +79,7 @@ export class AsistenciaController {
 
                     const fontSize = 12;
                     const nombreLimpio = evento.NOMBRES.normalize("NFD").replace(/[^\x20-\x7E\u00C0-\u017F]/g, '');
-                    console.log(nombreLimpio)
+
                     firstPage.drawText(`${nombreLimpio}`, {
                         x: 60,
                         y: 490,
