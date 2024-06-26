@@ -37,6 +37,9 @@ const procedures = {
     "CCFIRMA": {
         "SOLICITUDES": {
             "CRUD": `EXEC CCFIRMA.USP_CRUD_SOLICITUDES`
+        },
+        "ASISTENCIAS": {
+            "CRUD": `EXEC CCFIRMA.USP_CRUD_ASISTENCIAS`
         }
     }
 }
