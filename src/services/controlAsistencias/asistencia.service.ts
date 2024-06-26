@@ -17,16 +17,37 @@ export class AsistenciaService {
         let queryAsync = procedures.CCFIRMA.ASISTENCIAS.CRUD;
         queryAsync += ` @p_cData = ${entidad ? `'${JSON.stringify(entidad)}'` : null},`;
         queryAsync += ` @p_cUser = ${entidad.UCRCN},`;
-        queryAsync += ` @p_nTipo = ${1},`;
+        queryAsync += ` @p_nTipo = ${6},`;
         queryAsync += ` @p_nId = ${0}`;
 
         try {
             const result = await this.connection.query(queryAsync);
             const isSuccess = result?.[0]?.RESULT > 0;
-            const MESSAGE = isSuccess ? "Magistrado agregado correctamente" : "Ocurrió un error al intentar agregar el magistrado";
-            return { MESSAGE, STATUS: isSuccess };
+            const MESSAGE = isSuccess ? "Asistente agregados correctamente" : "Ocurrió un error al intentar registrar los asistentes";
+            return { MESSAGE, STATUS: isSuccess, ID: result?.[0]?.RESULT};
         } catch (error) {
-            const MESSAGE = error.originalError?.info?.message || "Ocurrió un error al intentar agregar el magistrado";
+            const MESSAGE = error.originalError?.info?.message || "Ocurrió un error al intentar registrar los asistentes";
+            return { MESSAGE, STATUS: false };
+        }
+    }
+
+    async createOne(entidad: AsistenciaModel): Promise<Result> {
+
+        let queryAsync = procedures.CCFIRMA.ASISTENCIAS.CRUD;
+        queryAsync += ` @p_cData = ${entidad ? `'${JSON.stringify(entidad)}'` : null},`;
+        queryAsync += ` @p_cUser = '${entidad.UCRCN}',`;
+        queryAsync += ` @p_nTipo = ${1},`;
+        queryAsync += ` @p_nId = ${0}`;
+
+        console.log(queryAsync)
+
+        try {
+            const result = await this.connection.query(queryAsync);
+            const isSuccess = result?.[0]?.RESULT > 0;
+            const MESSAGE = isSuccess ? "Asistentia registrada correctamente" : "Ocurrió un error al intentar registrar la asistencia";
+            return { MESSAGE, STATUS: isSuccess, ID: result?.[0]?.RESULT};
+        } catch (error) {
+            const MESSAGE = error.originalError?.info?.message || "Ocurrió un error al intentar registrar la asistencia";
             return { MESSAGE, STATUS: false };
         }
     }
@@ -52,7 +73,7 @@ export class AsistenciaService {
         queryAsync += ` @p_cUser = ${null},`;
         queryAsync += ` @p_nTipo = ${5},`;
         queryAsync += ` @p_nId = ${0}`;
-
+        console.log(queryAsync)
         try {
             const result = await this.connection.query(queryAsync);
             return result;

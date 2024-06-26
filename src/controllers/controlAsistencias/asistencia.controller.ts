@@ -1,16 +1,16 @@
-import { Body, Controller, Request, Get, Post, Query } from '@nestjs/common';
+import { Body, Controller, Request, Get, Post, Query, Res } from '@nestjs/common';
 import { Result } from '../../models/result.model';
 import { DataTable } from '../../models/DataTable.model.';
 import { AsistenciaModel } from 'src/models/controlAsistencias/asistencia.model';
 import { AsistenciaService } from 'src/services/controlAsistencias/asistencia.service';
 import { EventosModel } from 'src/models/controlAsistencias/eventos.model';
-import { PDFDocument, rgb, StandardFonts } from 'pdf-lib';
+import { PDFDocument, rgb, StandardFonts  } from 'pdf-lib';
 import * as qr from 'qrcode';
-import * as nodemailer from 'nodemailer';
 import { readFileSync } from 'fs';
 import * as uuid from 'uuid';
 import * as path from 'path';
 import { EmailService } from 'src/services/acompliance/email.service';
+import JSZip from 'jszip';
 
 @Controller('control/asistencias')
 export class AsistenciaController {
@@ -37,67 +37,72 @@ export class AsistenciaController {
 
     @Post('add')
     async addUser(@Request() req, @Body() entidad: AsistenciaModel): Promise<Result> {
-        entidad.UCRCN = req.user.UCRCN;
-        return await this.asistenciaService.create(entidad);
+        entidad.UCRCN = 'ADMIN_ASISTENCIAS'
+        return await this.asistenciaService.createOne(entidad);
     }
 
     @Post('addMasivo')
-    async addMasivo(@Request() req, @Body() entidad: AsistenciaModel[]): Promise<any> {
-        entidad = [
-            {
-                IDEVENTO: 3,
-                EVENTO: 'Evento 3',
-                CODIGO: '',
-                NOMBRES: 'Carlos',
-                APELLIDOS: 'Martínez',
-                DNI: '54321678B',
-                CORREO: 'ccarbajalmt0520@gmail.com',
-                REGISTRADO: true,
-            },
-        ];
-
-
-        entidad.forEach(evento => {
-            evento.CODIGO = uuid.v4().replace(/-/g, '').substring(0, 30);
-        });
-
+    async addMasivo(@Request() req, @Body() entidad: AsistenciaModel, @Res() res): Promise<any> {
         try {
-            const pdfPath = path.join(__dirname, 'src', 'files', 'asistenciaVirtual.pdf');
+            entidad.UCRCN = 'ADMIN_ASISTENCIAS';
+            let asistentes = JSON.parse(entidad.ASISTENTES);
+            await asistentes.forEach(async asistente => {
+                asistente.CODIGO = await uuid.v4().replace(/-/g, '').substring(0, 20);
+            });
 
-            // Procesar cada evento y enviar el PDF con QR por correo electrónico
-            for (const evento of entidad) {
-                const qrText = `CODIGO:${evento.CODIGO};NOMBRES:${evento.NOMBRES};APELLIDOS:${evento.APELLIDOS};DNI: ${evento.DNI}`;
-                const qrBuffer = await qr.toBuffer(qrText, { errorCorrectionLevel: 'H' });
-                console.log(qr)
-                const templatePDFBytes = readFileSync(pdfPath);
-                const pdfDoc = await PDFDocument.load(templatePDFBytes);
-                const pages = pdfDoc.getPages();
-                const firstPage = pages[0];
-    
-                const qrDims = pdfDoc.embedPng(qrBuffer);
-                firstPage.drawImage(await qrDims, {
-                    x: 450,
-                    y: 450,
-                    width: 100,
-                    height: 100,
-                });
+            entidad.ASISTENTES = JSON.stringify(asistentes);
+            let resultado = await this.asistenciaService.create(entidad);
 
-                console.log("first")
+            const zip = new JSZip();
 
-                const modifiedPDFBytes = await pdfDoc.save();
+            if (resultado.STATUS && resultado.ID > 0) {
+                let pdfPath = path.join(__dirname, 'src', 'files', 'asistenciaVirtual.pdf');
+                pdfPath = pdfPath.replace('controllers\\controlAsistencias\\src', 'files');
 
-                await this.emailService.enviarCorreo(evento.CORREO, modifiedPDFBytes);
+                for (const evento of asistentes) {
+                    const qrText = `CODIGO:${evento.CODIGO};NOMBRES:${evento.NOMBRES}`;
+                    const qrBuffer = await qr.toBuffer(qrText, { errorCorrectionLevel: 'H' });
 
+                    const templatePDFBytes = readFileSync(pdfPath);
+                    const pdfDoc = await PDFDocument.load(templatePDFBytes);
+                    
+                    const pages = pdfDoc.getPages();
+                    const firstPage = pages[0];
+
+                    const qrDims = pdfDoc.embedPng(qrBuffer);
+                    firstPage.drawImage(await qrDims, {
+                        x: 435,
+                        y: 425,
+                        width: 100,
+                        height: 100,
+                    });
+
+                    const fontSize = 12;
+                    const nombreLimpio = evento.NOMBRES.normalize("NFD").replace(/[^\x20-\x7E\u00C0-\u017F]/g, '');
+                    console.log(nombreLimpio)
+                    firstPage.drawText(`${nombreLimpio}`, {
+                        x: 60,
+                        y: 490,
+                        size: fontSize,
+                        color: rgb(0, 0, 0), // color en RGB
+                    });
+
+                    const modifiedPDFBytes = await pdfDoc.save();
+                    const pdfName = `${nombreLimpio.replace(' ', '_')}.pdf`;
+                    zip.file(pdfName, modifiedPDFBytes);
+                }
+
+                const zipBuffer = await zip.generateAsync({ type: 'nodebuffer' });
+
+                res.setHeader('Content-Type', 'application/zip');
+                res.setHeader('Content-Disposition', `attachment; filename=asistentes.zip`);
+                res.status(200).send(zipBuffer);
+            } else {
+                throw new Error('Error al procesar los asistentes');
             }
-
-            
-
-            return await { MESSAGE: 'PDFs enviados correctamente', STATUS: true };
-        } catch (err) {
-            console.log(err);
-            return await { MESSAGE: 'Error al enviar PDFs', STATUS: false };
+        } catch (error) {
+            console.error('Error en la generación y envío de PDFs:', error);
+            res.status(500).json({ message: 'Error en la generación y envío de PDFs' });
         }
-        // entidad.UCRCN = req.user.UCRCN;
-        // return await this.asistenciaService.create(entidad);
     }
 }
