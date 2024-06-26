@@ -165,7 +165,6 @@ let EntriesController = class EntriesController {
     async downloadFile(PATH, res) {
         try {
             const file = await this.s3Service.downloadFile(PATH);
-            console.log(file);
             res.set('Content-Type', 'application/pdf');
             res.send(file);
         }
