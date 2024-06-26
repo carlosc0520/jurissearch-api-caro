@@ -38,6 +38,9 @@ declare const procedures: {
         SOLICITUDES: {
             CRUD: string;
         };
+        ASISTENCIAS: {
+            CRUD: string;
+        };
     };
 };
 export default procedures;

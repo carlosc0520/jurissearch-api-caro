@@ -29,6 +29,8 @@ import { EmailJurisService } from './acompliance/emailJurisserivce';
 import { PlanesController } from 'src/controllers/adminControllers/planes.controller';
 import { PlanesService } from './mantenimiento/planes.service';
 import { validateHeaderValue } from 'http';
+import { AsistenciaController } from 'src/controllers/controlAsistencias/asistencia.controller';
+import { AsistenciaService } from './controlAsistencias/asistencia.service';
 
 @Module({
     imports: [TypeOrmModule.forFeature([])],
@@ -46,6 +48,7 @@ import { validateHeaderValue } from 'http';
 
         // COMPLIANCE
         EmailController,
+        AsistenciaController
     ],
     providers: [
         UserService, 
@@ -62,7 +65,8 @@ import { validateHeaderValue } from 'http';
 
         // COMPLIANCE
         EmailService,
-        EmailJurisService
+        EmailJurisService,
+        AsistenciaService
     ],
 })
 export class UserModule { }
