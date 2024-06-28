@@ -59,6 +59,24 @@ export class UserService {
         }
     }
 
+    async obtenerUsuario(entidad: User): Promise<User> {
+        try {
+            let queryAsync = procedures.JURIS.loguearUsuario;
+            queryAsync += ` @EMAIL = ${entidad?.EMAIL ? `'${entidad.EMAIL}'` : null},`;
+            queryAsync += ` @PASSWORD = ${entidad?.PASSWORD ? `'${entidad.PASSWORD}'` : null},`;
+            queryAsync += ` @IND = ${1000}`
+
+            const usuario: User = await this.connection.query(queryAsync)
+                .then((result) => result?.[0] ? result[0] : null)
+                .catch((error) => error);
+
+            return usuario;
+        } catch (error) {
+            return error;
+        }
+    }
+
+
     async createUser(entidad: User): Promise<Result> {
         let queryAsync = procedures.ADMIN.USUARIO.CRUD;
         queryAsync += ` @p_cData = ${entidad ? `'${JSON.stringify(entidad)}'` : null},`;
@@ -73,6 +91,24 @@ export class UserService {
             return { MESSAGE, STATUS: isSuccess };
         } catch (error) {
             const MESSAGE = error.originalError?.info?.message || "Ocurrió un error al intentar agregar el usuario";
+            return { MESSAGE, STATUS: false };
+        }
+    }
+
+    async updatePassword(entidad: User): Promise<Result> {
+        let queryAsync = procedures.ADMIN.USUARIO.CRUD;
+        queryAsync += ` @p_cData = ${entidad ? `'${JSON.stringify(entidad)}'` : null},`;
+        queryAsync += ` @p_cUser = '${"RECOVERY"}',`;
+        queryAsync += ` @p_nTipo = ${8},`;
+        queryAsync += ` @p_nId = ${0}`;
+
+        try {
+            const result = await this.connection.query(queryAsync);
+            const isSuccess = result?.[0]?.RESULT > 0;
+            const MESSAGE = isSuccess ? "Contraseña actualizada correctamente" : "Ocurrió un error al intentar actualizar la contraseña";
+            return { MESSAGE, STATUS: isSuccess };
+        } catch (error) {
+            const MESSAGE = error.originalError?.info?.message || "Ocurrió un error al intentar actualizar la contraseña";
             return { MESSAGE, STATUS: false };
         }
     }

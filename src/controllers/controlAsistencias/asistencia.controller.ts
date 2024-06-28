@@ -53,6 +53,7 @@ export class AsistenciaController {
             entidad.ASISTENTES = JSON.stringify(asistentes);
             let resultado = await this.asistenciaService.create(entidad);
 
+            // let resultado = { STATUS: true, ID: 1 };
             const zip = new JSZip();
 
             if (resultado.STATUS && resultado.ID > 0) {
@@ -72,17 +73,17 @@ export class AsistenciaController {
                     const qrDims = pdfDoc.embedPng(qrBuffer);
                     firstPage.drawImage(await qrDims, {
                         x: 435,
-                        y: 425,
+                        y: 455,
                         width: 100,
                         height: 100,
                     });
 
                     const fontSize = 12;
                     const nombreLimpio = evento.NOMBRES.normalize("NFD").replace(/[^\x20-\x7E\u00C0-\u017F]/g, '');
-                    console.log(nombreLimpio)
+
                     firstPage.drawText(`${nombreLimpio}`, {
-                        x: 60,
-                        y: 490,
+                        x: 48,
+                        y: 520,
                         size: fontSize,
                         color: rgb(0, 0, 0), // color en RGB
                     });

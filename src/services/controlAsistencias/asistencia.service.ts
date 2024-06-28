@@ -39,8 +39,6 @@ export class AsistenciaService {
         queryAsync += ` @p_nTipo = ${1},`;
         queryAsync += ` @p_nId = ${0}`;
 
-        console.log(queryAsync)
-
         try {
             const result = await this.connection.query(queryAsync);
             const isSuccess = result?.[0]?.RESULT > 0;
@@ -73,7 +71,7 @@ export class AsistenciaService {
         queryAsync += ` @p_cUser = ${null},`;
         queryAsync += ` @p_nTipo = ${5},`;
         queryAsync += ` @p_nId = ${0}`;
-        console.log(queryAsync)
+
         try {
             const result = await this.connection.query(queryAsync);
             return result;

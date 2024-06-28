@@ -3,11 +3,14 @@ import { Result } from '../../models/result.model';
 import { DataTable } from '../../models/DataTable.model.';
 import { HelpService } from 'src/services/mantenimiento/help.service';
 import { HelpModel } from 'src/models/mantenimiento/help.model';
+import { PlanesModel } from 'src/models/Admin/planes.model';
+import { PlanesService } from 'src/services/mantenimiento/planes.service';
 
 @Controller('settings/help')
 export class HelpController {
     constructor(
         private readonly helpService: HelpService,
+        private readonly planService: PlanesService
     ) { }
 
     @Get('list')
@@ -31,4 +34,10 @@ export class HelpController {
         entidad.UCRCN = req.user.UCRCN;
         return await this.helpService.edit(entidad);
     }
+
+    @Get('listPlanes')
+    async listaAll(@Query() entidad: DataTable): Promise<PlanesModel[]> {
+        return await this.planService.list(entidad);
+    }
+
 }

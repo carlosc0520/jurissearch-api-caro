@@ -63,7 +63,7 @@ export class LoginController {
         if (usuario?.STATUS === 0) {
             throw new BadRequestException({ MESSAGE: usuario.MESSAGE, STATUS: false });
         }
-    
+
         if (usuario.PASSWORD !== entidad.PASSWORD) {
             throw new BadRequestException({ MESSAGE: 'Contraseña incorrecta', STATUS: false });
         }
@@ -99,6 +99,11 @@ export class LoginController {
         return this.tokenService.validateTokenSolicitud(token);
     }
 
+    @Get("validateToken-recovery")
+    async validateTokenSolicitudTime(@Query('token') token: string): Promise<boolean> {
+        return this.tokenService.validateTokenSolicitudTime(token);
+    }
+
     @Post('generateUser')
     async generateUser(@Body() entidad: User): Promise<Result> {
         const result = await this.tokenService.validateTokenSolicitud(entidad.TOKEN);
@@ -123,6 +128,44 @@ export class LoginController {
     async ccfirmaSendEmail(@Body() entidad: SolicitudModel): Promise<Result> {
         const result = await this.emailJurisService.ccfirmaSendEmail(entidad);
         return result;
+    }
+
+    @Post('recovery')
+    async recoveryPassword(@Body() entidad: User): Promise<Result> {
+        const usuario: User = await this.userService.obtenerUsuario(entidad);
+
+        if (!usuario) {
+            throw new BadRequestException({ MESSAGE: 'Usuario no encontrado', STATUS: false });
+        }
+
+        if (usuario?.STATUS === 0) {
+            throw new BadRequestException({ MESSAGE: usuario.MESSAGE, STATUS: false });
+        }
+
+        const result = await this.emailJurisService.recoveryPassword(entidad);
+        return result;
+    }
+
+    @Post('recoveryUser')
+    async recoveryUser(@Body() entidad: User): Promise<Result> {
+
+        try {
+            const VALDIAR_TOKEN = this.tokenService.validateTokenSolicitudTime(entidad.TOKEN);
+            if (VALDIAR_TOKEN.STATUS === false) {
+                throw new BadRequestException({ MESSAGE: VALDIAR_TOKEN.MESSAGE, STATUS: false });
+            }
+
+            const entidadNuevo = new User();
+            entidadNuevo.EMAIL = entidad.EMAIL;
+            entidadNuevo.PASSWORD = entidad.PASSWORD;
+
+
+            const result = await this.userService.updatePassword(entidadNuevo);
+            return result;
+        } catch (error) {
+            return { MESSAGE: "Token invalido", STATUS: false }
+        }
+
     }
 
 }

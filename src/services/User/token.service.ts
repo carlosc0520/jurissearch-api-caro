@@ -26,7 +26,7 @@ export class TokenService {
         const payload = {
             ID: user.ID || 0,
             NOMBRES: user.NOMBRES,
-            CORREO:  user.CORREO,
+            CORREO: user.CORREO,
             APELLIDOP: user.APELLIDOP,
             APELLIDOM: user.APELLIDOM,
             TELEFONO: user.TELEFONO,
@@ -54,6 +54,26 @@ export class TokenService {
         } catch (error) {
             return false;
         }
-    }    
+    }
 
+    validateTokenSolicitudTime(token: string): any {
+        try {
+            const data = jwt.verify(token, this.secretKey);
+            return { MESSAGE: 'Token valido', STATUS: true, DATA: data };
+        } catch (error) {
+            if (error.message === 'jwt expired') {
+                return { MESSAGE: 'Token expirado', STATUS: false };
+            }
+        }
+    }
+
+
+    generateTokenRecovery(user: User, tiempo: number): string {
+        const payload = {
+            EMAIL: user.EMAIL,
+            ID: user.ID,
+        }
+
+        return jwt.sign(payload, this.secretKey, { expiresIn: tiempo * 60 });
+    }
 }
