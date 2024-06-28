@@ -20,8 +20,8 @@ export class AsistenciaController {
     ) { }
 
     @Get('list')
-    async listFilters(@Query() entidad: DataTable): Promise<AsistenciaModel[]> {
-        return await this.asistenciaService.list(entidad);
+    async listFilters(@Query() entidad: DataTable, @Query('IDEVENTO') IDEVENTO: number): Promise<AsistenciaModel[]> {
+        return await this.asistenciaService.list(entidad, IDEVENTO);
     }
 
 
