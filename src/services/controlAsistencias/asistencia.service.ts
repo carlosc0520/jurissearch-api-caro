@@ -39,10 +39,6 @@ export class AsistenciaService {
         queryAsync += ` @p_nTipo = ${1},`;
         queryAsync += ` @p_nId = ${0}`;
 
-<<<<<<< HEAD
-=======
-
->>>>>>> b69b653e1f43b6947f0df2bb01fdc760d7ba1807
         try {
             const result = await this.connection.query(queryAsync);
             const isSuccess = result?.[0]?.RESULT > 0;
