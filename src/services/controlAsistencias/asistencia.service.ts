@@ -74,6 +74,21 @@ export class AsistenciaService {
         }
     }
 
+    async listAsistencia(entidad: DataTable, IDEVENTO: number, FECHA: Date): Promise<AsistenciaModel[]> {
+        let queryAsync = procedures.CCFIRMA.ASISTENCIAS.CRUD;
+        queryAsync += ` @p_cData = ${entidad ? `'${JSON.stringify({ ...entidad, IDEVENTO, FECHA})}'` : null},`;
+        queryAsync += ` @p_cUser = ${null},`;
+        queryAsync += ` @p_nTipo = ${8},`;
+        queryAsync += ` @p_nId = ${0}`;
+        console.log(queryAsync);
+        try {
+            const result = await this.connection.query(queryAsync);
+            return result;
+        } catch (error) {
+            return error;
+        }
+    }
+
     async listEventos(entidad: DataTable): Promise<EventosModel[]> {
         let queryAsync = procedures.CCFIRMA.ASISTENCIAS.CRUD;
         queryAsync += ` @p_cData = ${entidad ? `'${JSON.stringify(entidad)}'` : null},`;
