@@ -9,6 +9,8 @@ import * as fs from 'fs';
 import { DataTable } from 'src/models/DataTable.model.';
 import { Response } from 'express';
 import { BusquedaModel } from 'src/models/Admin/busqueda.model';
+import { PDFDocument, rgb, StandardFonts } from 'pdf-lib';
+import * as path from 'path';
 
 @Controller('admin/entries')
 export class EntriesController {
@@ -37,7 +39,7 @@ export class EntriesController {
             }
         }),
     )
-    async uploadMultipleFiles(@Request() req, @Body() entidad: EntriesModel, @UploadedFiles() files,): Promise<Result> {
+    async uploadMultipleFiles(@Request() req, @Body() entidad: EntriesModel, @UploadedFiles() files,): Promise<any> {
         try {
             const table: DataTable = {
                 INIT: 0,
@@ -51,9 +53,65 @@ export class EntriesController {
                 return { MESSAGE: `Ya existe una entrada con el mismo título para ${entidad.TYPE} - ${entidad.TIPO}`, STATUS: false };
             }
 
-            
+            const pathcaroa = path.join(__dirname, '..', '..', 'files/files', "caroa.png");
+            const pathccfirma = path.join(__dirname, '..', '..', 'files/files', "ccfirma.png");
+            const pathmarcadeagua = path.join(__dirname, '..', '..', 'files/files', "marcadeagua.png");
+            const pathnuevologo = path.join(__dirname, '..', '..', 'files/files', "nuevologo.png");
+
             const [file1] = files;
-            const file2 = { filename: null, path: null}
+            const templatePDFBytes = fs.readFileSync(file1.path);
+            const pdfDoc = await PDFDocument.load(templatePDFBytes);
+
+            const caroaImage = await pdfDoc.embedPng(fs.readFileSync(pathcaroa));
+            const ccfirmaImage = await pdfDoc.embedPng(fs.readFileSync(pathccfirma));
+            const marcadeaguaImage = await pdfDoc.embedPng(fs.readFileSync(pathmarcadeagua));
+            const nuevologoImage = await pdfDoc.embedPng(fs.readFileSync(pathnuevologo));
+            const pages = pdfDoc.getPages();
+
+            for (let i = 0; i < pages.length; i++) {
+                const page = pages[i];
+                const { width, height } = page.getSize();
+
+                const x = (width) / 2;
+                const y = (height) / 2;
+
+                await page.drawImage(marcadeaguaImage, {
+                    x: x - 310,
+                    y: y - 330,
+                    width: 620,
+                    height: 600,
+                    opacity: 0.3,
+                });
+
+                // console.log(y, x, width, height);
+                await page.drawImage(caroaImage, {
+                    x: x - 290,
+                    y: y + 375,
+                    width: 95,
+                    height: 40,
+                });
+
+                await page.drawImage(nuevologoImage, {
+                    x: x - 25,
+                    y: y + 380,
+                    width: 50,
+                    height: 35,
+                });
+
+                await page.drawImage(ccfirmaImage, {
+                    x: x - 30,
+                    y: y - 415,
+                    width: 70,
+                    height: 40,
+                    opacity: 0.5,
+                });
+            }
+
+            const pdfBytes = await pdfDoc.save();
+            fs.writeFileSync(file1.path, pdfBytes);
+
+
+            const file2 = { filename: null, path: null }
             const keysLocation: string[] = await this.s3Service.uploadFiles(
                 entidad,
                 file1.filename,
@@ -176,6 +234,64 @@ export class EntriesController {
 
             if (![undefined, null].includes(file1)) {
                 // await this.s3Service.deleteFile(entidad.ENTRIEFILE);
+                
+                const pathcaroa = path.join(__dirname, '..', '..', 'files/files', "caroa.png");
+                const pathccfirma = path.join(__dirname, '..', '..', 'files/files', "ccfirma.png");
+                const pathmarcadeagua = path.join(__dirname, '..', '..', 'files/files', "marcadeagua.png");
+                const pathnuevologo = path.join(__dirname, '..', '..', 'files/files', "nuevologo.png");
+
+                const templatePDFBytes = fs.readFileSync(file1.path);
+                const pdfDoc = await PDFDocument.load(templatePDFBytes);
+
+                const caroaImage = await pdfDoc.embedPng(fs.readFileSync(pathcaroa));
+                const ccfirmaImage = await pdfDoc.embedPng(fs.readFileSync(pathccfirma));
+                const marcadeaguaImage = await pdfDoc.embedPng(fs.readFileSync(pathmarcadeagua));
+                const nuevologoImage = await pdfDoc.embedPng(fs.readFileSync(pathnuevologo));
+
+                const pages = pdfDoc.getPages();
+
+                for (let i = 0; i < pages.length; i++) {
+                    const page = pages[i];
+                    const { width, height } = page.getSize();
+
+                    const x = (width) / 2;
+                    const y = (height) / 2;
+
+                    await page.drawImage(marcadeaguaImage, {
+                        x: x - 310,
+                        y: y - 330,
+                        width: 620,
+                        height: 600,
+                        opacity: 0.3,
+                    });
+
+                    await page.drawImage(caroaImage, {
+                        x: x - 290,
+                        y: y + 375,
+                        width: 95,
+                        height: 40,
+                    });
+
+                    await page.drawImage(nuevologoImage, {
+                        x: x - 25,
+                        y: y + 380,
+                        width: 50,
+                        height: 35,
+                    });
+
+                    await page.drawImage(ccfirmaImage, {
+                        x: x - 30,
+                        y: y - 415,
+                        width: 70,
+                        height: 40,
+                        opacity: 0.5,
+                    });
+                }
+
+                const pdfBytes = await pdfDoc.save();
+                fs.writeFileSync(file1.path, pdfBytes);
+                
+                
                 const keysLocation: string = await this.s3Service.uploadFile(
                     entidad,
                     file1.filename,
@@ -184,18 +300,6 @@ export class EntriesController {
 
                 entidad.ENTRIEFILE = keysLocation;
             }
-
-
-            // if (![undefined, null].includes(file2)) {
-            //     // await this.s3Service.deleteFile(entidad.ENTRIEFILERESUMEN);
-            //     const keysLocation: string = await this.s3Service.uploadFile(
-            //         entidad,
-            //         file2.filename,
-            //         file2.path
-            //     );
-
-            //     entidad.ENTRIEFILERESUMEN = keysLocation;
-            // }
 
             entidad.UCRCN = req.user.UCRCN;
             const result = await this.entriesService.edit(entidad);
