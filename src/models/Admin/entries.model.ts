@@ -1,6 +1,7 @@
 export class EntriesModel {
     ID: number = 0;
     TITLE: string = '';
+    RTITLE?: string = '';
     ISBINDING: boolean = false;
     AMBIT: string = '';
     FRESOLUTION: string = '';

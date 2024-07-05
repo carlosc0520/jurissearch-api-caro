@@ -1,6 +1,7 @@
 export declare class EntriesModel {
     ID: number;
     TITLE: string;
+    RTITLE?: string;
     ISBINDING: boolean;
     AMBIT: string;
     FRESOLUTION: string;

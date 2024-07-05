@@ -36,7 +36,23 @@ export class EntriesService {
         queryAsync += ` @p_cData = ${entidad ? `'${JSON.stringify({ ...entidad, TITLE, TYPE, TIPO })}'` : null},`;
         queryAsync += ` @p_cUser = ${null},`;
         queryAsync += ` @p_nTipo = ${4},`
-        queryAsync += ` @p_nId = ${0}`;
+        queryAsync += ` @p_nId = ${entidad.ID || 0}`;
+
+        try {
+            const result = await this.connection.query(queryAsync);
+            return result;
+        } catch (error) {
+            return error;
+        }
+    }
+
+    async listV(entidad: DataTable, TITLE: string, TYPE: string, TIPO: string): Promise<EntriesModel[]> {
+        let queryAsync = procedures.ADMIN.ENTRIES.CRUD;
+        queryAsync += ` @p_cData = ${entidad ? `'${JSON.stringify({ ...entidad, TITLE, TYPE, TIPO })}'` : null},`;
+        queryAsync += ` @p_cUser = ${null},`;
+        queryAsync += ` @p_nTipo = ${9},`
+        queryAsync += ` @p_nId = ${entidad.ID || 0}`;
+
         try {
             const result = await this.connection.query(queryAsync);
             return result;

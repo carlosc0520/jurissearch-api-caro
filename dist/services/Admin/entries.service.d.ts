@@ -8,6 +8,7 @@ export declare class EntriesService {
     constructor(connection: DataSource);
     createEntries(entidad: EntriesModel): Promise<Result>;
     list(entidad: DataTable, TITLE: string, TYPE: string, TIPO: string): Promise<EntriesModel[]>;
+    listV(entidad: DataTable, TITLE: string, TYPE: string, TIPO: string): Promise<EntriesModel[]>;
     get(ID: number): Promise<EntriesModel>;
     getPrint(ID: number): Promise<EntriesModel>;
     deleteFilter(id: number, UCRCN: string): Promise<Result>;

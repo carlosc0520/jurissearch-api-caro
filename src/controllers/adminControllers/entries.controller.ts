@@ -48,7 +48,7 @@ export class EntriesController {
                 CESTDO: null,
                 ID: 0
             };
-            const obtener = await this.entriesService.list(table, entidad.TITLE, entidad.TYPE, entidad.TIPO);
+            const obtener = await this.entriesService.listV(table, entidad.TITLE, entidad.TYPE, entidad.TIPO);
             if (obtener.length > 0) {
                 return { MESSAGE: `Ya existe una entrada con el mismo título para ${entidad.TYPE} - ${entidad.TIPO}`, STATUS: false };
             }
@@ -165,18 +165,77 @@ export class EntriesController {
                 CESTDO: null,
                 ID: 0
             };
-            const obtener = await this.entriesService.list(table, entidad.TITLE, entidad.TYPE, entidad.TIPO);
+
+            const obtener = await this.entriesService.listV(table, entidad.TITLE, entidad.TYPE, entidad.TIPO);
             if (obtener.length > 0) {
                 return { MESSAGE: `Ya existe una entrada con el mismo título para ${entidad.TYPE} - ${entidad.TIPO}`, STATUS: false };
             }
 
+
+            const pathcaroa = path.join(__dirname, '..', '..', 'files/files', "caroa.png");
+            const pathccfirma = path.join(__dirname, '..', '..', 'files/files', "ccfirma.png");
+            const pathmarcadeagua = path.join(__dirname, '..', '..', 'files/files', "marcadeagua.png");
+            const pathnuevologo = path.join(__dirname, '..', '..', 'files/files', "nuevologo.png");
+
+
             const [file1] = files;
+            const templatePDFBytes = fs.readFileSync(file1.path);
+            const pdfDoc = await PDFDocument.load(templatePDFBytes);
+
+            const caroaImage = await pdfDoc.embedPng(fs.readFileSync(pathcaroa));
+            const ccfirmaImage = await pdfDoc.embedPng(fs.readFileSync(pathccfirma));
+            const marcadeaguaImage = await pdfDoc.embedPng(fs.readFileSync(pathmarcadeagua));
+            const nuevologoImage = await pdfDoc.embedPng(fs.readFileSync(pathnuevologo));
+            const pages = pdfDoc.getPages();
+
+            for (let i = 0; i < pages.length; i++) {
+                const page = pages[i];
+                const { width, height } = page.getSize();
+
+                const x = (width) / 2;
+                const y = (height) / 2;
+
+                await page.drawImage(marcadeaguaImage, {
+                    x: x - 310,
+                    y: y - 330,
+                    width: 620,
+                    height: 600,
+                    opacity: 0.7,
+                });
+
+                // console.log(y, x, width, height);
+                await page.drawImage(caroaImage, {
+                    x: x - 290,
+                    y: y + 375,
+                    width: 95,
+                    height: 40,
+                });
+
+                await page.drawImage(nuevologoImage, {
+                    x: x - 25,
+                    y: y + 380,
+                    width: 50,
+                    height: 35,
+                });
+
+                await page.drawImage(ccfirmaImage, {
+                    x: x - 30,
+                    y: y - 415,
+                    width: 70,
+                    height: 40,
+                    opacity: 0.5,
+                });
+            }
+
+            const pdfBytes = await pdfDoc.save();
+            fs.writeFileSync(file1.path, pdfBytes);
 
             const keysLocation: string = await this.s3Service.uploadFile(
                 entidad,
                 file1.filename,
                 file1.path
             );
+        
 
             entidad.ENTRIEFILE = keysLocation;
             entidad.UCRCN = req.user.UCRCN;
@@ -225,7 +284,7 @@ export class EntriesController {
                 ID: entidad.ID
             };
 
-            const obtener = await this.entriesService.list(table, entidad.TITLE, entidad.TYPE, entidad.TIPO);
+            const obtener = await this.entriesService.listV(table, entidad.TITLE, entidad.TYPE, entidad.TIPO);
             if (obtener.length > 0) {
                 return { MESSAGE: `Ya existe una entrada con el mismo título para ${entidad.TYPE} - ${entidad.TIPO}`, STATUS: false };
             }
@@ -348,7 +407,7 @@ export class EntriesController {
                 ID: entidad.ID
             };
 
-            const obtener = await this.entriesService.list(table, entidad.TITLE, entidad.TYPE, entidad.TIPO);
+            const obtener = await this.entriesService.listV(table, entidad.TITLE, entidad.TYPE, entidad.TIPO);
             if (obtener.length > 0) {
                 return { MESSAGE: `Ya existe una entrada con el mismo título para ${entidad.TYPE} - ${entidad.TIPO}`, STATUS: false };
             }
@@ -356,7 +415,7 @@ export class EntriesController {
             const [file1] = files;
 
             if (![undefined, null].includes(file1)) {
-                await this.s3Service.deleteFile(entidad.ENTRIEFILE);
+                // await this.s3Service.deleteFile(entidad.ENTRIEFILE);
 
 
                 const pathcaroa = path.join(__dirname, '..', '..', 'files/files', "caroa.png");

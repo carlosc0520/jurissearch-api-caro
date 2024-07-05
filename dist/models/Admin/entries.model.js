@@ -5,6 +5,7 @@ class EntriesModel {
     constructor() {
         this.ID = 0;
         this.TITLE = '';
+        this.RTITLE = '';
         this.ISBINDING = false;
         this.AMBIT = '';
         this.FRESOLUTION = '';

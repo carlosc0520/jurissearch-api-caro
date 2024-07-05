@@ -58,6 +58,7 @@ export class S3Service {
             return result.Key;
 
         } catch (error) {
+            console.log(error)
             throw new Error(error);
         }
     }
