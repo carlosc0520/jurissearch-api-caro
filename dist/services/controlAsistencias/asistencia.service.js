@@ -77,6 +77,20 @@ let AsistenciaService = class AsistenciaService {
             return error;
         }
     }
+    async listAsistentes(entidad, IDEVENTO) {
+        let queryAsync = configMappers_1.default.CCFIRMA.ASISTENCIAS.CRUD;
+        queryAsync += ` @p_cData = ${entidad ? `'${JSON.stringify(Object.assign(Object.assign({}, entidad), { IDEVENTO }))}'` : null},`;
+        queryAsync += ` @p_cUser = ${null},`;
+        queryAsync += ` @p_nTipo = ${11},`;
+        queryAsync += ` @p_nId = ${0}`;
+        try {
+            const result = await this.connection.query(queryAsync);
+            return result;
+        }
+        catch (error) {
+            return error;
+        }
+    }
     async listAsistencia(entidad, IDEVENTO, FECHA) {
         let queryAsync = configMappers_1.default.CCFIRMA.ASISTENCIAS.CRUD;
         queryAsync += ` @p_cData = ${entidad ? `'${JSON.stringify(Object.assign(Object.assign({}, entidad), { IDEVENTO, FECHA }))}'` : null},`;

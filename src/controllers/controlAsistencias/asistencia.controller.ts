@@ -11,6 +11,7 @@ import * as uuid from 'uuid';
 import * as path from 'path';
 import { EmailService } from 'src/services/acompliance/email.service';
 import JSZip from 'jszip';
+import { AsistentesModel } from 'src/models/controlAsistencias/asistentes.model';
 
 @Controller('control/asistencias')
 export class AsistenciaController {
@@ -24,11 +25,17 @@ export class AsistenciaController {
         return await this.asistenciaService.list(entidad, IDEVENTO);
     }
 
+    @Get('listAsistentes')
+    async listAsistentes(@Query() entidad: DataTable, @Query('IDEVENTO') IDEVENTO: number, @Query('FECHA') FECHA: Date): Promise<AsistenciaModel[]> {
+        return await this.asistenciaService.listAsistentes(entidad, IDEVENTO);
+    }
+
     @Get('listFull')
     async listAsistenciaFUll(@Query() entidad: DataTable, @Query('IDEVENTO') IDEVENTO: number, @Query('FECHA') FECHA: Date): Promise<AsistenciaModel[]> {
         return await this.asistenciaService.listAsistencia(entidad, IDEVENTO, FECHA);
     }
 
+    
     @Get('eventos')
     async eventos(@Query() entidad: DataTable): Promise<EventosModel[]> {
         return await this.asistenciaService.listEventos(entidad);
@@ -111,3 +118,4 @@ export class AsistenciaController {
         }
     }
 }
+

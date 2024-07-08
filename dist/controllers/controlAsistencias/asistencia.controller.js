@@ -58,6 +58,9 @@ let AsistenciaController = class AsistenciaController {
     async listFilters(entidad, IDEVENTO) {
         return await this.asistenciaService.list(entidad, IDEVENTO);
     }
+    async listAsistentes(entidad, IDEVENTO, FECHA) {
+        return await this.asistenciaService.listAsistentes(entidad, IDEVENTO);
+    }
     async listAsistenciaFUll(entidad, IDEVENTO, FECHA) {
         return await this.asistenciaService.listAsistencia(entidad, IDEVENTO, FECHA);
     }
@@ -134,6 +137,15 @@ __decorate([
     __metadata("design:paramtypes", [DataTable_model_1.DataTable, Number]),
     __metadata("design:returntype", Promise)
 ], AsistenciaController.prototype, "listFilters", null);
+__decorate([
+    (0, common_1.Get)('listAsistentes'),
+    __param(0, (0, common_1.Query)()),
+    __param(1, (0, common_1.Query)('IDEVENTO')),
+    __param(2, (0, common_1.Query)('FECHA')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [DataTable_model_1.DataTable, Number, Date]),
+    __metadata("design:returntype", Promise)
+], AsistenciaController.prototype, "listAsistentes", null);
 __decorate([
     (0, common_1.Get)('listFull'),
     __param(0, (0, common_1.Query)()),

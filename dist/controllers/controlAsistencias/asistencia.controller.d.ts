@@ -9,6 +9,7 @@ export declare class AsistenciaController {
     private readonly emailService;
     constructor(asistenciaService: AsistenciaService, emailService: EmailService);
     listFilters(entidad: DataTable, IDEVENTO: number): Promise<AsistenciaModel[]>;
+    listAsistentes(entidad: DataTable, IDEVENTO: number, FECHA: Date): Promise<AsistenciaModel[]>;
     listAsistenciaFUll(entidad: DataTable, IDEVENTO: number, FECHA: Date): Promise<AsistenciaModel[]>;
     eventos(entidad: DataTable): Promise<EventosModel[]>;
     deleteUser(req: any, ID: number): Promise<Result>;

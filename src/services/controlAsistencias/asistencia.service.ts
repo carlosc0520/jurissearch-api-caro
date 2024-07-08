@@ -5,6 +5,7 @@ import { Result } from '../../models/result.model';
 import { DataTable } from 'src/models/DataTable.model.';
 import { AsistenciaModel } from 'src/models/controlAsistencias/asistencia.model';
 import { EventosModel } from 'src/models/controlAsistencias/eventos.model';
+import { AsistentesModel } from 'src/models/controlAsistencias/asistentes.model';
 
 @Injectable()
 export class AsistenciaService {
@@ -74,7 +75,24 @@ export class AsistenciaService {
         }
     }
 
-    async listAsistencia(entidad: DataTable, IDEVENTO: number, FECHA: Date): Promise<AsistenciaModel[]> {
+    async listAsistentes(entidad: DataTable, IDEVENTO: number): Promise<AsistenciaModel[]> {
+        let queryAsync = procedures.CCFIRMA.ASISTENCIAS.CRUD;
+        queryAsync += ` @p_cData = ${entidad ? `'${JSON.stringify({ ...entidad, IDEVENTO })}'` : null},`;
+        queryAsync += ` @p_cUser = ${null},`;
+        queryAsync += ` @p_nTipo = ${11},`;
+        queryAsync += ` @p_nId = ${0}`;
+
+        try {
+            const result = await this.connection.query(queryAsync);
+            return result;
+        } catch (error) {
+            return error;
+        }
+    }
+
+
+    
+    async listAsistencia(entidad: DataTable, IDEVENTO: number, FECHA: Date): Promise<AsistentesModel[]> {
         let queryAsync = procedures.CCFIRMA.ASISTENCIAS.CRUD;
         queryAsync += ` @p_cData = ${entidad ? `'${JSON.stringify({ ...entidad, IDEVENTO, FECHA})}'` : null},`;
         queryAsync += ` @p_cUser = ${null},`;
@@ -88,8 +106,6 @@ export class AsistenciaService {
             return error;
         }
     }
-
-    width
 
     async listEventos(entidad: DataTable): Promise<EventosModel[]> {
         let queryAsync = procedures.CCFIRMA.ASISTENCIAS.CRUD;
@@ -125,3 +141,4 @@ export class AsistenciaService {
     }
 
 }
+
