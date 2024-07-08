@@ -61,10 +61,6 @@ let EntriesController = class EntriesController {
                 CESTDO: null,
                 ID: 0
             };
-            const obtener = await this.entriesService.listV(table, entidad.TITLE, entidad.TYPE, entidad.TIPO);
-            if (obtener.length > 0) {
-                return { MESSAGE: `Ya existe una entrada con el mismo título para ${entidad.TYPE} - ${entidad.TIPO}`, STATUS: false };
-            }
             const pathcaroa = path.join(__dirname, '..', '..', 'files/files', "caroa.png");
             const pathccfirma = path.join(__dirname, '..', '..', 'files/files', "ccfirma.png");
             const pathmarcadeagua = path.join(__dirname, '..', '..', 'files/files', "marcadeagua.png");
@@ -95,6 +91,7 @@ let EntriesController = class EntriesController {
                     width: 95,
                     height: 40,
                 });
+                page.drawText('https://ccfirma.com/', { x: x - 290, y: y + 395, size: 10, color: (0, pdf_lib_1.rgb)(0, 0, 0), opacity: 0.0 });
                 await page.drawImage(nuevologoImage, {
                     x: x - 25,
                     y: y + 380,
@@ -108,6 +105,7 @@ let EntriesController = class EntriesController {
                     height: 40,
                     opacity: 0.5,
                 });
+                page.drawText('https://ccfirma.com/', { x: x - 30, y: y - 400, size: 10, color: (0, pdf_lib_1.rgb)(0, 0, 0), opacity: 0.0 });
             }
             const pdfBytes = await pdfDoc.save();
             fs.writeFileSync(file1.path, pdfBytes);
@@ -171,6 +169,7 @@ let EntriesController = class EntriesController {
                     width: 95,
                     height: 40,
                 });
+                page.drawText('https://ccfirma.com/', { x: x - 290, y: y + 395, size: 10, color: (0, pdf_lib_1.rgb)(0, 0, 0), opacity: 0.0 });
                 await page.drawImage(nuevologoImage, {
                     x: x - 25,
                     y: y + 380,
@@ -184,6 +183,7 @@ let EntriesController = class EntriesController {
                     height: 40,
                     opacity: 0.5,
                 });
+                page.drawText('https://ccfirma.com/', { x: x - 30, y: y - 400, size: 10, color: (0, pdf_lib_1.rgb)(0, 0, 0), opacity: 0.0 });
             }
             const pdfBytes = await pdfDoc.save();
             fs.writeFileSync(file1.path, pdfBytes);
@@ -246,6 +246,7 @@ let EntriesController = class EntriesController {
                         width: 95,
                         height: 40,
                     });
+                    page.drawText('https://ccfirma.com/', { x: x - 290, y: y + 395, size: 10, color: (0, pdf_lib_1.rgb)(0, 0, 0), opacity: 0.0 });
                     await page.drawImage(nuevologoImage, {
                         x: x - 25,
                         y: y + 380,
@@ -259,6 +260,7 @@ let EntriesController = class EntriesController {
                         height: 40,
                         opacity: 0.5,
                     });
+                    page.drawText('https://ccfirma.com/', { x: x - 30, y: y - 400, size: 10, color: (0, pdf_lib_1.rgb)(0, 0, 0), opacity: 0.0 });
                 }
                 const pdfBytes = await pdfDoc.save();
                 fs.writeFileSync(file1.path, pdfBytes);
@@ -322,6 +324,7 @@ let EntriesController = class EntriesController {
                         width: 95,
                         height: 40,
                     });
+                    page.drawText('https://ccfirma.com/', { x: x - 290, y: y + 395, size: 10, color: (0, pdf_lib_1.rgb)(0, 0, 0), opacity: 0.0 });
                     await page.drawImage(nuevologoImage, {
                         x: x - 25,
                         y: y + 380,
@@ -335,6 +338,7 @@ let EntriesController = class EntriesController {
                         height: 40,
                         opacity: 0.5,
                     });
+                    page.drawText('https://ccfirma.com/', { x: x - 30, y: y - 400, size: 10, color: (0, pdf_lib_1.rgb)(0, 0, 0), opacity: 0.0 });
                 }
                 const pdfBytes = await pdfDoc.save();
                 fs.writeFileSync(file1.path, pdfBytes);

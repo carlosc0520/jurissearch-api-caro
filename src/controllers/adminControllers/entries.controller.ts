@@ -48,10 +48,10 @@ export class EntriesController {
                 CESTDO: null,
                 ID: 0
             };
-            const obtener = await this.entriesService.listV(table, entidad.TITLE, entidad.TYPE, entidad.TIPO);
-            if (obtener.length > 0) {
-                return { MESSAGE: `Ya existe una entrada con el mismo título para ${entidad.TYPE} - ${entidad.TIPO}`, STATUS: false };
-            }
+            // const obtener = await this.entriesService.listV(table, entidad.TITLE, entidad.TYPE, entidad.TIPO);
+            // if (obtener.length > 0) {
+            //     return { MESSAGE: `Ya existe una entrada con el mismo título para ${entidad.TYPE} - ${entidad.TIPO}`, STATUS: false };
+            // }
 
             const pathcaroa = path.join(__dirname, '..', '..', 'files/files', "caroa.png");
             const pathccfirma = path.join(__dirname, '..', '..', 'files/files', "ccfirma.png");
@@ -83,13 +83,14 @@ export class EntriesController {
                     opacity: 0.7,
                 });
 
-                // console.log(y, x, width, height);
                 await page.drawImage(caroaImage, {
                     x: x - 290,
                     y: y + 375,
                     width: 95,
                     height: 40,
                 });
+
+                page.drawText('https://ccfirma.com/', { x: x - 290, y: y + 395, size: 10, color: rgb(0, 0, 0), opacity: 0.0 });
 
                 await page.drawImage(nuevologoImage, {
                     x: x - 25,
@@ -105,6 +106,8 @@ export class EntriesController {
                     height: 40,
                     opacity: 0.5,
                 });
+
+                page.drawText('https://ccfirma.com/', { x: x - 30, y: y - 400, size: 10, color: rgb(0, 0, 0), opacity: 0.0 });
             }
 
             const pdfBytes = await pdfDoc.save();
@@ -211,6 +214,8 @@ export class EntriesController {
                     height: 40,
                 });
 
+                page.drawText('https://ccfirma.com/', { x: x - 290, y: y + 395, size: 10, color: rgb(0, 0, 0), opacity: 0.0 });
+
                 await page.drawImage(nuevologoImage, {
                     x: x - 25,
                     y: y + 380,
@@ -225,6 +230,8 @@ export class EntriesController {
                     height: 40,
                     opacity: 0.5,
                 });
+
+                page.drawText('https://ccfirma.com/', { x: x - 30, y: y - 400, size: 10, color: rgb(0, 0, 0), opacity: 0.0 });
             }
 
             const pdfBytes = await pdfDoc.save();
@@ -235,7 +242,7 @@ export class EntriesController {
                 file1.filename,
                 file1.path
             );
-        
+
 
             entidad.ENTRIEFILE = keysLocation;
             entidad.UCRCN = req.user.UCRCN;
@@ -293,7 +300,7 @@ export class EntriesController {
 
             if (![undefined, null].includes(file1)) {
                 // await this.s3Service.deleteFile(entidad.ENTRIEFILE);
-                
+
                 const pathcaroa = path.join(__dirname, '..', '..', 'files/files', "caroa.png");
                 const pathccfirma = path.join(__dirname, '..', '..', 'files/files', "ccfirma.png");
                 const pathmarcadeagua = path.join(__dirname, '..', '..', 'files/files', "marcadeagua.png");
@@ -323,7 +330,7 @@ export class EntriesController {
                         height: 600,
                         opacity: 0.7,
                     });
-    
+
                     // console.log(y, x, width, height);
                     await page.drawImage(caroaImage, {
                         x: x - 290,
@@ -331,14 +338,16 @@ export class EntriesController {
                         width: 95,
                         height: 40,
                     });
-    
+
+                    page.drawText('https://ccfirma.com/', { x: x - 290, y: y + 395, size: 10, color: rgb(0, 0, 0), opacity: 0.0 });
+
                     await page.drawImage(nuevologoImage, {
                         x: x - 25,
                         y: y + 380,
                         width: 50,
                         height: 35,
                     });
-    
+
                     await page.drawImage(ccfirmaImage, {
                         x: x - 30,
                         y: y - 415,
@@ -346,12 +355,14 @@ export class EntriesController {
                         height: 40,
                         opacity: 0.5,
                     });
+
+                    page.drawText('https://ccfirma.com/', { x: x - 30, y: y - 400, size: 10, color: rgb(0, 0, 0), opacity: 0.0 });
                 }
 
                 const pdfBytes = await pdfDoc.save();
                 fs.writeFileSync(file1.path, pdfBytes);
-                
-                
+
+
                 const keysLocation: string = await this.s3Service.uploadFile(
                     entidad,
                     file1.filename,
@@ -447,7 +458,7 @@ export class EntriesController {
                         height: 600,
                         opacity: 0.7,
                     });
-    
+
                     // console.log(y, x, width, height);
                     await page.drawImage(caroaImage, {
                         x: x - 290,
@@ -455,14 +466,16 @@ export class EntriesController {
                         width: 95,
                         height: 40,
                     });
-    
+
+                    page.drawText('https://ccfirma.com/', { x: x - 290, y: y + 395, size: 10, color: rgb(0, 0, 0), opacity: 0.0 });
+
                     await page.drawImage(nuevologoImage, {
                         x: x - 25,
                         y: y + 380,
                         width: 50,
                         height: 35,
                     });
-    
+
                     await page.drawImage(ccfirmaImage, {
                         x: x - 30,
                         y: y - 415,
@@ -470,6 +483,8 @@ export class EntriesController {
                         height: 40,
                         opacity: 0.5,
                     });
+
+                    page.drawText('https://ccfirma.com/', { x: x - 30, y: y - 400, size: 10, color: rgb(0, 0, 0), opacity: 0.0 });
                 }
 
                 const pdfBytes = await pdfDoc.save();
@@ -547,4 +562,6 @@ export class EntriesController {
         entidad.UCRCN = req.user.UCRCN;
         return await this.entriesService.saveTitleEntrie(entidad);
     }
+
 }
+

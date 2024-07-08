@@ -89,6 +89,8 @@ export class AsistenciaService {
         }
     }
 
+    width
+
     async listEventos(entidad: DataTable): Promise<EventosModel[]> {
         let queryAsync = procedures.CCFIRMA.ASISTENCIAS.CRUD;
         queryAsync += ` @p_cData = ${entidad ? `'${JSON.stringify(entidad)}'` : null},`;

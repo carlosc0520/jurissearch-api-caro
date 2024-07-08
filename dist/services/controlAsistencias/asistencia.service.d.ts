@@ -10,6 +10,7 @@ export declare class AsistenciaService {
     createOne(entidad: AsistenciaModel): Promise<Result>;
     list(entidad: DataTable, IDEVENTO: number): Promise<AsistenciaModel[]>;
     listAsistencia(entidad: DataTable, IDEVENTO: number, FECHA: Date): Promise<AsistenciaModel[]>;
+    width: any;
     listEventos(entidad: DataTable): Promise<EventosModel[]>;
     delete(id: number, UCRCN: string): Promise<Result>;
 }
