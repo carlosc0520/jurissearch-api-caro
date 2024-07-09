@@ -37,6 +37,7 @@ class EntriesModel {
         this.MATERIA = '';
         this.TITLEALT = '';
         this.IDFAV = 0;
+        this.OEMISOR = '';
     }
 }
 exports.EntriesModel = EntriesModel;

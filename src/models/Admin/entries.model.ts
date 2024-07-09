@@ -33,4 +33,5 @@ export class EntriesModel {
     MATERIA: string = '';
     TITLEALT: string = '';
     IDFAV: number = 0;
+    OEMISOR: string = '';
 }

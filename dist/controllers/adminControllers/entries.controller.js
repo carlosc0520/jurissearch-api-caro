@@ -61,6 +61,10 @@ let EntriesController = class EntriesController {
                 CESTDO: null,
                 ID: 0
             };
+            const obtener = await this.entriesService.listV(table, entidad.TITLE, entidad.TYPE, entidad.TIPO);
+            if (obtener.length > 0) {
+                return { MESSAGE: `Ya existe una entrada con el mismo título para ${entidad.TYPE} - ${entidad.TIPO}`, STATUS: false };
+            }
             const pathcaroa = path.join(__dirname, '..', '..', 'files/files', "caroa.png");
             const pathccfirma = path.join(__dirname, '..', '..', 'files/files', "ccfirma.png");
             const pathmarcadeagua = path.join(__dirname, '..', '..', 'files/files', "marcadeagua.png");
