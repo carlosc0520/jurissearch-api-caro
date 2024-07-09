@@ -41,7 +41,8 @@ const procedures = {
             "CRUD": `EXEC CCFIRMA.USP_CRUD_SOLICITUDES`
         },
         "ASISTENCIAS": {
-            "CRUD": `EXEC CCFIRMA.USP_CRUD_ASISTENCIAS`
+            "CRUD": `EXEC CCFIRMA.USP_CRUD_ASISTENCIAS`,
+            "CRUD2": `EXEC CCFIRMA.USP_CRUD_ASISTENCIAS2`
         }
     }
 };

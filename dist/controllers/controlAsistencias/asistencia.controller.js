@@ -61,6 +61,9 @@ let AsistenciaController = class AsistenciaController {
     async listAsistentes(entidad, IDEVENTO, FECHA) {
         return await this.asistenciaService.listAsistentes(entidad, IDEVENTO);
     }
+    async listReporte(entidad, IDEVENTO, IDPARTICIPANTE, PARTICIPANTE, INDICADOR, FECHA) {
+        return await this.asistenciaService.listReporte(entidad, IDEVENTO, IDPARTICIPANTE, PARTICIPANTE, INDICADOR, FECHA);
+    }
     async listAsistenciaFUll(entidad, IDEVENTO, FECHA) {
         return await this.asistenciaService.listAsistencia(entidad, IDEVENTO, FECHA);
     }
@@ -146,6 +149,18 @@ __decorate([
     __metadata("design:paramtypes", [DataTable_model_1.DataTable, Number, Date]),
     __metadata("design:returntype", Promise)
 ], AsistenciaController.prototype, "listAsistentes", null);
+__decorate([
+    (0, common_1.Get)('listReporte'),
+    __param(0, (0, common_1.Query)()),
+    __param(1, (0, common_1.Query)('IDEVENTO')),
+    __param(2, (0, common_1.Query)('IDPARTICIPANTE')),
+    __param(3, (0, common_1.Query)('PARTICIPANTE')),
+    __param(4, (0, common_1.Query)('INDICADOR')),
+    __param(5, (0, common_1.Query)('FECHA')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [DataTable_model_1.DataTable, Number, Number, String, Number, Date]),
+    __metadata("design:returntype", Promise)
+], AsistenciaController.prototype, "listReporte", null);
 __decorate([
     (0, common_1.Get)('listFull'),
     __param(0, (0, common_1.Query)()),

@@ -40,6 +40,7 @@ declare const procedures: {
         };
         ASISTENCIAS: {
             CRUD: string;
+            CRUD2: string;
         };
     };
 };
