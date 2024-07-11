@@ -91,6 +91,46 @@ let AsistenciaService = class AsistenciaService {
             return error;
         }
     }
+    async fechasEventos(entidad, IDEVENTO) {
+        let queryAsync = configMappers_1.default.CCFIRMA.ASISTENCIAS.CRUD3;
+        queryAsync += ` @p_cData = ${entidad ? `'${JSON.stringify(Object.assign(Object.assign({}, entidad), { IDEVENTO }))}'` : null},`;
+        queryAsync += ` @p_cUser = "ADMIN_ASISTENCIAS",`;
+        queryAsync += ` @p_nTipo = ${3},`;
+        queryAsync += ` @p_nId = ${0}`;
+        try {
+            const result = await this.connection.query(queryAsync);
+            return result;
+        }
+        catch (error) {
+            return error;
+        }
+    }
+    async createApertura(entidad) {
+        var _a, _b, _c, _d, _e, _f, _g;
+        let queryAsync = configMappers_1.default.CCFIRMA.ASISTENCIAS.CRUD3;
+        queryAsync += ` @p_cData = ${entidad ? `'${JSON.stringify(entidad)}'` : null},`;
+        queryAsync += ` @p_cUser = '${entidad.UCRCN}',`;
+        queryAsync += ` @p_nTipo = ${entidad.TIPO},`;
+        queryAsync += ` @p_nId = ${0}`;
+        console.log(queryAsync);
+        try {
+            const result = await this.connection.query(queryAsync);
+            const isSuccess = ((_a = result === null || result === void 0 ? void 0 : result[0]) === null || _a === void 0 ? void 0 : _a.RESULT) > 0;
+            let isNoAgregado = (_b = result === null || result === void 0 ? void 0 : result[0]) === null || _b === void 0 ? void 0 : _b.RESULT;
+            if (isNoAgregado == 1) {
+                return { MESSAGE: "Evento aperturado correctamente", STATUS: true, ID: (_c = result === null || result === void 0 ? void 0 : result[0]) === null || _c === void 0 ? void 0 : _c.RESULT };
+            }
+            if (isNoAgregado == 2) {
+                return { MESSAGE: "Evento cerrado correctamente", STATUS: true, ID: (_d = result === null || result === void 0 ? void 0 : result[0]) === null || _d === void 0 ? void 0 : _d.RESULT };
+            }
+            const MESSAGE = "Ocurrió un error al intentar registrar la asistencia";
+            return { MESSAGE, STATUS: isSuccess, ID: (_e = result === null || result === void 0 ? void 0 : result[0]) === null || _e === void 0 ? void 0 : _e.RESULT };
+        }
+        catch (error) {
+            const MESSAGE = ((_g = (_f = error.originalError) === null || _f === void 0 ? void 0 : _f.info) === null || _g === void 0 ? void 0 : _g.message) || "Ocurrió un error al intentar registrar la asistencia";
+            return { MESSAGE, STATUS: false };
+        }
+    }
     async listAsistentes(entidad, IDEVENTO) {
         let queryAsync = configMappers_1.default.CCFIRMA.ASISTENCIAS.CRUD;
         queryAsync += ` @p_cData = ${entidad ? `'${JSON.stringify(Object.assign(Object.assign({}, entidad), { IDEVENTO }))}'` : null},`;

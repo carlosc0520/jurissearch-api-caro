@@ -20,6 +20,8 @@ class AsistenciaModel {
         this.FEDCN = null;
         this.FINGRESO = null;
         this.FSALIDA = null;
+        this.FINGRESO2 = null;
+        this.FSALIDA2 = null;
         this.FECHA = null;
         this.TIEMPO = null;
         this.FINGRESO1 = null;

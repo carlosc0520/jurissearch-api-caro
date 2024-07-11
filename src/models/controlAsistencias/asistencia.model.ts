@@ -16,6 +16,8 @@ export class AsistenciaModel {
     FEDCN?: Date = null;
     FINGRESO?: Date = null;
     FSALIDA?: Date = null;
+    FINGRESO2?: string = null;
+    FSALIDA2?: string = null;
     FECHA?: Date = null;
     TIEMPO?: string = null;
     FINGRESO1?: string = null;

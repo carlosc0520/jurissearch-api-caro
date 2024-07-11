@@ -13,6 +13,8 @@ export declare class AsistenciaController {
     listReporte(entidad: DataTable, IDEVENTO: number, IDPARTICIPANTE: number, PARTICIPANTE: string, INDICADOR: number, FECHA: Date): Promise<AsistenciaModel[]>;
     listAsistenciaFUll(entidad: DataTable, IDEVENTO: number, FECHA: Date): Promise<AsistenciaModel[]>;
     eventos(entidad: DataTable): Promise<EventosModel[]>;
+    fechasEventos(entidad: DataTable, IDEVENTO: number): Promise<AsistenciaModel[]>;
+    aperturarEvento(req: any, entidad: AsistenciaModel): Promise<Result>;
     deleteUser(req: any, ID: number): Promise<Result>;
     addUser(req: any, entidad: AsistenciaModel): Promise<Result>;
     addMasivo(req: any, entidad: AsistenciaModel, res: any): Promise<any>;

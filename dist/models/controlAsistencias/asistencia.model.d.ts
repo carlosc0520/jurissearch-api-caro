@@ -16,6 +16,8 @@ export declare class AsistenciaModel {
     FEDCN?: Date;
     FINGRESO?: Date;
     FSALIDA?: Date;
+    FINGRESO2?: string;
+    FSALIDA2?: string;
     FECHA?: Date;
     TIEMPO?: string;
     FINGRESO1?: string;

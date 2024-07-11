@@ -90,7 +90,51 @@ export class AsistenciaService {
             return error;
         }
     }
+
+    async fechasEventos(entidad: DataTable, IDEVENTO: number): Promise<AsistenciaModel[]> { 
+
+        let queryAsync = procedures.CCFIRMA.ASISTENCIAS.CRUD3;
+        queryAsync += ` @p_cData = ${entidad ? `'${JSON.stringify({ ...entidad, IDEVENTO})}'` : null},`;
+        queryAsync += ` @p_cUser = "ADMIN_ASISTENCIAS",`;
+        queryAsync += ` @p_nTipo = ${3},`;
+        queryAsync += ` @p_nId = ${0}`;
+
+        try {
+            const result = await this.connection.query(queryAsync);
+            return result;
+        } catch (error) {
+            return error;
+        }
+    }
     
+    async createApertura(entidad: AsistenciaModel): Promise<Result> {
+
+        let queryAsync = procedures.CCFIRMA.ASISTENCIAS.CRUD3;
+        queryAsync += ` @p_cData = ${entidad ? `'${JSON.stringify(entidad)}'` : null},`;
+        queryAsync += ` @p_cUser = '${entidad.UCRCN}',`;
+        queryAsync += ` @p_nTipo = ${entidad.TIPO},`;
+        queryAsync += ` @p_nId = ${0}`;
+
+        try {
+            const result = await this.connection.query(queryAsync);
+            const isSuccess = result?.[0]?.RESULT > 0;
+            let isNoAgregado = result?.[0]?.RESULT;
+            if (isNoAgregado == 1) {
+                return { MESSAGE: "Evento aperturado correctamente", STATUS: true, ID: result?.[0]?.RESULT };
+            }
+
+            if(isNoAgregado == 2){
+                return { MESSAGE: "Evento cerrado correctamente", STATUS: true, ID: result?.[0]?.RESULT };
+            }
+
+            const MESSAGE = "Ocurrió un error al intentar registrar la asistencia";
+            return { MESSAGE, STATUS: isSuccess, ID: result?.[0]?.RESULT };
+        } catch (error) {
+            const MESSAGE = error.originalError?.info?.message || "Ocurrió un error al intentar registrar la asistencia";
+            return { MESSAGE, STATUS: false };
+        }
+    }
+
     async listAsistentes(entidad: DataTable, IDEVENTO: number): Promise<AsistenciaModel[]> {
         let queryAsync = procedures.CCFIRMA.ASISTENCIAS.CRUD;
         queryAsync += ` @p_cData = ${entidad ? `'${JSON.stringify({ ...entidad, IDEVENTO })}'` : null},`;

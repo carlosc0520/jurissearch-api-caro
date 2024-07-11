@@ -70,6 +70,13 @@ let AsistenciaController = class AsistenciaController {
     async eventos(entidad) {
         return await this.asistenciaService.listEventos(entidad);
     }
+    async fechasEventos(entidad, IDEVENTO) {
+        return await this.asistenciaService.fechasEventos(entidad, IDEVENTO);
+    }
+    async aperturarEvento(req, entidad) {
+        entidad.UCRCN = 'ADMIN_ASISTENCIAS';
+        return await this.asistenciaService.createApertura(entidad);
+    }
     async deleteUser(req, ID) {
         return await this.asistenciaService.delete(ID, req.user.UCRCN);
     }
@@ -177,6 +184,22 @@ __decorate([
     __metadata("design:paramtypes", [DataTable_model_1.DataTable]),
     __metadata("design:returntype", Promise)
 ], AsistenciaController.prototype, "eventos", null);
+__decorate([
+    (0, common_1.Get)('fechas-eventos'),
+    __param(0, (0, common_1.Query)()),
+    __param(1, (0, common_1.Query)('IDEVENTO')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [DataTable_model_1.DataTable, Number]),
+    __metadata("design:returntype", Promise)
+], AsistenciaController.prototype, "fechasEventos", null);
+__decorate([
+    (0, common_1.Post)('aperturar-evento'),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, asistencia_model_1.AsistenciaModel]),
+    __metadata("design:returntype", Promise)
+], AsistenciaController.prototype, "aperturarEvento", null);
 __decorate([
     (0, common_1.Post)('delete'),
     __param(0, (0, common_1.Request)()),

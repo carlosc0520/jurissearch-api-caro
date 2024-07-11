@@ -52,6 +52,19 @@ export class AsistenciaController {
         return await this.asistenciaService.listEventos(entidad);
     }
 
+    @Get('fechas-eventos')
+    async fechasEventos(@Query() entidad: DataTable, @Query('IDEVENTO') IDEVENTO: number): Promise<AsistenciaModel[]> {
+        return await this.asistenciaService.fechasEventos(entidad, IDEVENTO);
+    }
+
+    
+    @Post('aperturar-evento')
+    async aperturarEvento(@Request() req, @Body() entidad: AsistenciaModel): Promise<Result> {
+        entidad.UCRCN = 'ADMIN_ASISTENCIAS'
+        return await this.asistenciaService.createApertura(entidad);
+    }
+
+
     @Post('delete')
     async deleteUser(@Request() req, @Body('ID') ID: number): Promise<Result> {
         return await this.asistenciaService.delete(ID, req.user.UCRCN);
