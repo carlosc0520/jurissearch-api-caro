@@ -12,5 +12,5 @@ export declare class EmailJurisService {
     sendEmail(model: SolicitudModel): Promise<Result>;
     ccfirmaSendEmail(model: SolicitudModel): Promise<Result>;
     recoveryPassword(model: User): Promise<Result>;
-    sendCCFIRMAOportunidaes(name: string, email: string, message: string, file: any, file2: any): Promise<Result>;
+    sendCCFIRMAOportunidaes(name: string, email: string, message: string, file: any): Promise<Result>;
 }

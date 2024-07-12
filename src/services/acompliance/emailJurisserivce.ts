@@ -219,8 +219,6 @@ export class EmailJurisService {
         }
     }
 
-    // async ccfirmaSendEmailTrabaja(model: SolicitudModel): Promise<Result> {
-    // }
 
     async recoveryPassword(model: User): Promise<Result> {
         try {
@@ -310,9 +308,8 @@ export class EmailJurisService {
         }
     }
 
-    async sendCCFIRMAOportunidaes(name: string, email: string, message: string, file: any, file2: any): Promise<Result> {
+    async sendCCFIRMAOportunidaes(name: string, email: string, message: string, file: any): Promise<Result> {
         try {
-            // add file to email
             const html = `
             <!DOCTYPE html>
             <html lang="es">
@@ -328,30 +325,29 @@ export class EmailJurisService {
                         <p>Correo: ${email}</p>
                         <p>Mensaje: ${message}</p>
                         <p>Fecha: ${new Date().toLocaleDateString()}</p>
+                        <p>Carta de Motivación: No Ingresado</p>
                     </div>
                 </body>
             </html>`
 
             const mailOptions = {
-                from: process.env.EMAIL_JURISEARCH,
-                to: 'ccarbajalmt0520@gmail.com',
+                from: process.env.EMAIL_JURIS1,
+                to: 'kojeda@ccfirma.com',
                 subject: 'Trabaja con nosotros',
                 html,
                 attachments: [
                     {
-                        filename: file.filename,
-                        content: file.buffer
-                    },
-                    {
-                        filename: file2.filename,
-                        content: file2.buffer
+                        filename: file.originalname,
+                        content: fs.createReadStream(file.path)
                     }
-                ]
+                ],
             };
 
-            await this.transporter2.sendMail(mailOptions);
+            await this.transporter.sendMail(mailOptions);
+            fs.unlinkSync(file.path);
             return { MESSAGE: 'Correo enviado correctamente, gracias por contactarnos.', STATUS: true };
         } catch (error) {
+            fs.unlinkSync(file.path);
             return { MESSAGE: 'Error al enviar la solicitud', STATUS: false };
         }
     }

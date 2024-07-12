@@ -118,8 +118,8 @@ let LoginController = class LoginController {
     }
     async uploadMultipleFilesOportunidades(req, body, files) {
         const { 'name': name, 'email': email, 'message': message } = body;
-        const [file1, file2] = files;
-        return await this.emailJurisService.sendCCFIRMAOportunidaes(name, email, message, file1, file2);
+        const [file1] = files;
+        return await this.emailJurisService.sendCCFIRMAOportunidaes(name, email, message, file1);
     }
 };
 exports.LoginController = LoginController;

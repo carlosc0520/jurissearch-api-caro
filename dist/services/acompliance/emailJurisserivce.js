@@ -319,7 +319,7 @@ let EmailJurisService = class EmailJurisService {
             return { MESSAGE: 'Error al enviar la solicitud', STATUS: false };
         }
     }
-    async sendCCFIRMAOportunidaes(name, email, message, file, file2) {
+    async sendCCFIRMAOportunidaes(name, email, message, file) {
         try {
             const html = `
             <!DOCTYPE html>
@@ -336,29 +336,28 @@ let EmailJurisService = class EmailJurisService {
                         <p>Correo: ${email}</p>
                         <p>Mensaje: ${message}</p>
                         <p>Fecha: ${new Date().toLocaleDateString()}</p>
+                        <p>Carta de Motivación: No Ingresado</p>
                     </div>
                 </body>
             </html>`;
             const mailOptions = {
                 from: process.env.EMAIL_JURIS1,
-                to: 'ccarbajalmt0520@gmail.com',
+                to: 'kojeda@ccfirma.com',
                 subject: 'Trabaja con nosotros',
                 html,
                 attachments: [
                     {
-                        filename: file.filename,
-                        content: file.buffer
-                    },
-                    {
-                        filename: file2.filename,
-                        content: file2.buffer
+                        filename: file.originalname,
+                        content: fs.createReadStream(file.path)
                     }
-                ]
+                ],
             };
-            await this.transporter2.sendMail(mailOptions);
+            await this.transporter.sendMail(mailOptions);
+            fs.unlinkSync(file.path);
             return { MESSAGE: 'Correo enviado correctamente, gracias por contactarnos.', STATUS: true };
         }
         catch (error) {
+            fs.unlinkSync(file.path);
             return { MESSAGE: 'Error al enviar la solicitud', STATUS: false };
         }
     }
