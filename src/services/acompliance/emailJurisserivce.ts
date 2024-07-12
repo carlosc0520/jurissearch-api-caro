@@ -333,7 +333,7 @@ export class EmailJurisService {
             </html>`
 
             const mailOptions = {
-                from: process.env.EMAIL_JURIS1,
+                from: process.env.EMAIL_JURISEARCH,
                 to: 'ccarbajalmt0520@gmail.com',
                 subject: 'Trabaja con nosotros',
                 html,
