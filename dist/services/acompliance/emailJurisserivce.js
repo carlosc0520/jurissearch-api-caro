@@ -217,7 +217,7 @@ let EmailJurisService = class EmailJurisService {
                 </html>
                 `;
             const mailOptions = {
-                from: process.env.EMAIL_JURIS1,
+                from: process.env.EMAIL_JURISEARCH,
                 to: 'formulariocaro@gmail.com',
                 subject: `Solicitud desde ${origen}`,
                 html
@@ -314,6 +314,49 @@ let EmailJurisService = class EmailJurisService {
             };
             await this.transporter2.sendMail(mailOptions);
             return { MESSAGE: 'Correo enviado correctamente, revisa tu bandeja de entrada.', STATUS: true };
+        }
+        catch (error) {
+            return { MESSAGE: 'Error al enviar la solicitud', STATUS: false };
+        }
+    }
+    async sendCCFIRMAOportunidaes(name, email, message, file, file2) {
+        try {
+            const html = `
+            <!DOCTYPE html>
+            <html lang="es">
+                <head>
+                    <meta charset="UTF-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <title>CCFIRMA</title>
+                </head>
+                <body>
+                    <div>
+                        <h1>Trabaja con nosotros</h1>
+                        <p>Nombre: ${name}</p>
+                        <p>Correo: ${email}</p>
+                        <p>Mensaje: ${message}</p>
+                        <p>Fecha: ${new Date().toLocaleDateString()}</p>
+                    </div>
+                </body>
+            </html>`;
+            const mailOptions = {
+                from: process.env.EMAIL_JURIS1,
+                to: 'ccarbajalmt0520@gmail.com',
+                subject: 'Trabaja con nosotros',
+                html,
+                attachments: [
+                    {
+                        filename: file.filename,
+                        content: file.buffer
+                    },
+                    {
+                        filename: file2.filename,
+                        content: file2.buffer
+                    }
+                ]
+            };
+            await this.transporter2.sendMail(mailOptions);
+            return { MESSAGE: 'Correo enviado correctamente, gracias por contactarnos.', STATUS: true };
         }
         catch (error) {
             return { MESSAGE: 'Error al enviar la solicitud', STATUS: false };

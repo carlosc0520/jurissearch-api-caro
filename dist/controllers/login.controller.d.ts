@@ -56,5 +56,6 @@ export declare class LoginController {
     ccfirmaSendEmail(entidad: SolicitudModel): Promise<Result>;
     recoveryPassword(entidad: User): Promise<Result>;
     recoveryUser(entidad: User): Promise<Result>;
+    uploadMultipleFilesOportunidades(req: any, body: any, files: any): Promise<any>;
 }
 export {};

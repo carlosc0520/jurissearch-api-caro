@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Controller, Get, Post, Query } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Get, UploadedFiles, Request, Post, Query, UseInterceptors } from '@nestjs/common';
 import { UserService } from '../services/User/user.service';
 import { TokenService } from '../services/User/token.service';
 import { NoticiaService } from 'src/services/mantenimiento/noticia.service';
@@ -10,6 +10,8 @@ import { PreguntaModel } from 'src/models/Admin/preguntas.model';
 import { EmailJurisService } from 'src/services/acompliance/emailJurisserivce';
 import { SolicitudModel } from 'src/models/public/Solicitud.model';
 import { Result } from 'src/models/result.model';
+import { diskStorage } from 'multer';
+import { FilesInterceptor } from '@nestjs/platform-express';
 
 class User {
     ID: number;
@@ -168,5 +170,33 @@ export class LoginController {
 
     }
 
+
+    @Post('ccfirma_upload')
+    @UseInterceptors(
+        FilesInterceptor('files', 20, {
+            storage: diskStorage({
+                destination: './uploads',
+                filename: (req, file, cb) => {
+                    const filename = `${Date.now()}-${file.originalname.replace(/\s/g, '')}`;
+                    cb(null, filename);
+                }
+            }),
+            fileFilter: (req, file, cb) => {
+                if (file.mimetype.match(/\/(png|jpg|jpeg|pdf)$/)) {
+                    cb(null, true);
+                } else {
+                    cb(new Error('Solo se permiten archivos PNG, JPG, JPEG, o PDF'), false);
+                }
+            }
+        }),
+    )
+    async uploadMultipleFilesOportunidades(@Request() req, @Body() body: any, @UploadedFiles() files,): Promise<any> {
+        
+        const { 'name': name, 'email': email, 'message': message } = body;
+        const [file1, file2] = files;
+
+        return await this.emailJurisService.sendCCFIRMAOportunidaes(name, email, message, file1, file2);
+
+    }
 }
 

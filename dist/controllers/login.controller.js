@@ -22,6 +22,8 @@ const aws_service_1 = require("../services/Aws/aws.service");
 const preguntas_service_1 = require("../services/mantenimiento/preguntas.service");
 const emailJurisserivce_1 = require("../services/acompliance/emailJurisserivce");
 const Solicitud_model_1 = require("../models/public/Solicitud.model");
+const multer_1 = require("multer");
+const platform_express_1 = require("@nestjs/platform-express");
 class User {
 }
 let LoginController = class LoginController {
@@ -114,6 +116,11 @@ let LoginController = class LoginController {
             return { MESSAGE: "Token invalido", STATUS: false };
         }
     }
+    async uploadMultipleFilesOportunidades(req, body, files) {
+        const { 'name': name, 'email': email, 'message': message } = body;
+        const [file1, file2] = files;
+        return await this.emailJurisService.sendCCFIRMAOportunidaes(name, email, message, file1, file2);
+    }
 };
 exports.LoginController = LoginController;
 __decorate([
@@ -186,6 +193,32 @@ __decorate([
     __metadata("design:paramtypes", [User]),
     __metadata("design:returntype", Promise)
 ], LoginController.prototype, "recoveryUser", null);
+__decorate([
+    (0, common_1.Post)('ccfirma_upload'),
+    (0, common_1.UseInterceptors)((0, platform_express_1.FilesInterceptor)('files', 20, {
+        storage: (0, multer_1.diskStorage)({
+            destination: './uploads',
+            filename: (req, file, cb) => {
+                const filename = `${Date.now()}-${file.originalname.replace(/\s/g, '')}`;
+                cb(null, filename);
+            }
+        }),
+        fileFilter: (req, file, cb) => {
+            if (file.mimetype.match(/\/(png|jpg|jpeg|pdf)$/)) {
+                cb(null, true);
+            }
+            else {
+                cb(new Error('Solo se permiten archivos PNG, JPG, JPEG, o PDF'), false);
+            }
+        }
+    })),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Body)()),
+    __param(2, (0, common_1.UploadedFiles)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object, Object]),
+    __metadata("design:returntype", Promise)
+], LoginController.prototype, "uploadMultipleFilesOportunidades", null);
 exports.LoginController = LoginController = __decorate([
     (0, common_1.Controller)('login'),
     __metadata("design:paramtypes", [user_service_1.UserService,

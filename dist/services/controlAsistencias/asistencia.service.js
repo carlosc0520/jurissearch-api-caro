@@ -112,7 +112,6 @@ let AsistenciaService = class AsistenciaService {
         queryAsync += ` @p_cUser = '${entidad.UCRCN}',`;
         queryAsync += ` @p_nTipo = ${entidad.TIPO},`;
         queryAsync += ` @p_nId = ${0}`;
-        console.log(queryAsync);
         try {
             const result = await this.connection.query(queryAsync);
             const isSuccess = ((_a = result === null || result === void 0 ? void 0 : result[0]) === null || _a === void 0 ? void 0 : _a.RESULT) > 0;
