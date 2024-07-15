@@ -19,4 +19,5 @@ export class BusquedaModel {
     ID?: number = 0;
     UEDCN?: string = '';
     IDUSR?: number = 0;
+    OEMISOR?: string = '';
 }

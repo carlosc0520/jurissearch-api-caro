@@ -84,8 +84,8 @@ export class EntriesController {
                 });
 
                 await page.drawImage(caroaImage, {
-                    x: x - 290,
-                    y: y + 375,
+                    x: x - (width < 500 ? 240 : 290),
+                    y: y + (height < 800 ? 345 : 375),
                     width: 95,
                     height: 40,
                 });
@@ -93,21 +93,28 @@ export class EntriesController {
                 page.drawText('https://ccfirma.com/', { x: x - 290, y: y + 395, size: 10, color: rgb(0, 0, 0), opacity: 0.0 });
 
                 await page.drawImage(nuevologoImage, {
-                    x: x - 25,
-                    y: y + 380,
+                    x: x - (width < 500 ? 20 : 25),
+                    y: y + (height < 800 ? 350 : 380),
                     width: 50,
                     height: 35,
                 });
 
                 await page.drawImage(ccfirmaImage, {
-                    x: x - 30,
-                    y: y - 415,
+                    x: x - (width < 500 ? 25 : 30),
+                    y: y - (height < 800 ? 390 : 415),
                     width: 70,
-                    height: 40,
-                    opacity: 0.5,
+                    height: 30,
+                    opacity: 0.9,
                 });
 
-                page.drawText('https://ccfirma.com/', { x: x - 30, y: y - 400, size: 10, color: rgb(0, 0, 0), opacity: 0.0 });
+                page.drawText('https://ccfirma.com/', {
+                    x: x - (width < 500 ? 25 : 30),
+                    y: y - (height < 800 ? 390 : 415),
+                    size: 10,
+                    color: rgb(0, 0, 0),
+                    opacity: 0.0
+                });
+
             }
 
             const pdfBytes = await pdfDoc.save();
@@ -206,10 +213,9 @@ export class EntriesController {
                     opacity: 0.7,
                 });
 
-                // console.log(y, x, width, height);
                 await page.drawImage(caroaImage, {
-                    x: x - 290,
-                    y: y + 375,
+                    x: x - (width < 500 ? 240 : 290),
+                    y: y + (height < 800 ? 345 : 375),
                     width: 95,
                     height: 40,
                 });
@@ -217,21 +223,28 @@ export class EntriesController {
                 page.drawText('https://ccfirma.com/', { x: x - 290, y: y + 395, size: 10, color: rgb(0, 0, 0), opacity: 0.0 });
 
                 await page.drawImage(nuevologoImage, {
-                    x: x - 25,
-                    y: y + 380,
+                    x: x - (width < 500 ? 20 : 25),
+                    y: y + (height < 800 ? 350 : 380),
                     width: 50,
                     height: 35,
                 });
 
                 await page.drawImage(ccfirmaImage, {
-                    x: x - 30,
-                    y: y - 415,
+                    x: x - (width < 500 ? 25 : 30),
+                    y: y - (height < 800 ? 390 : 415),
                     width: 70,
-                    height: 40,
-                    opacity: 0.5,
+                    height: 30,
+                    opacity: 0.9,
                 });
 
-                page.drawText('https://ccfirma.com/', { x: x - 30, y: y - 400, size: 10, color: rgb(0, 0, 0), opacity: 0.0 });
+                page.drawText('https://ccfirma.com/', {
+                    x: x - (width < 500 ? 25 : 30),
+                    y: y - (height < 800 ? 390 : 415),
+                    size: 10,
+                    color: rgb(0, 0, 0),
+                    opacity: 0.0
+                });
+
             }
 
             const pdfBytes = await pdfDoc.save();
@@ -319,10 +332,10 @@ export class EntriesController {
                 for (let i = 0; i < pages.length; i++) {
                     const page = pages[i];
                     const { width, height } = page.getSize();
-
+    
                     const x = (width) / 2;
                     const y = (height) / 2;
-
+    
                     await page.drawImage(marcadeaguaImage, {
                         x: x - 310,
                         y: y - 330,
@@ -330,33 +343,39 @@ export class EntriesController {
                         height: 600,
                         opacity: 0.7,
                     });
-
-                    // console.log(y, x, width, height);
+    
                     await page.drawImage(caroaImage, {
-                        x: x - 290,
-                        y: y + 375,
+                        x: x - (width < 500 ? 240 : 290),
+                        y: y + (height < 800 ? 345 : 375),
                         width: 95,
                         height: 40,
                     });
-
+    
                     page.drawText('https://ccfirma.com/', { x: x - 290, y: y + 395, size: 10, color: rgb(0, 0, 0), opacity: 0.0 });
-
+    
                     await page.drawImage(nuevologoImage, {
-                        x: x - 25,
-                        y: y + 380,
+                        x: x - (width < 500 ? 20 : 25),
+                        y: y + (height < 800 ? 350 : 380),
                         width: 50,
                         height: 35,
                     });
-
+    
                     await page.drawImage(ccfirmaImage, {
-                        x: x - 30,
-                        y: y - 415,
+                        x: x - (width < 500 ? 25 : 30),
+                        y: y - (height < 800 ? 390 : 415),
                         width: 70,
-                        height: 40,
-                        opacity: 0.5,
+                        height: 30,
+                        opacity: 0.9,
                     });
-
-                    page.drawText('https://ccfirma.com/', { x: x - 30, y: y - 400, size: 10, color: rgb(0, 0, 0), opacity: 0.0 });
+    
+                    page.drawText('https://ccfirma.com/', {
+                        x: x - (width < 500 ? 25 : 30),
+                        y: y - (height < 800 ? 390 : 415),
+                        size: 10,
+                        color: rgb(0, 0, 0),
+                        opacity: 0.0
+                    });
+    
                 }
 
                 const pdfBytes = await pdfDoc.save();
@@ -447,10 +466,10 @@ export class EntriesController {
                 for (let i = 0; i < pages.length; i++) {
                     const page = pages[i];
                     const { width, height } = page.getSize();
-
+    
                     const x = (width) / 2;
                     const y = (height) / 2;
-
+    
                     await page.drawImage(marcadeaguaImage, {
                         x: x - 310,
                         y: y - 330,
@@ -458,33 +477,39 @@ export class EntriesController {
                         height: 600,
                         opacity: 0.7,
                     });
-
-                    // console.log(y, x, width, height);
+    
                     await page.drawImage(caroaImage, {
-                        x: x - 290,
-                        y: y + 375,
+                        x: x - (width < 500 ? 240 : 290),
+                        y: y + (height < 800 ? 345 : 375),
                         width: 95,
                         height: 40,
                     });
-
+    
                     page.drawText('https://ccfirma.com/', { x: x - 290, y: y + 395, size: 10, color: rgb(0, 0, 0), opacity: 0.0 });
-
+    
                     await page.drawImage(nuevologoImage, {
-                        x: x - 25,
-                        y: y + 380,
+                        x: x - (width < 500 ? 20 : 25),
+                        y: y + (height < 800 ? 350 : 380),
                         width: 50,
                         height: 35,
                     });
-
+    
                     await page.drawImage(ccfirmaImage, {
-                        x: x - 30,
-                        y: y - 415,
+                        x: x - (width < 500 ? 25 : 30),
+                        y: y - (height < 800 ? 390 : 415),
                         width: 70,
-                        height: 40,
-                        opacity: 0.5,
+                        height: 30,
+                        opacity: 0.9,
                     });
-
-                    page.drawText('https://ccfirma.com/', { x: x - 30, y: y - 400, size: 10, color: rgb(0, 0, 0), opacity: 0.0 });
+    
+                    page.drawText('https://ccfirma.com/', {
+                        x: x - (width < 500 ? 25 : 30),
+                        y: y - (height < 800 ? 390 : 415),
+                        size: 10,
+                        color: rgb(0, 0, 0),
+                        opacity: 0.0
+                    });
+    
                 }
 
                 const pdfBytes = await pdfDoc.save();
