@@ -55,6 +55,7 @@ let LoginController = class LoginController {
     }
     async removeSession(token) {
         this.tokenService.removeSession(token);
+        console.log("token removido");
         return true;
     }
     async listaAll(entidad) {
