@@ -37,6 +37,7 @@ declare class User {
     DATOS?: string;
     STATUS?: number;
     MESSAGE?: string;
+    BANDERA?: boolean;
 }
 export declare class LoginController {
     private readonly userService;
@@ -47,6 +48,7 @@ export declare class LoginController {
     private readonly s3Service;
     constructor(userService: UserService, tokenService: TokenService, noticiaService: NoticiaService, preguntaService: PreguntasService, emailJurisService: EmailJurisService, s3Service: S3Service);
     autenticarUsuario(entidad: User): Promise<User>;
+    removeSession(token: string): Promise<boolean>;
     listaAll(entidad: DataTable): Promise<NoticiaModel[]>;
     listaPreguntas(entidad: DataTable): Promise<PreguntaModel[]>;
     validateToken(token: string): Promise<boolean>;

@@ -28,27 +28,80 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TokenService = void 0;
 const common_1 = require("@nestjs/common");
 const jwt = __importStar(require("jsonwebtoken"));
+const uuid = __importStar(require("uuid"));
+const path = __importStar(require("path"));
+const fs = __importStar(require("fs"));
+const SESSIONS_FILE_PATH = path.join(__dirname, 'active-sessions.json');
 let TokenService = class TokenService {
     constructor() {
         this.secretKey = process.env.SECRET_KEY;
         this.SECRET_KEY_SOLICITUD = process.env.SECRET_KEY_SOLICITUD;
+        this.activeSessions = this.readActiveSessionsFromFile();
     }
-    generateToken(user) {
-        var _a;
+    readActiveSessionsFromFile() {
+        try {
+            const sessionsData = fs.readFileSync(SESSIONS_FILE_PATH, 'utf8');
+            const sessions = JSON.parse(sessionsData);
+            const activeSessions = new Map();
+            sessions.forEach(session => {
+                if (session.expiresIn > Date.now()) {
+                    activeSessions.set(session.sessionId, session);
+                }
+            });
+            return activeSessions;
+        }
+        catch (error) {
+            return new Map();
+        }
+    }
+    async removeSession(token) {
+        const payload = jwt.decode(token);
+        this.activeSessions = await this.readActiveSessionsFromFile();
+        this.activeSessions.delete(payload.sessionId);
+        this.writeActiveSessionsToFile();
+    }
+    writeActiveSessionsToFile() {
+        const sessionsArray = Array.from(this.activeSessions.values());
+        const sessionsData = JSON.stringify(sessionsArray, null, 2);
+        fs.writeFileSync(SESSIONS_FILE_PATH, sessionsData, 'utf8');
+    }
+    generateToken(user, bandera = false) {
+        if (this.activeSessions.has(user.ID.toString())) {
+            const session = this.activeSessions.get(user.ID.toString());
+            if (this.isSessionActive(session) && !bandera) {
+                throw new common_1.BadRequestException({
+                    MESSAGE: 'No puede iniciar sesión porque ya tiene otra sesión activa.',
+                    STATUS: false,
+                    OPTION: 1
+                });
+            }
+            this.activeSessions.delete(user.ID.toString());
+        }
+        const sessionId = uuid.v4();
+        const expiresIn = Date.now() + (60 * 60 * 1000);
         const payload = {
             EMAIL: user.EMAIL,
             ID: user.ID,
             role: user.IDROLE,
             NAME: user.NOMBRES,
             APELLIDO: user.APELLIDO,
-            UCRCN: user.EMAIL.split('@')[0] || "",
-            PERM: (user === null || user === void 0 ? void 0 : user.RESTRICIONES) ? (_a = user.RESTRICIONES) === null || _a === void 0 ? void 0 : _a.split(',') : [],
+            UCRCN: user.EMAIL.split('@')[0] || '',
+            PERM: (user === null || user === void 0 ? void 0 : user.RESTRICIONES) ? user.RESTRICIONES.split(',') : [],
+            sessionId: sessionId,
         };
-        return jwt.sign(payload, this.secretKey);
+        this.activeSessions.set(user.ID.toString(), { sessionId: sessionId, expiresIn: expiresIn });
+        this.writeActiveSessionsToFile();
+        return jwt.sign(payload, this.secretKey, { expiresIn: '1h' });
+    }
+    isSessionActive(session) {
+        return session && session.expiresIn > Date.now();
     }
     generateTokenSolicitud(user) {
         const payload = {
@@ -104,6 +157,7 @@ let TokenService = class TokenService {
 };
 exports.TokenService = TokenService;
 exports.TokenService = TokenService = __decorate([
-    (0, common_1.Injectable)()
+    (0, common_1.Injectable)(),
+    __metadata("design:paramtypes", [])
 ], TokenService);
 //# sourceMappingURL=token.service.js.map

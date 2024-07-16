@@ -9,6 +9,7 @@ import { UserModule } from './services/UserModule';
 
 // Middleware
 import { AuthMiddleware } from './middleware/auth.middleware';
+import { TokenService } from './services/User/token.service';
 
 
 @Module({
@@ -32,12 +33,14 @@ import { AuthMiddleware } from './middleware/auth.middleware';
     UserModule
   ],
   exports: [
+    TokenService
   ],
   controllers: [
     AppController
   ],
   providers: [
     AppService,
+    TokenService
   ],
 })
 export class AppModule {

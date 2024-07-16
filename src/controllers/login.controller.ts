@@ -41,6 +41,7 @@ class User {
     DATOS?: string;
     STATUS?: number;
     MESSAGE?: string;
+    BANDERA?: boolean = false;
 }
 
 @Controller('login')
@@ -71,9 +72,16 @@ export class LoginController {
         }
 
 
-        const token = this.tokenService.generateToken(usuario);
+        const token = this.tokenService.generateToken(usuario, entidad.BANDERA);
         usuario.TOKEN = token;
         return usuario;
+    }
+    
+    @Get("logout")
+    async removeSession(@Query('token') token: string): Promise<boolean> {
+        this.tokenService.removeSession(token);
+        console.log("token removido");
+        return true;
     }
 
     @Get('noticias')

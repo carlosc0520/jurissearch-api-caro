@@ -25,6 +25,9 @@ const Solicitud_model_1 = require("../models/public/Solicitud.model");
 const multer_1 = require("multer");
 const platform_express_1 = require("@nestjs/platform-express");
 class User {
+    constructor() {
+        this.BANDERA = false;
+    }
 }
 let LoginController = class LoginController {
     constructor(userService, tokenService, noticiaService, preguntaService, emailJurisService, s3Service) {
@@ -46,9 +49,13 @@ let LoginController = class LoginController {
         if (usuario.PASSWORD !== entidad.PASSWORD) {
             throw new common_1.BadRequestException({ MESSAGE: 'Contraseña incorrecta', STATUS: false });
         }
-        const token = this.tokenService.generateToken(usuario);
+        const token = this.tokenService.generateToken(usuario, entidad.BANDERA);
         usuario.TOKEN = token;
         return usuario;
+    }
+    async removeSession(token) {
+        this.tokenService.removeSession(token);
+        return true;
     }
     async listaAll(entidad) {
         const noticias = await this.noticiaService.list(entidad);
@@ -130,6 +137,13 @@ __decorate([
     __metadata("design:paramtypes", [User]),
     __metadata("design:returntype", Promise)
 ], LoginController.prototype, "autenticarUsuario", null);
+__decorate([
+    (0, common_1.Get)("logout"),
+    __param(0, (0, common_1.Query)('token')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], LoginController.prototype, "removeSession", null);
 __decorate([
     (0, common_1.Get)('noticias'),
     __param(0, (0, common_1.Query)()),

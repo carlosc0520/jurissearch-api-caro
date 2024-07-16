@@ -1,14 +1,22 @@
-// auth.middleware.ts
-
-import { Injectable, NestMiddleware } from '@nestjs/common';
+import { Injectable, NestMiddleware, UnauthorizedException } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
 import * as jwt from 'jsonwebtoken';
+import { TokenService } from '../services/User/token.service';
+
+interface Session {
+    sessionId: string;
+    expiresIn: number;
+}
+
 
 @Injectable()
 export class AuthMiddleware implements NestMiddleware {
     private readonly secretKey = process.env.SECRET_KEY;
+    private activeSessions: Map<string, Session>;
 
-    use(req: Request, res: Response, next: NextFunction) {
+    constructor(private readonly tokenService: TokenService) {}
+
+    async use(req: Request, res: Response, next: NextFunction) {
         let token = req.headers.authorization;
         if (!token) {
             return res.status(401).json({ message: 'Token no proporcionado' });
@@ -17,12 +25,24 @@ export class AuthMiddleware implements NestMiddleware {
         token = token.replace('Bearer ', '');
 
         try {
-            const decoded = jwt.verify(token, this.secretKey);
+            const decoded = await jwt.verify(token, this.secretKey);
+            this.activeSessions = this.tokenService.readActiveSessionsFromFile();
+            const session = this.activeSessions.get(decoded.sessionId.toString());
+            if (!this.isSessionActive(session)) {
+                throw new UnauthorizedException({ message: 'Token inválido o sesión cerrada' });
+            }
+            
             req['user'] = decoded;
             next();
-
         } catch (error) {
-            return res.status(401).json({ message: 'Token inválido' });
+            if (error instanceof UnauthorizedException) {
+                throw error;
+            }
+            throw new UnauthorizedException({ message: 'Error en la autenticación' });
         }
+    }
+
+    private isSessionActive(session: Session): boolean {
+        return session && session.expiresIn > Date.now();
     }
 }

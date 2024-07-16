@@ -13,6 +13,7 @@ const app_service_1 = require("./app.service");
 const typeorm_1 = require("@nestjs/typeorm");
 const UserModule_1 = require("./services/UserModule");
 const auth_middleware_1 = require("./middleware/auth.middleware");
+const token_service_1 = require("./services/User/token.service");
 let AppModule = class AppModule {
     configure(consumer) {
         consumer.apply(auth_middleware_1.AuthMiddleware).forRoutes({
@@ -41,12 +42,15 @@ exports.AppModule = AppModule = __decorate([
             }),
             UserModule_1.UserModule
         ],
-        exports: [],
+        exports: [
+            token_service_1.TokenService
+        ],
         controllers: [
             app_controller_1.AppController
         ],
         providers: [
             app_service_1.AppService,
+            token_service_1.TokenService
         ],
     })
 ], AppModule);

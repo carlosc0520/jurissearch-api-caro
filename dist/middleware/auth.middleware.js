@@ -28,32 +28,49 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthMiddleware = void 0;
 const common_1 = require("@nestjs/common");
 const jwt = __importStar(require("jsonwebtoken"));
+const token_service_1 = require("../services/User/token.service");
 let AuthMiddleware = class AuthMiddleware {
-    constructor() {
+    constructor(tokenService) {
+        this.tokenService = tokenService;
         this.secretKey = process.env.SECRET_KEY;
     }
-    use(req, res, next) {
+    async use(req, res, next) {
         let token = req.headers.authorization;
         if (!token) {
             return res.status(401).json({ message: 'Token no proporcionado' });
         }
         token = token.replace('Bearer ', '');
         try {
-            const decoded = jwt.verify(token, this.secretKey);
+            const decoded = await jwt.verify(token, this.secretKey);
+            this.activeSessions = this.tokenService.readActiveSessionsFromFile();
+            const session = this.activeSessions.get(decoded.sessionId.toString());
+            if (!this.isSessionActive(session)) {
+                throw new common_1.UnauthorizedException({ message: 'Token inválido o sesión cerrada' });
+            }
             req['user'] = decoded;
             next();
         }
         catch (error) {
-            return res.status(401).json({ message: 'Token inválido' });
+            if (error instanceof common_1.UnauthorizedException) {
+                throw error;
+            }
+            throw new common_1.UnauthorizedException({ message: 'Error en la autenticación' });
         }
+    }
+    isSessionActive(session) {
+        return session && session.expiresIn > Date.now();
     }
 };
 exports.AuthMiddleware = AuthMiddleware;
 exports.AuthMiddleware = AuthMiddleware = __decorate([
-    (0, common_1.Injectable)()
+    (0, common_1.Injectable)(),
+    __metadata("design:paramtypes", [token_service_1.TokenService])
 ], AuthMiddleware);
 //# sourceMappingURL=auth.middleware.js.map
