@@ -101,7 +101,7 @@ export class EntriesController {
 
                 await page.drawImage(ccfirmaImage, {
                     x: x - (width < 500 ? 25 : 30),
-                    y: y - (height < 800 ? 390 : 415),
+                    y: y - (height < 800 ? 395 : 415),
                     width: 70,
                     height: 30,
                     opacity: 0.9,
@@ -231,7 +231,7 @@ export class EntriesController {
 
                 await page.drawImage(ccfirmaImage, {
                     x: x - (width < 500 ? 25 : 30),
-                    y: y - (height < 800 ? 390 : 415),
+                    y: y - (height < 800 ? 395 : 415),
                     width: 70,
                     height: 30,
                     opacity: 0.9,
@@ -362,7 +362,7 @@ export class EntriesController {
     
                     await page.drawImage(ccfirmaImage, {
                         x: x - (width < 500 ? 25 : 30),
-                        y: y - (height < 800 ? 390 : 415),
+                        y: y - (height < 800 ? 395 : 415),
                         width: 70,
                         height: 30,
                         opacity: 0.9,
@@ -496,7 +496,7 @@ export class EntriesController {
     
                     await page.drawImage(ccfirmaImage, {
                         x: x - (width < 500 ? 25 : 30),
-                        y: y - (height < 800 ? 390 : 415),
+                        y: y - (height < 800 ? 395 : 415),
                         width: 70,
                         height: 30,
                         opacity: 0.9,
