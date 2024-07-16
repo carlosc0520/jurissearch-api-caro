@@ -3,6 +3,7 @@ import * as AWS from 'aws-sdk';
 import * as fs from 'fs';
 import { EntriesModel } from 'src/models/Admin/entries.model';
 import { NoticiaModel } from 'src/models/Admin/noticia.model';
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class S3Service {
@@ -19,17 +20,15 @@ export class S3Service {
 
     async uploadFiles(entidad: EntriesModel, file1Key: string, file1Path: string, file2Key: string, file2Path: string): Promise<string[]> {
         try {
+            let title = entidad.TITLE.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+            title = title.replace(/[^a-zA-Z0-9]/g, '_');
+            let uniqueKey = uuidv4();
+
             const params1 = {
-                Bucket: `${process.env.AWS_BUCKET_NAME}/${entidad.TYPE}/${entidad.TIPO}/${entidad.TITLE}`,
-                Key: file1Key,
+                Bucket: `${process.env.AWS_BUCKET_NAME}/${entidad.TYPE}/${entidad.TIPO}/${title}`,
+                Key: `${uniqueKey}.pdf`,
                 Body: fs.createReadStream(file1Path),
             };
-
-            // const params2 = {
-            //     Bucket: `${process.env.AWS_BUCKET_NAME}/${entidad.TYPE}/${entidad.TIPO}/${entidad.TITLE}`,
-            //     Key: file2Key,
-            //     Body: fs.createReadStream(file2Path),
-            // };
 
             const uploadPromises = [
                 this.s3.upload(params1).promise(),
@@ -48,9 +47,13 @@ export class S3Service {
 
     async uploadFile(entidad: EntriesModel, file1Key: string, file1Path: string): Promise<string> {
         try {
+            let title = entidad.TITLE.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+            title = title.replace(/[^a-zA-Z0-9]/g, '_');
+            let uniqueKey = uuidv4();
+
             const params1 = {
-                Bucket: `${process.env.AWS_BUCKET_NAME}/${entidad.TYPE}/${entidad.TIPO}/${entidad.TITLE}`,
-                Key: file1Key,
+                Bucket: `${process.env.AWS_BUCKET_NAME}/${entidad.TYPE}/${entidad.TIPO}/${title}`,
+                Key: `${uniqueKey}.pdf`,
                 Body: fs.createReadStream(file1Path),
             };
 

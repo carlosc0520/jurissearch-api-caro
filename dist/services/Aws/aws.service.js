@@ -43,6 +43,7 @@ exports.S3Service = void 0;
 const common_1 = require("@nestjs/common");
 const AWS = __importStar(require("aws-sdk"));
 const fs = __importStar(require("fs"));
+const uuid_1 = require("uuid");
 let S3Service = class S3Service {
     constructor() {
         this.s3 = new AWS.S3({
@@ -54,9 +55,12 @@ let S3Service = class S3Service {
     }
     async uploadFiles(entidad, file1Key, file1Path, file2Key, file2Path) {
         try {
+            let title = entidad.TITLE.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+            title = title.replace(/[^a-zA-Z0-9]/g, '_');
+            let uniqueKey = (0, uuid_1.v4)();
             const params1 = {
-                Bucket: `${process.env.AWS_BUCKET_NAME}/${entidad.TYPE}/${entidad.TIPO}/${entidad.TITLE}`,
-                Key: file1Key,
+                Bucket: `${process.env.AWS_BUCKET_NAME}/${entidad.TYPE}/${entidad.TIPO}/${title}`,
+                Key: `${uniqueKey}.pdf`,
                 Body: fs.createReadStream(file1Path),
             };
             const uploadPromises = [
@@ -72,9 +76,12 @@ let S3Service = class S3Service {
     }
     async uploadFile(entidad, file1Key, file1Path) {
         try {
+            let title = entidad.TITLE.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+            title = title.replace(/[^a-zA-Z0-9]/g, '_');
+            let uniqueKey = (0, uuid_1.v4)();
             const params1 = {
-                Bucket: `${process.env.AWS_BUCKET_NAME}/${entidad.TYPE}/${entidad.TIPO}/${entidad.TITLE}`,
-                Key: file1Key,
+                Bucket: `${process.env.AWS_BUCKET_NAME}/${entidad.TYPE}/${entidad.TIPO}/${title}`,
+                Key: `${uniqueKey}.pdf`,
                 Body: fs.createReadStream(file1Path),
             };
             const result = await this.s3.upload(params1).promise();
