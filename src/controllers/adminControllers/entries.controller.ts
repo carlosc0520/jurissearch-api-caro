@@ -582,6 +582,13 @@ export class EntriesController {
         return await this.entriesService.busquedaFavorites(busqueda);
     }
 
+    @Get("busqueda-favorites-entrie")
+    async busquedaFavoritesEntrie(@Request() req, @Query() busqueda: BusquedaModel): Promise<EntriesModel[]> {
+        busqueda.UEDCN = req.user.UCRCN;
+        busqueda.IDUSR = req.user.ID;
+        return await this.entriesService.busquedaFavoritesEntrie(busqueda);
+    }
+
     @Post("save-title-entrie")
     async saveTitleEntrie(@Request() req, @Body() entidad: EntriesModel): Promise<Result> {
         entidad.UCRCN = req.user.UCRCN;

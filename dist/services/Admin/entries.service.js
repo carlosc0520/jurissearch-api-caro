@@ -158,6 +158,20 @@ let EntriesService = class EntriesService {
             return error;
         }
     }
+    async busquedaFavoritesEntrie(entidad) {
+        let queryAsync = configMappers_1.default.ADMIN.BUSQUEDAS.CRUD;
+        queryAsync += ` @p_cData = ${entidad ? `'${JSON.stringify(entidad)}'` : null},`;
+        queryAsync += ` @p_cUser = ${entidad.UEDCN},`;
+        queryAsync += ` @p_nTipo = ${8},`;
+        queryAsync += ` @p_nId = ${0}`;
+        try {
+            const result = await this.connection.query(queryAsync);
+            return result;
+        }
+        catch (error) {
+            return error;
+        }
+    }
     async addFavorite(IDUSER, IDENTRIE) {
         var _a, _b, _c;
         let queryAsync = configMappers_1.default.ADMIN.ENTRIES.CRUD;

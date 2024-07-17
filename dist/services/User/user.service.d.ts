@@ -42,5 +42,7 @@ export declare class UserService {
     list(entidad: DataTable, IDROLE: string): Promise<User[]>;
     addFavoriteUser(USER: string, IDUSER: number, IDENTRIE: number): Promise<Result>;
     getUser(ID: number): Promise<User>;
+    createDirectory(entidad: any): Promise<Result>;
+    listDirectory(IDUSUARIO: number, DSCRPCN: string, TYPE: string): Promise<any>;
 }
 export {};

@@ -76,7 +76,6 @@ export class UserService {
         }
     }
 
-
     async createUser(entidad: User): Promise<Result> {
         let queryAsync = procedures.ADMIN.USUARIO.CRUD;
         queryAsync += ` @p_cData = ${entidad ? `'${JSON.stringify(entidad)}'` : null},`;
@@ -196,6 +195,40 @@ export class UserService {
         try {
             const result = await this.connection.query(queryAsync);
             return result[0] || {};
+        } catch (error) {
+            return error;
+        }
+    }
+
+    async createDirectory(entidad: any): Promise<Result> {
+        let queryAsync = procedures.ADMIN.USUARIO.CRUD2;
+        queryAsync += ` @p_cData = ${entidad ? `'${JSON.stringify(entidad)}'` : null},`;
+        queryAsync += ` @p_cUser = ${entidad?.USER ? `'${entidad.USER}'` : null},`;
+        queryAsync += ` @p_nTipo = ${1},`;
+        queryAsync += ` @p_nId = ${0}`;
+
+        console.log(queryAsync)
+        try {
+            const result = await this.connection.query(queryAsync);
+            const isSuccess = result?.[0]?.RESULT > 0;
+            const MESSAGE = isSuccess ? "Directorio creado correctamente" : "Ocurrió un error al intentar crear el directorio";
+            return { MESSAGE, STATUS: isSuccess };
+        } catch (error) {
+            const MESSAGE = error.originalError?.info?.message || "Ocurrió un error al intentar crear el directorio";
+            return { MESSAGE, STATUS: false };
+        }
+    }
+
+    async listDirectory(IDUSUARIO: number, DSCRPCN: string, TYPE: string): Promise<any> {
+        let queryAsync = procedures.ADMIN.USUARIO.CRUD2;
+        queryAsync += ` @p_cData = '${JSON.stringify({ ID: IDUSUARIO, DSCRPCN, TYPE })}',`;
+        queryAsync += ` @p_cUser = ${'USUARIO'},`;
+        queryAsync += ` @p_nTipo = ${4},`;
+        queryAsync += ` @p_nId = ${0}`;
+
+        try {
+            const result = await this.connection.query(queryAsync);
+            return result;
         } catch (error) {
             return error;
         }

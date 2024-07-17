@@ -57,6 +57,14 @@ let UsuarioController = class UsuarioController {
         entidad.ID = req.user.ID;
         return await this.userService.editUser(entidad);
     }
+    async createDirectory(req, entidad) {
+        entidad.USER = req.user.UCRCN;
+        entidad.ID = req.user.ID;
+        return await this.userService.createDirectory(entidad);
+    }
+    async listDirectory(req, DSCRPCN, TYPE) {
+        return await this.userService.listDirectory(req.user.ID, DSCRPCN, TYPE);
+    }
     async addFavoriteUser(req, IDENTRIE) {
         return await this.userService.addFavoriteUser(req.user.UCRCN, req.user.ID, IDENTRIE);
     }
@@ -116,6 +124,23 @@ __decorate([
     __metadata("design:paramtypes", [Object, User]),
     __metadata("design:returntype", Promise)
 ], UsuarioController.prototype, "editUserForce", null);
+__decorate([
+    (0, common_1.Post)('add-directory'),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], UsuarioController.prototype, "createDirectory", null);
+__decorate([
+    (0, common_1.Get)('list-directory'),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Query)('DSCRPCN')),
+    __param(2, (0, common_1.Query)('TYPE')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, String, String]),
+    __metadata("design:returntype", Promise)
+], UsuarioController.prototype, "listDirectory", null);
 __decorate([
     (0, common_1.Get)('add-favorite'),
     __param(0, (0, common_1.Request)()),

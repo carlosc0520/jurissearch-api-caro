@@ -20,5 +20,6 @@ export declare class EntriesController {
     downloadFile(PATH: string, res: Response): Promise<any>;
     busqueda(req: any, busqueda: BusquedaModel): Promise<EntriesModel[]>;
     busquedaFavorites(req: any, busqueda: BusquedaModel): Promise<EntriesModel[]>;
+    busquedaFavoritesEntrie(req: any, busqueda: BusquedaModel): Promise<EntriesModel[]>;
     saveTitleEntrie(req: any, entidad: EntriesModel): Promise<Result>;
 }

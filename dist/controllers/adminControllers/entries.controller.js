@@ -417,6 +417,11 @@ let EntriesController = class EntriesController {
         busqueda.IDUSR = req.user.ID;
         return await this.entriesService.busquedaFavorites(busqueda);
     }
+    async busquedaFavoritesEntrie(req, busqueda) {
+        busqueda.UEDCN = req.user.UCRCN;
+        busqueda.IDUSR = req.user.ID;
+        return await this.entriesService.busquedaFavoritesEntrie(busqueda);
+    }
     async saveTitleEntrie(req, entidad) {
         entidad.UCRCN = req.user.UCRCN;
         return await this.entriesService.saveTitleEntrie(entidad);
@@ -585,6 +590,14 @@ __decorate([
     __metadata("design:paramtypes", [Object, busqueda_model_1.BusquedaModel]),
     __metadata("design:returntype", Promise)
 ], EntriesController.prototype, "busquedaFavorites", null);
+__decorate([
+    (0, common_1.Get)("busqueda-favorites-entrie"),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Query)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, busqueda_model_1.BusquedaModel]),
+    __metadata("design:returntype", Promise)
+], EntriesController.prototype, "busquedaFavoritesEntrie", null);
 __decorate([
     (0, common_1.Post)("save-title-entrie"),
     __param(0, (0, common_1.Request)()),

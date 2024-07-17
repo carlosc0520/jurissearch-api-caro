@@ -44,6 +44,8 @@ export declare class UsuarioController {
     deleteUser(req: any, ID: number): Promise<Result>;
     editUser(req: any, entidad: User): Promise<Result>;
     editUserForce(req: any, entidad: User): Promise<Result>;
+    createDirectory(req: any, entidad: any): Promise<Result>;
+    listDirectory(req: any, DSCRPCN: string, TYPE: string): Promise<any>;
     addFavoriteUser(req: any, IDENTRIE: number): Promise<any>;
 }
 export {};

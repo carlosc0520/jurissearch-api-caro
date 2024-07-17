@@ -5,6 +5,7 @@ declare const procedures: {
     ADMIN: {
         USUARIO: {
             CRUD: string;
+            CRUD2: string;
         };
         FILTROS: {
             CRUD: string;

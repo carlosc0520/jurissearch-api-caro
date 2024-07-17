@@ -85,6 +85,19 @@ export class UsuarioController {
         return await this.userService.editUser(entidad);
     }
 
+    @Post('add-directory')
+    async createDirectory(@Request() req, @Body() entidad: any): Promise<Result> {
+        entidad.USER = req.user.UCRCN;
+        entidad.ID = req.user.ID;
+        return await this.userService.createDirectory(entidad);
+    }
+
+
+    @Get('list-directory')
+    async listDirectory(@Request() req, @Query('DSCRPCN') DSCRPCN: string, @Query('TYPE') TYPE: string): Promise<any> {
+        return await this.userService.listDirectory(req.user.ID, DSCRPCN, TYPE);
+    }
+
     // **** FAVORITOS ****
     @Get('add-favorite')
     async addFavoriteUser(@Request() req, @Query("IDENTRIE") IDENTRIE: number): Promise<any> {
