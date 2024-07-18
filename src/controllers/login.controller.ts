@@ -87,7 +87,7 @@ export class LoginController {
     async listaAll(@Query() entidad: DataTable): Promise<NoticiaModel[]> {
         const noticias = await this.noticiaService.list(entidad);
 
-        const noticiasConImagenes = await Promise.all(noticias.map(async noticia => {
+        const noticiasConImagenes = await Promise.all(noticias?.map(async noticia => {
             noticia.IMAGEN2 = await this.s3Service.getImage(noticia.IMAGEN);
             return noticia;
         }));
