@@ -70,8 +70,8 @@ export class TokenService {
             this.activeSessions.delete(user.ID.toString());
         }
 
-        const sessionId = uuid.v4(); // Generar un UUID único para la sesión
-        const expiresIn = Date.now() + (60 * 60 * 1000); // Tiempo de expiración del token (1 hora)
+        const sessionId = uuid.v4(); // Generar un UUID único para la sesió
+        const expiresIn = Date.now() + (60 * 60 * 2 * 1000);
         const payload = {
             EMAIL: user.EMAIL,
             ID: user.ID,
