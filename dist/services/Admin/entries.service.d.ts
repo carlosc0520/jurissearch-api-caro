@@ -18,4 +18,5 @@ export declare class EntriesService {
     busquedaFavoritesEntrie(entidad: BusquedaModel): Promise<EntriesModel[]>;
     addFavorite(IDUSER: number, IDENTRIE: number): Promise<Result>;
     saveTitleEntrie(entidad: EntriesModel): Promise<Result>;
+    saveDirectory(entidad: BusquedaModel): Promise<Result>;
 }

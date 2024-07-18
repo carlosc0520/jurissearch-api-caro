@@ -207,7 +207,6 @@ export class UserService {
         queryAsync += ` @p_nTipo = ${1},`;
         queryAsync += ` @p_nId = ${0}`;
 
-        console.log(queryAsync)
         try {
             const result = await this.connection.query(queryAsync);
             const isSuccess = result?.[0]?.RESULT > 0;
@@ -224,6 +223,21 @@ export class UserService {
         queryAsync += ` @p_cData = '${JSON.stringify({ ID: IDUSUARIO, DSCRPCN, TYPE })}',`;
         queryAsync += ` @p_cUser = ${'USUARIO'},`;
         queryAsync += ` @p_nTipo = ${4},`;
+        queryAsync += ` @p_nId = ${0}`;
+
+        try {
+            const result = await this.connection.query(queryAsync);
+            return result;
+        } catch (error) {
+            return error;
+        }
+    }
+
+    async listDirectoryAll(IDUSUARIO: number): Promise<any> {
+        let queryAsync = procedures.ADMIN.USUARIO.CRUD2;
+        queryAsync += ` @p_cData = '${JSON.stringify({ ID: IDUSUARIO })}',`;
+        queryAsync += ` @p_cUser = ${'USUARIO'},`;
+        queryAsync += ` @p_nTipo = ${5},`;
         queryAsync += ` @p_nId = ${0}`;
 
         try {

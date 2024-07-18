@@ -208,6 +208,24 @@ let EntriesService = class EntriesService {
             return { MESSAGE, STATUS: false };
         }
     }
+    async saveDirectory(entidad) {
+        var _a, _b, _c;
+        let queryAsync = configMappers_1.default.ADMIN.USUARIO.CRUD2;
+        queryAsync += ` @p_cData = ${entidad ? `'${JSON.stringify(entidad)}'` : null},`;
+        queryAsync += ` @p_cUser = '${entidad.UEDCN}',`;
+        queryAsync += ` @p_nTipo = ${6},`;
+        queryAsync += ` @p_nId = ${0}`;
+        try {
+            const result = await this.connection.query(queryAsync);
+            const isSuccess = ((_a = result === null || result === void 0 ? void 0 : result[0]) === null || _a === void 0 ? void 0 : _a.RESULT) > 0;
+            const MESSAGE = isSuccess ? "Directorio guardado correctamente" : "Ocurrió un error al intentar guardar el directorio";
+            return { MESSAGE, STATUS: isSuccess };
+        }
+        catch (error) {
+            const MESSAGE = ((_c = (_b = error.originalError) === null || _b === void 0 ? void 0 : _b.info) === null || _c === void 0 ? void 0 : _c.message) || "Ocurrió un error al intentar guardar el directorio";
+            return { MESSAGE, STATUS: false };
+        }
+    }
 };
 exports.EntriesService = EntriesService;
 exports.EntriesService = EntriesService = __decorate([

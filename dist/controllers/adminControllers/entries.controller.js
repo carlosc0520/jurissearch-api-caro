@@ -410,6 +410,7 @@ let EntriesController = class EntriesController {
     }
     async busqueda(req, busqueda) {
         busqueda.UEDCN = req.user.UCRCN;
+        busqueda.IDUSR = req.user.ID;
         return await this.entriesService.busqueda(busqueda);
     }
     async busquedaFavorites(req, busqueda) {
@@ -425,6 +426,10 @@ let EntriesController = class EntriesController {
     async saveTitleEntrie(req, entidad) {
         entidad.UCRCN = req.user.UCRCN;
         return await this.entriesService.saveTitleEntrie(entidad);
+    }
+    async saveDirectory(req, entidad) {
+        entidad.ID = req.user.ID;
+        return await this.entriesService.saveDirectory(entidad);
     }
 };
 exports.EntriesController = EntriesController;
@@ -606,6 +611,14 @@ __decorate([
     __metadata("design:paramtypes", [Object, entries_model_1.EntriesModel]),
     __metadata("design:returntype", Promise)
 ], EntriesController.prototype, "saveTitleEntrie", null);
+__decorate([
+    (0, common_1.Post)("save-add-directory"),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, busqueda_model_1.BusquedaModel]),
+    __metadata("design:returntype", Promise)
+], EntriesController.prototype, "saveDirectory", null);
 exports.EntriesController = EntriesController = __decorate([
     (0, common_1.Controller)('admin/entries'),
     __metadata("design:paramtypes", [entries_service_1.EntriesService,

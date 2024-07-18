@@ -572,6 +572,7 @@ export class EntriesController {
     @Get("busqueda")
     async busqueda(@Request() req, @Query() busqueda: BusquedaModel): Promise<EntriesModel[]> {
         busqueda.UEDCN = req.user.UCRCN;
+        busqueda.IDUSR = req.user.ID;
         return await this.entriesService.busqueda(busqueda);
     }
 
@@ -594,6 +595,13 @@ export class EntriesController {
         entidad.UCRCN = req.user.UCRCN;
         return await this.entriesService.saveTitleEntrie(entidad);
     }
+
+    @Post("save-add-directory")
+    async saveDirectory(@Request() req, @Body() entidad: BusquedaModel): Promise<Result> {
+        entidad.ID = req.user.ID;
+        return await this.entriesService.saveDirectory(entidad);
+    }
+
 
 }
 

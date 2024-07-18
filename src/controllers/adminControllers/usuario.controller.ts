@@ -98,6 +98,11 @@ export class UsuarioController {
         return await this.userService.listDirectory(req.user.ID, DSCRPCN, TYPE);
     }
 
+    @Get('list-directory-all')
+    async listDirectoryAll(@Request() req): Promise<any> {
+        return await this.userService.listDirectoryAll(req.user.ID);
+    }
+
     // **** FAVORITOS ****
     @Get('add-favorite')
     async addFavoriteUser(@Request() req, @Query("IDENTRIE") IDENTRIE: number): Promise<any> {

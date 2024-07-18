@@ -17,7 +17,9 @@ export declare class BusquedaModel {
     DESC: string;
     CESTDO: string;
     ID?: number;
+    IDENTRIE?: number;
     UEDCN?: string;
     IDUSR?: number;
     OEMISOR?: string;
+    IDDIRECTORIO?: number;
 }

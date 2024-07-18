@@ -181,7 +181,6 @@ let UserService = class UserService {
         queryAsync += ` @p_cUser = ${(entidad === null || entidad === void 0 ? void 0 : entidad.USER) ? `'${entidad.USER}'` : null},`;
         queryAsync += ` @p_nTipo = ${1},`;
         queryAsync += ` @p_nId = ${0}`;
-        console.log(queryAsync);
         try {
             const result = await this.connection.query(queryAsync);
             const isSuccess = ((_a = result === null || result === void 0 ? void 0 : result[0]) === null || _a === void 0 ? void 0 : _a.RESULT) > 0;
@@ -198,6 +197,20 @@ let UserService = class UserService {
         queryAsync += ` @p_cData = '${JSON.stringify({ ID: IDUSUARIO, DSCRPCN, TYPE })}',`;
         queryAsync += ` @p_cUser = ${'USUARIO'},`;
         queryAsync += ` @p_nTipo = ${4},`;
+        queryAsync += ` @p_nId = ${0}`;
+        try {
+            const result = await this.connection.query(queryAsync);
+            return result;
+        }
+        catch (error) {
+            return error;
+        }
+    }
+    async listDirectoryAll(IDUSUARIO) {
+        let queryAsync = configMappers_1.default.ADMIN.USUARIO.CRUD2;
+        queryAsync += ` @p_cData = '${JSON.stringify({ ID: IDUSUARIO })}',`;
+        queryAsync += ` @p_cUser = ${'USUARIO'},`;
+        queryAsync += ` @p_nTipo = ${5},`;
         queryAsync += ` @p_nId = ${0}`;
         try {
             const result = await this.connection.query(queryAsync);

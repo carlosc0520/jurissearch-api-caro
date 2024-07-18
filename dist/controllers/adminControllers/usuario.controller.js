@@ -65,6 +65,9 @@ let UsuarioController = class UsuarioController {
     async listDirectory(req, DSCRPCN, TYPE) {
         return await this.userService.listDirectory(req.user.ID, DSCRPCN, TYPE);
     }
+    async listDirectoryAll(req) {
+        return await this.userService.listDirectoryAll(req.user.ID);
+    }
     async addFavoriteUser(req, IDENTRIE) {
         return await this.userService.addFavoriteUser(req.user.UCRCN, req.user.ID, IDENTRIE);
     }
@@ -141,6 +144,13 @@ __decorate([
     __metadata("design:paramtypes", [Object, String, String]),
     __metadata("design:returntype", Promise)
 ], UsuarioController.prototype, "listDirectory", null);
+__decorate([
+    (0, common_1.Get)('list-directory-all'),
+    __param(0, (0, common_1.Request)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], UsuarioController.prototype, "listDirectoryAll", null);
 __decorate([
     (0, common_1.Get)('add-favorite'),
     __param(0, (0, common_1.Request)()),

@@ -44,5 +44,6 @@ export declare class UserService {
     getUser(ID: number): Promise<User>;
     createDirectory(entidad: any): Promise<Result>;
     listDirectory(IDUSUARIO: number, DSCRPCN: string, TYPE: string): Promise<any>;
+    listDirectoryAll(IDUSUARIO: number): Promise<any>;
 }
 export {};

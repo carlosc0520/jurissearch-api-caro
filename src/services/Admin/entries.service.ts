@@ -209,4 +209,22 @@ export class EntriesService {
         }
     }
 
+    async saveDirectory(entidad: BusquedaModel): Promise<Result>{
+        let queryAsync = procedures.ADMIN.USUARIO.CRUD2;
+        queryAsync += ` @p_cData = ${entidad ? `'${JSON.stringify(entidad)}'` : null},`;
+        queryAsync += ` @p_cUser = '${entidad.UEDCN}',`;
+        queryAsync += ` @p_nTipo = ${6},`;
+        queryAsync += ` @p_nId = ${0}`;
+
+        try {
+            const result = await this.connection.query(queryAsync);
+            const isSuccess = result?.[0]?.RESULT > 0;
+            const MESSAGE = isSuccess ? "Directorio guardado correctamente" : "Ocurrió un error al intentar guardar el directorio";
+            return { MESSAGE, STATUS: isSuccess };
+        } catch (error) {
+            const MESSAGE = error.originalError?.info?.message || "Ocurrió un error al intentar guardar el directorio";
+            return { MESSAGE, STATUS: false };
+        }
+    }
+
 }

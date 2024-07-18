@@ -18,9 +18,11 @@ class BusquedaModel {
         this.NMRCN = '';
         this.DESC = null;
         this.ID = 0;
+        this.IDENTRIE = 0;
         this.UEDCN = '';
         this.IDUSR = 0;
         this.OEMISOR = '';
+        this.IDDIRECTORIO = 0;
     }
 }
 exports.BusquedaModel = BusquedaModel;

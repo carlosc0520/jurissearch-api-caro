@@ -22,4 +22,5 @@ export declare class EntriesController {
     busquedaFavorites(req: any, busqueda: BusquedaModel): Promise<EntriesModel[]>;
     busquedaFavoritesEntrie(req: any, busqueda: BusquedaModel): Promise<EntriesModel[]>;
     saveTitleEntrie(req: any, entidad: EntriesModel): Promise<Result>;
+    saveDirectory(req: any, entidad: BusquedaModel): Promise<Result>;
 }

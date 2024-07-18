@@ -44,9 +44,7 @@ export class TokenService {
     }
 
     async removeSession(token: string) {
-        console.log(token);
         const payload: any = jwt.decode(token);
-        console.log(payload)
         this.activeSessions = await this.readActiveSessionsFromFile();
         this.activeSessions.delete(payload.sessionId);
         this.writeActiveSessionsToFile();
