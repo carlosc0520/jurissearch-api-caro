@@ -80,7 +80,6 @@ export class LoginController {
     @Get("logout")
     async removeSession(@Query('token') token: string): Promise<boolean> {
         this.tokenService.removeSession(token);
-        console.log("token removido");
         return true;
     }
 
