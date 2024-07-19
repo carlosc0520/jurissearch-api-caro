@@ -11,6 +11,7 @@ export declare class AsistenciaService {
     createOne(entidad: AsistenciaModel): Promise<Result>;
     list(entidad: DataTable, IDEVENTO: number): Promise<AsistenciaModel[]>;
     listReporte(entidad: DataTable, IDEVENTO: number, IDPARTICIPANTE: number, PARTICIPANTE: string, INDICADOR: number, FECHA: Date): Promise<AsistenciaModel[]>;
+    listReporteAll(entidad: DataTable, IDEVENTO: number): Promise<AsistenciaModel[]>;
     fechasEventos(entidad: DataTable, IDEVENTO: number): Promise<AsistenciaModel[]>;
     createApertura(entidad: AsistenciaModel): Promise<Result>;
     listAsistentes(entidad: DataTable, IDEVENTO: number): Promise<AsistenciaModel[]>;

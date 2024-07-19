@@ -26,6 +26,7 @@ class AsistenciaModel {
         this.TIEMPO = null;
         this.FINGRESO1 = null;
         this.FSALIDA1 = null;
+        this.REGISTROS = null;
     }
 }
 exports.AsistenciaModel = AsistenciaModel;

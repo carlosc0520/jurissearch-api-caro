@@ -85,7 +85,7 @@ let TokenService = class TokenService {
             this.activeSessions.delete(user.ID.toString());
         }
         const sessionId = uuid.v4();
-        const expiresIn = Date.now() + (60 * 60 * 1000);
+        const expiresIn = Date.now() + (60 * 60 * 2 * 1000);
         const payload = {
             EMAIL: user.EMAIL,
             ID: user.ID,

@@ -11,6 +11,7 @@ export declare class AsistenciaController {
     listFilters(entidad: DataTable, IDEVENTO: number): Promise<AsistenciaModel[]>;
     listAsistentes(entidad: DataTable, IDEVENTO: number, FECHA: Date): Promise<AsistenciaModel[]>;
     listReporte(entidad: DataTable, IDEVENTO: number, IDPARTICIPANTE: number, PARTICIPANTE: string, INDICADOR: number, FECHA: Date): Promise<AsistenciaModel[]>;
+    listReporteAll(entidad: DataTable, IDEVENTO: number): Promise<AsistenciaModel[]>;
     listAsistenciaFUll(entidad: DataTable, IDEVENTO: number, FECHA: Date): Promise<AsistenciaModel[]>;
     eventos(entidad: DataTable): Promise<EventosModel[]>;
     fechasEventos(entidad: DataTable, IDEVENTO: number): Promise<AsistenciaModel[]>;

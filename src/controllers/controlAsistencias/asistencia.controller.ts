@@ -41,6 +41,13 @@ export class AsistenciaController {
         return await this.asistenciaService.listReporte(entidad, IDEVENTO, IDPARTICIPANTE, PARTICIPANTE, INDICADOR, FECHA);
     }
 
+    @Get('listReporteAll')
+    async listReporteAll(@Query() entidad: DataTable, 
+        @Query('IDEVENTO') IDEVENTO: number
+    ): Promise<AsistenciaModel[]> {
+        return await this.asistenciaService.listReporteAll(entidad, IDEVENTO);
+    }
+
     @Get('listFull')
     async listAsistenciaFUll(@Query() entidad: DataTable, @Query('IDEVENTO') IDEVENTO: number, @Query('FECHA') FECHA: Date): Promise<AsistenciaModel[]> {
         return await this.asistenciaService.listAsistencia(entidad, IDEVENTO, FECHA);

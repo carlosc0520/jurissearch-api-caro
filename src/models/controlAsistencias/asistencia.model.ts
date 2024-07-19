@@ -22,4 +22,5 @@ export class AsistenciaModel {
     TIEMPO?: string = null;
     FINGRESO1?: string = null;
     FSALIDA1?: string = null;
+    REGISTROS?: string = null;
 }
