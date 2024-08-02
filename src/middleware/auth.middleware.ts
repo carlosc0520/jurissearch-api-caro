@@ -18,21 +18,21 @@ export class AuthMiddleware implements NestMiddleware {
 
     async use(req: Request, res: Response, next: NextFunction) {
         let token = req.headers.authorization;
-        if (!token) {
-            return res.status(401).json({ message: 'Token no proporcionado' });
-        }
+        // if (!token) {
+        //     return res.status(401).json({ message: 'Token no proporcionado' });
+        // }
         
         token = token.replace('Bearer ', '');
 
         try {
-            const decoded = await jwt.verify(token, this.secretKey);
-            this.activeSessions = this.tokenService.readActiveSessionsFromFile();
-            const session = this.activeSessions.get(decoded.sessionId.toString());
-            if (!this.isSessionActive(session)) {
-                throw new UnauthorizedException({ message: 'Token inválido o sesión cerrada' });
-            }
+            // const decoded = await jwt.verify(token, this.secretKey);
+            // this.activeSessions = this.tokenService.readActiveSessionsFromFile();
+            // const session = this.activeSessions.get(decoded.sessionId.toString());
+            // if (!this.isSessionActive(session)) {
+            //     throw new UnauthorizedException({ message: 'Token inválido o sesión cerrada' });
+            // }
             
-            req['user'] = decoded;
+            // req['user'] = decoded;
             next();
         } catch (error) {
             if (error instanceof UnauthorizedException) {

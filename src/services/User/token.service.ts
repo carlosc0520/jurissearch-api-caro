@@ -71,6 +71,7 @@ export class TokenService {
         }
 
         const sessionId = uuid.v4(); // Generar un UUID único para la sesió
+        // const expiresIn = Date.now() + (60 * 180 * 2 * 1000);
         const expiresIn = Date.now() + (60 * 60 * 2 * 1000);
         const payload = {
             EMAIL: user.EMAIL,
