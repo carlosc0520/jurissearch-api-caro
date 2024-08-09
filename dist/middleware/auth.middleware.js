@@ -43,17 +43,9 @@ let AuthMiddleware = class AuthMiddleware {
     }
     async use(req, res, next) {
         let token = req.headers.authorization;
-        if (!token) {
-            return res.status(401).json({ message: 'Token no proporcionado' });
-        }
         token = token.replace('Bearer ', '');
         try {
             const decoded = await jwt.verify(token, this.secretKey);
-            this.activeSessions = this.tokenService.readActiveSessionsFromFile();
-            const session = this.activeSessions.get(decoded.sessionId.toString());
-            if (!this.isSessionActive(session)) {
-                throw new common_1.UnauthorizedException({ message: 'Token inválido o sesión cerrada' });
-            }
             req['user'] = decoded;
             next();
         }

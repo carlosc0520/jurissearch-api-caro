@@ -543,6 +543,15 @@ export class EntriesController {
         return await this.entriesService.list(entidad, entidad.DESC, TYPE, null);
     }
 
+    @Get('list-data')
+    async listData(@Query() entidad: DataTable, @Query('TYPE') TYPE: string,
+        @Query('BLOG') BLOG: string,
+        @Query('FRESOLUTION') FRESOLUTION: string,
+        @Query('TEMA') TEMA: string,
+        @Query('RTITLE') RTITLE: string): Promise<EntriesModel[]> {
+        return await this.entriesService.listData(entidad, entidad.DESC, TYPE, null, BLOG, FRESOLUTION, TEMA, RTITLE);
+    }
+
     @Post('delete')
     async deleteUser(@Request() req, @Body('ID') ID: number): Promise<Result> {
         return await this.entriesService.deleteFilter(ID, req.user.UCRCN);

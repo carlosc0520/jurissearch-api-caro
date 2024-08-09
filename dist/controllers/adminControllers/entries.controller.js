@@ -389,6 +389,9 @@ let EntriesController = class EntriesController {
     async listUsers(entidad, TYPE) {
         return await this.entriesService.list(entidad, entidad.DESC, TYPE, null);
     }
+    async listData(entidad, TYPE, BLOG, FRESOLUTION, TEMA, RTITLE) {
+        return await this.entriesService.listData(entidad, entidad.DESC, TYPE, null, BLOG, FRESOLUTION, TEMA, RTITLE);
+    }
     async deleteUser(req, ID) {
         return await this.entriesService.deleteFilter(ID, req.user.UCRCN);
     }
@@ -549,6 +552,18 @@ __decorate([
     __metadata("design:paramtypes", [DataTable_model_1.DataTable, String]),
     __metadata("design:returntype", Promise)
 ], EntriesController.prototype, "listUsers", null);
+__decorate([
+    (0, common_1.Get)('list-data'),
+    __param(0, (0, common_1.Query)()),
+    __param(1, (0, common_1.Query)('TYPE')),
+    __param(2, (0, common_1.Query)('BLOG')),
+    __param(3, (0, common_1.Query)('FRESOLUTION')),
+    __param(4, (0, common_1.Query)('TEMA')),
+    __param(5, (0, common_1.Query)('RTITLE')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [DataTable_model_1.DataTable, String, String, String, String, String]),
+    __metadata("design:returntype", Promise)
+], EntriesController.prototype, "listData", null);
 __decorate([
     (0, common_1.Post)('delete'),
     __param(0, (0, common_1.Request)()),

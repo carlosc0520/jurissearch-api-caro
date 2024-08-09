@@ -6,4 +6,5 @@ export declare class PreguntaModel {
     FCRCN: Date;
     FEDCN: Date;
     CDESTDO: string;
+    ORDEN?: number;
 }

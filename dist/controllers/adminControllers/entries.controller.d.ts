@@ -14,6 +14,7 @@ export declare class EntriesController {
     editMultipleFiles(req: any, entidad: EntriesModel, files?: any[]): Promise<Result>;
     editSingleFile(req: any, entidad: EntriesModel, files?: any[]): Promise<Result>;
     listUsers(entidad: DataTable, TYPE: string): Promise<EntriesModel[]>;
+    listData(entidad: DataTable, TYPE: string, BLOG: string, FRESOLUTION: string, TEMA: string, RTITLE: string): Promise<EntriesModel[]>;
     deleteUser(req: any, ID: number): Promise<Result>;
     Obtener(ID: number): Promise<EntriesModel>;
     getPrint(ID: number): Promise<EntriesModel>;

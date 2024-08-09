@@ -52,6 +52,21 @@ let EntriesService = class EntriesService {
             return error;
         }
     }
+    async listData(entidad, TITLE, TYPE, TIPO, BLOG, FRESOLUTION, TEMA, RTITLE) {
+        let queryAsync = configMappers_1.default.ADMIN.ENTRIES.CRUD;
+        queryAsync += ` @p_cData = ${entidad ? `'${JSON.stringify(Object.assign(Object.assign({}, entidad), { TITLE, TYPE, TIPO,
+            BLOG, FRESOLUTION, TEMA, RTITLE }))}'` : null},`;
+        queryAsync += ` @p_cUser = ${null},`;
+        queryAsync += ` @p_nTipo = ${4},`;
+        queryAsync += ` @p_nId = ${entidad.ID || 0}`;
+        try {
+            const result = await this.connection.query(queryAsync);
+            return result;
+        }
+        catch (error) {
+            return error;
+        }
+    }
     async listV(entidad, TITLE, TYPE, TIPO) {
         let queryAsync = configMappers_1.default.ADMIN.ENTRIES.CRUD;
         queryAsync += ` @p_cData = ${entidad ? `'${JSON.stringify(Object.assign(Object.assign({}, entidad), { TITLE, TYPE, TIPO }))}'` : null},`;

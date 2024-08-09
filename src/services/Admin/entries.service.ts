@@ -46,6 +46,26 @@ export class EntriesService {
         }
     }
 
+    async listData(entidad: DataTable, TITLE: string, TYPE: string, TIPO: string,
+        BLOG: string, FRESOLUTION: string, TEMA: string, RTITLE: string
+    ): Promise<EntriesModel[]> {
+        let queryAsync = procedures.ADMIN.ENTRIES.CRUD;
+        queryAsync += ` @p_cData = ${entidad ? `'${JSON.stringify({
+            ...entidad, TITLE, TYPE, TIPO,
+            BLOG, FRESOLUTION, TEMA, RTITLE
+        })}'` : null},`;
+        queryAsync += ` @p_cUser = ${null},`;
+        queryAsync += ` @p_nTipo = ${4},`
+        queryAsync += ` @p_nId = ${entidad.ID || 0}`;
+
+        try {
+            const result = await this.connection.query(queryAsync);
+            return result;
+        } catch (error) {
+            return error;
+        }
+    }
+
     async listV(entidad: DataTable, TITLE: string, TYPE: string, TIPO: string): Promise<EntriesModel[]> {
         let queryAsync = procedures.ADMIN.ENTRIES.CRUD;
         queryAsync += ` @p_cData = ${entidad ? `'${JSON.stringify({ ...entidad, TITLE, TYPE, TIPO })}'` : null},`;
@@ -209,7 +229,7 @@ export class EntriesService {
         }
     }
 
-    async saveDirectory(entidad: BusquedaModel): Promise<Result>{
+    async saveDirectory(entidad: BusquedaModel): Promise<Result> {
         let queryAsync = procedures.ADMIN.USUARIO.CRUD2;
         queryAsync += ` @p_cData = ${entidad ? `'${JSON.stringify(entidad)}'` : null},`;
         queryAsync += ` @p_cUser = '${entidad.UEDCN}',`;

@@ -10,6 +10,7 @@ class PreguntaModel {
         this.FCRCN = new Date();
         this.FEDCN = new Date();
         this.CDESTDO = '';
+        this.ORDEN = 0;
     }
 }
 exports.PreguntaModel = PreguntaModel;
