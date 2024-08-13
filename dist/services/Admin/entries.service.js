@@ -23,6 +23,7 @@ let EntriesService = class EntriesService {
     async createEntries(entidad) {
         var _a, _b, _c;
         let queryAsync = configMappers_1.default.ADMIN.ENTRIES.CRUD;
+        entidad.RESUMEN = entidad.RESUMEN.replace(/'/g, "''");
         queryAsync += ` @p_cData = ${entidad ? `'${JSON.stringify(entidad)}'` : null},`;
         queryAsync += ` @p_cUser = ${entidad.UCRCN},`;
         queryAsync += ` @p_nTipo = ${1},`;

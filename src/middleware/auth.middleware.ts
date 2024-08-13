@@ -35,10 +35,10 @@ export class AuthMiddleware implements NestMiddleware {
             req['user'] = decoded;
             next();
         } catch (error) {
-            if (error instanceof UnauthorizedException) {
-                throw error;
-            }
-            throw new UnauthorizedException({ message: 'Error en la autenticación' });
+            // if (error instanceof UnauthorizedException) {
+            //     throw error;
+            // }
+            // throw new UnauthorizedException({ message: 'Error en la autenticación' });
         }
     }
 

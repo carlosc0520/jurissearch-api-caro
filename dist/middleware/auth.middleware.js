@@ -50,10 +50,6 @@ let AuthMiddleware = class AuthMiddleware {
             next();
         }
         catch (error) {
-            if (error instanceof common_1.UnauthorizedException) {
-                throw error;
-            }
-            throw new common_1.UnauthorizedException({ message: 'Error en la autenticación' });
         }
     }
     isSessionActive(session) {
