@@ -7,6 +7,7 @@ export class EntriesModel {
     FRESOLUTION: string = '';
     OJURISDICCIONAL: string = '';
     MAGISTRATES: string = '';
+    MAGISTRADOS: string = '';
     VDESIDENTE: number = 1;
     CVOTE: number = 1;
     ENTRIEFILE: string = '';

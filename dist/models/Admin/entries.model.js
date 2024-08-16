@@ -11,6 +11,7 @@ class EntriesModel {
         this.FRESOLUTION = '';
         this.OJURISDICCIONAL = '';
         this.MAGISTRATES = '';
+        this.MAGISTRADOS = '';
         this.VDESIDENTE = 1;
         this.CVOTE = 1;
         this.ENTRIEFILE = '';

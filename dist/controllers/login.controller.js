@@ -41,13 +41,22 @@ let LoginController = class LoginController {
     async autenticarUsuario(entidad) {
         const usuario = await this.userService.loguearUsuario(entidad);
         if (!usuario) {
-            throw new common_1.BadRequestException({ MESSAGE: 'Usuario no encontrado', STATUS: false });
+            throw new common_1.BadRequestException({
+                MESSAGE: 'Usuario no encontrado',
+                STATUS: false,
+            });
         }
         if ((usuario === null || usuario === void 0 ? void 0 : usuario.STATUS) === 0) {
-            throw new common_1.BadRequestException({ MESSAGE: usuario.MESSAGE, STATUS: false });
+            throw new common_1.BadRequestException({
+                MESSAGE: usuario.MESSAGE,
+                STATUS: false,
+            });
         }
         if (usuario.PASSWORD !== entidad.PASSWORD) {
-            throw new common_1.BadRequestException({ MESSAGE: 'Contraseña incorrecta', STATUS: false });
+            throw new common_1.BadRequestException({
+                MESSAGE: 'Contraseña incorrecta',
+                STATUS: false,
+            });
         }
         const token = this.tokenService.generateToken(usuario, entidad.BANDERA);
         usuario.TOKEN = token;
@@ -58,13 +67,18 @@ let LoginController = class LoginController {
         return true;
     }
     async listaAll(entidad) {
-        let noticias = await this.noticiaService.list(entidad);
-        noticias = noticias ? noticias : [];
-        const noticiasConImagenes = await Promise.all(noticias.map(async (noticia) => {
-            noticia.IMAGEN2 = await this.s3Service.getImage(noticia.IMAGEN);
-            return noticia;
-        }));
-        return noticiasConImagenes;
+        try {
+            let noticias = await this.noticiaService.list(entidad);
+            noticias = noticias ? noticias : [];
+            const noticiasConImagenes = await Promise.all(noticias.map(async (noticia) => {
+                noticia.IMAGEN2 = await this.s3Service.getImage(noticia.IMAGEN);
+                return noticia;
+            }));
+            return noticiasConImagenes;
+        }
+        catch (error) {
+            return [];
+        }
     }
     async listaPreguntas(entidad) {
         entidad.CESTDO = 'A';
@@ -81,12 +95,12 @@ let LoginController = class LoginController {
         const result = await this.tokenService.validateTokenSolicitud(entidad.TOKEN);
         if (result) {
             entidad.IDROLE = 2;
-            entidad.USER = "AUTOLOGIN";
-            entidad.PLAN = "1";
+            entidad.USER = 'AUTOLOGIN';
+            entidad.PLAN = '1';
             return await this.userService.createUser(entidad);
         }
         else {
-            return { MESSAGE: "Token invalido", STATUS: false };
+            return { MESSAGE: 'Token invalido', STATUS: false };
         }
     }
     async sendEmail(entidad) {
@@ -100,10 +114,16 @@ let LoginController = class LoginController {
     async recoveryPassword(entidad) {
         const usuario = await this.userService.obtenerUsuario(entidad);
         if (!usuario) {
-            throw new common_1.BadRequestException({ MESSAGE: 'Usuario no encontrado', STATUS: false });
+            throw new common_1.BadRequestException({
+                MESSAGE: 'Usuario no encontrado',
+                STATUS: false,
+            });
         }
         if ((usuario === null || usuario === void 0 ? void 0 : usuario.STATUS) === 0) {
-            throw new common_1.BadRequestException({ MESSAGE: usuario.MESSAGE, STATUS: false });
+            throw new common_1.BadRequestException({
+                MESSAGE: usuario.MESSAGE,
+                STATUS: false,
+            });
         }
         const result = await this.emailJurisService.recoveryPassword(entidad);
         return result;
@@ -112,7 +132,10 @@ let LoginController = class LoginController {
         try {
             const VALDIAR_TOKEN = this.tokenService.validateTokenSolicitudTime(entidad.TOKEN);
             if (VALDIAR_TOKEN.STATUS === false) {
-                throw new common_1.BadRequestException({ MESSAGE: VALDIAR_TOKEN.MESSAGE, STATUS: false });
+                throw new common_1.BadRequestException({
+                    MESSAGE: VALDIAR_TOKEN.MESSAGE,
+                    STATUS: false,
+                });
             }
             const entidadNuevo = new User();
             entidadNuevo.EMAIL = entidad.EMAIL;
@@ -121,11 +144,11 @@ let LoginController = class LoginController {
             return result;
         }
         catch (error) {
-            return { MESSAGE: "Token invalido", STATUS: false };
+            return { MESSAGE: 'Token invalido', STATUS: false };
         }
     }
     async uploadMultipleFilesOportunidades(req, body, files) {
-        const { 'name': name, 'email': email, 'message': message } = body;
+        const { name: name, email: email, message: message } = body;
         const [file1] = files;
         return await this.emailJurisService.sendCCFIRMAOportunidaes(name, email, message, file1);
     }
@@ -139,7 +162,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], LoginController.prototype, "autenticarUsuario", null);
 __decorate([
-    (0, common_1.Get)("logout"),
+    (0, common_1.Get)('logout'),
     __param(0, (0, common_1.Query)('token')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
@@ -160,14 +183,14 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], LoginController.prototype, "listaPreguntas", null);
 __decorate([
-    (0, common_1.Get)("validateToken"),
+    (0, common_1.Get)('validateToken'),
     __param(0, (0, common_1.Query)('token')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], LoginController.prototype, "validateToken", null);
 __decorate([
-    (0, common_1.Get)("validateToken-recovery"),
+    (0, common_1.Get)('validateToken-recovery'),
     __param(0, (0, common_1.Query)('token')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
@@ -216,7 +239,7 @@ __decorate([
             filename: (req, file, cb) => {
                 const filename = `${Date.now()}-${file.originalname.replace(/\s/g, '')}`;
                 cb(null, filename);
-            }
+            },
         }),
         fileFilter: (req, file, cb) => {
             if (file.mimetype.match(/\/(png|jpg|jpeg|pdf)$/)) {
@@ -225,7 +248,7 @@ __decorate([
             else {
                 cb(new Error('Solo se permiten archivos PNG, JPG, JPEG, o PDF'), false);
             }
-        }
+        },
     })),
     __param(0, (0, common_1.Request)()),
     __param(1, (0, common_1.Body)()),

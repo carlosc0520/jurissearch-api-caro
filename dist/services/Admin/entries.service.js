@@ -23,7 +23,10 @@ let EntriesService = class EntriesService {
     async createEntries(entidad) {
         var _a, _b, _c;
         let queryAsync = configMappers_1.default.ADMIN.ENTRIES.CRUD;
-        entidad.RESUMEN = entidad.RESUMEN.replace(/'/g, "''");
+        entidad.RESUMEN = entidad.RESUMEN ? entidad.RESUMEN.replace(/'/g, "''") : entidad.RESUMEN;
+        entidad.SHORTSUMMARY = entidad.SHORTSUMMARY ? entidad.SHORTSUMMARY.replace(/'/g, "''") : entidad.SHORTSUMMARY;
+        entidad.SUBTEMA = entidad.SUBTEMA ? entidad.SUBTEMA.replace(/'/g, "''") : entidad.SUBTEMA;
+        entidad.TEMA = entidad.TEMA ? entidad.TEMA.replace(/'/g, "''") : entidad.TEMA;
         queryAsync += ` @p_cData = ${entidad ? `'${JSON.stringify(entidad)}'` : null},`;
         queryAsync += ` @p_cUser = ${entidad.UCRCN},`;
         queryAsync += ` @p_nTipo = ${1},`;
@@ -131,6 +134,10 @@ let EntriesService = class EntriesService {
     async edit(entidad) {
         var _a, _b, _c;
         let queryAsync = configMappers_1.default.ADMIN.ENTRIES.CRUD;
+        entidad.RESUMEN = entidad.RESUMEN ? entidad.RESUMEN.replace(/'/g, "''") : entidad.RESUMEN;
+        entidad.SHORTSUMMARY = entidad.SHORTSUMMARY ? entidad.SHORTSUMMARY.replace(/'/g, "''") : entidad.SHORTSUMMARY;
+        entidad.SUBTEMA = entidad.SUBTEMA ? entidad.SUBTEMA.replace(/'/g, "''") : entidad.SUBTEMA;
+        entidad.TEMA = entidad.TEMA ? entidad.TEMA.replace(/'/g, "''") : entidad.TEMA;
         queryAsync += ` @p_cData = ${entidad ? `'${JSON.stringify(entidad)}'` : null},`;
         queryAsync += ` @p_cUser = ${entidad.UCRCN},`;
         queryAsync += ` @p_nTipo = ${1},`;
