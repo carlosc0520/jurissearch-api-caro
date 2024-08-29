@@ -7,6 +7,7 @@ import { TokenService } from '../User/token.service';
 import * as fs from 'fs';
 import procedures from '../configMappers';
 import { User } from 'src/models/Admin/user.model';
+import { HelpModel } from 'src/models/mantenimiento/help.model';
 
 @Injectable()
 export class EmailJurisService {
@@ -128,6 +129,57 @@ export class EmailJurisService {
             return { MESSAGE: 'Error al enviar la solicitud', STATUS: false };
         }
     }
+
+    async sendEmailContacto(model: HelpModel): Promise<Result> {
+        try {
+
+            const html = `
+            <!DOCTYPE html>
+            <html lang="es">
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>Bienvenido a JURISSEARCH</title>
+                <style>
+                    body {
+                        font-family: Arial, sans-serif;
+                        background-color: #f4f4f4;
+                        margin: 0;
+                        padding: 0;
+                    }
+                        
+                </style>
+            </head>
+                <body>
+                    <div class="container_juris">
+                        <h1>Solicitud de contacto</h1>
+                        <p>Nombre: ${model.NOMBRES}</p>
+                        <p>Correo: ${model.CORREO}</p>
+                        <p>Asunto: ${model.ASUNTO}</p>
+                        <p>Mensaje: ${model.MENSAJE}</p>
+                        <p>Fecha: ${new Date().toLocaleDateString()}</p>
+                    </div>
+                </body>
+            </html>
+            `;
+
+
+            const mailOptions = {
+                from: 'jsearch@ccfirma.com',
+                to: 'jsearch@ccfirma.com',
+                subject: 'Solicitud de contacto',
+                html
+            };
+
+            await this.transporter2.sendMail(mailOptions);
+
+            return { MESSAGE: 'Solicitud enviada correctamente, revisa tu correo y activa tu cuenta.', STATUS: true };
+
+        } catch (error) {
+            return { MESSAGE: 'Error al enviar la solicitud', STATUS: false };
+        }
+    }
+
 
     async ccfirmaSendEmail(model: SolicitudModel): Promise<Result> {
 

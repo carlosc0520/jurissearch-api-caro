@@ -18,10 +18,12 @@ const DataTable_model_1 = require("../../models/DataTable.model.");
 const help_service_1 = require("../../services/mantenimiento/help.service");
 const help_model_1 = require("../../models/mantenimiento/help.model");
 const planes_service_1 = require("../../services/mantenimiento/planes.service");
+const emailJurisserivce_1 = require("../../services/acompliance/emailJurisserivce");
 let HelpController = class HelpController {
-    constructor(helpService, planService) {
+    constructor(helpService, planService, emailJurisService) {
         this.helpService = helpService;
         this.planService = planService;
+        this.emailJurisService = emailJurisService;
     }
     async listFilters(entidad) {
         return await this.helpService.list(entidad);
@@ -31,6 +33,7 @@ let HelpController = class HelpController {
     }
     async addUser(entidad) {
         entidad.UCRCN = entidad.NOMBRES.toString().trim();
+        await this.emailJurisService.sendEmailContacto(entidad);
         return await this.helpService.create(entidad);
     }
     async editUser(req, entidad) {
@@ -82,6 +85,7 @@ __decorate([
 exports.HelpController = HelpController = __decorate([
     (0, common_1.Controller)('settings/help'),
     __metadata("design:paramtypes", [help_service_1.HelpService,
-        planes_service_1.PlanesService])
+        planes_service_1.PlanesService,
+        emailJurisserivce_1.EmailJurisService])
 ], HelpController);
 //# sourceMappingURL=help.controller.js.map

@@ -5,12 +5,15 @@ import { HelpService } from 'src/services/mantenimiento/help.service';
 import { HelpModel } from 'src/models/mantenimiento/help.model';
 import { PlanesModel } from 'src/models/Admin/planes.model';
 import { PlanesService } from 'src/services/mantenimiento/planes.service';
+import { EmailJurisService } from 'src/services/acompliance/emailJurisserivce';
 
 @Controller('settings/help')
 export class HelpController {
     constructor(
         private readonly helpService: HelpService,
-        private readonly planService: PlanesService
+        private readonly planService: PlanesService,
+        private readonly emailJurisService: EmailJurisService,
+
     ) { }
 
     @Get('list')
@@ -26,6 +29,9 @@ export class HelpController {
     @Post('add')
     async addUser(@Body() entidad: HelpModel): Promise<Result> {
         entidad.UCRCN = entidad.NOMBRES.toString().trim();
+
+        await this.emailJurisService.sendEmailContacto(entidad);
+
         return await this.helpService.create(entidad);
     }
 
