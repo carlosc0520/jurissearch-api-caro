@@ -52,6 +52,7 @@ const pdf_lib_1 = require("pdf-lib");
 const path = __importStar(require("path"));
 const docx_1 = require("docx");
 const recursos_1 = __importDefault(require("./recursos"));
+const jszip_1 = __importDefault(require("jszip"));
 let EntriesController = class EntriesController {
     constructor(entriesService, s3Service) {
         this.entriesService = entriesService;
@@ -432,6 +433,32 @@ let EntriesController = class EntriesController {
     }
     async listData(entidad, TYPE, BLOG, FRESOLUTION, TEMA, RTITLE) {
         return await this.entriesService.listData(entidad, entidad.DESC, TYPE, null, BLOG, FRESOLUTION, TEMA, RTITLE);
+    }
+    async listSearchData(req, RTITLE, res) {
+        try {
+            let data = await this.entriesService.listSearchData(RTITLE, 2);
+            let zip = new jszip_1.default();
+            for (let i = 0; i < data.length; i++) {
+                try {
+                    let file = await this.s3Service.downloadFile(data[i].ENTRIEFILE);
+                    zip.file(data[i].TITLE + '.pdf', file);
+                }
+                catch (error) {
+                    console.error(`Error al descargar el archivo: ${data[i].ENTRIEFILE}`, error);
+                    continue;
+                }
+            }
+            const zipBuffer = await zip.generateAsync({ type: 'nodebuffer' });
+            res.setHeader('Content-Type', 'application/zip');
+            res.setHeader('Content-Disposition', `attachment; filename=asistentes.zip`);
+            res.status(200).send(zipBuffer);
+        }
+        catch (error) {
+            res.status(500).json({ message: 'Error interno del servidor' });
+        }
+    }
+    async listSearchDataFull(req, RTITLE) {
+        return await this.entriesService.listSearchData(RTITLE, 1);
     }
     async deleteUser(req, ID) {
         return await this.entriesService.deleteFilter(ID, req.user.UCRCN);
@@ -1430,6 +1457,23 @@ __decorate([
     __metadata("design:paramtypes", [DataTable_model_1.DataTable, String, String, String, String, String]),
     __metadata("design:returntype", Promise)
 ], EntriesController.prototype, "listData", null);
+__decorate([
+    (0, common_1.Get)('list-search-data'),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Query)('RTITLE')),
+    __param(2, (0, common_1.Res)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, String, Object]),
+    __metadata("design:returntype", Promise)
+], EntriesController.prototype, "listSearchData", null);
+__decorate([
+    (0, common_1.Get)('list-search-data-full'),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Query)('RTITLE')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, String]),
+    __metadata("design:returntype", Promise)
+], EntriesController.prototype, "listSearchDataFull", null);
 __decorate([
     (0, common_1.Post)('delete'),
     __param(0, (0, common_1.Request)()),

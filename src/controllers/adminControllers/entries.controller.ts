@@ -36,6 +36,8 @@ import {
   WidthType,
 } from 'docx';
 import recursos from './recursos';
+import JSZip from 'jszip';
+import { ReporteModelEntrie } from 'src/models/Admin/reporte.model';
 
 @Controller('admin/entries')
 export class EntriesController {
@@ -759,6 +761,53 @@ export class EntriesController {
       TEMA,
       RTITLE,
     );
+  }
+
+  @Get('list-search-data')
+  async listSearchData(
+    @Request() req,
+    @Query('RTITLE') RTITLE: string,
+    @Res() res,
+  ): Promise<any> {
+    try {
+      let data: EntriesModel[] =
+        await this.entriesService.listSearchData(RTITLE, 2);
+
+      let zip = new JSZip();
+
+      for (let i = 0; i < data.length; i++) {
+        try {
+          let file = await this.s3Service.downloadFile(data[i].ENTRIEFILE);
+          zip.file(data[i].TITLE + '.pdf', file);
+        } catch (error) {
+          console.error(
+            `Error al descargar el archivo: ${data[i].ENTRIEFILE}`,
+            error,
+          );
+          continue;
+        }
+      }
+
+      const zipBuffer = await zip.generateAsync({ type: 'nodebuffer' });
+
+      res.setHeader('Content-Type', 'application/zip');
+      res.setHeader(
+        'Content-Disposition',
+        `attachment; filename=asistentes.zip`,
+      );
+
+      res.status(200).send(zipBuffer);
+    } catch (error) {
+      res.status(500).json({ message: 'Error interno del servidor' });
+    }
+  }
+
+  @Get('list-search-data-full')
+  async listSearchDataFull(
+    @Request() req,
+    @Query('RTITLE') RTITLE: string,
+  ): Promise<any> {
+    return await this.entriesService.listSearchData(RTITLE, 1);
   }
 
   @Post('delete')
@@ -1565,7 +1614,7 @@ export class EntriesController {
                               color: '000000',
                             }),
                             new TextRun({
-                                text: '\n',
+                              text: '\n',
                             }),
                             new TextRun({
                               text: 'Voto que discrepa del fallo final adoptado. ',
@@ -1620,7 +1669,7 @@ export class EntriesController {
                               color: '000000',
                             }),
                             new TextRun({
-                                text: '\n',
+                              text: '\n',
                             }),
                             new TextRun({
                               text: 'Voto que disiente de la argumentación jurídica, pero no del fallo final adoptado. ',

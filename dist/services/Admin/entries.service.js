@@ -71,6 +71,20 @@ let EntriesService = class EntriesService {
             return error;
         }
     }
+    async listSearchData(RTITLE, TYPE) {
+        let queryAsync = configMappers_1.default.ADMIN.ENTRIES.CRUD;
+        queryAsync += ` @p_cData = '${JSON.stringify({ RTITLE, TYPE })}',`;
+        queryAsync += ` @p_cUser = ${null},`;
+        queryAsync += ` @p_nTipo = ${12},`;
+        queryAsync += ` @p_nId = ${0}`;
+        try {
+            const result = await this.connection.query(queryAsync);
+            return result;
+        }
+        catch (error) {
+            return error;
+        }
+    }
     async listV(entidad, TITLE, TYPE, TIPO) {
         let queryAsync = configMappers_1.default.ADMIN.ENTRIES.CRUD;
         queryAsync += ` @p_cData = ${entidad ? `'${JSON.stringify(Object.assign(Object.assign({}, entidad), { TITLE, TYPE, TIPO }))}'` : null},`;

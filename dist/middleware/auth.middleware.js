@@ -43,7 +43,12 @@ let AuthMiddleware = class AuthMiddleware {
     }
     async use(req, res, next) {
         let token = req.headers.authorization;
-        token = token.replace('Bearer ', '');
+        try {
+            token = token.replace('Bearer ', '');
+        }
+        catch (error) {
+            token = null;
+        }
         try {
             const decoded = await jwt.verify(token, this.secretKey);
             req['user'] = decoded;
