@@ -767,11 +767,12 @@ export class EntriesController {
   async listSearchData(
     @Request() req,
     @Query('RTITLE') RTITLE: string,
+    @Query('TYPE') TYPE: string,
     @Res() res,
   ): Promise<any> {
     try {
       let data: EntriesModel[] =
-        await this.entriesService.listSearchData(RTITLE, 2);
+        await this.entriesService.listSearchData(RTITLE, 2, TYPE);
 
       let zip = new JSZip();
 
@@ -806,8 +807,9 @@ export class EntriesController {
   async listSearchDataFull(
     @Request() req,
     @Query('RTITLE') RTITLE: string,
+    @Query('TYPE') TYPE: string,
   ): Promise<any> {
-    return await this.entriesService.listSearchData(RTITLE, 1);
+    return await this.entriesService.listSearchData(RTITLE, 1, TYPE);
   }
 
   @Post('delete')

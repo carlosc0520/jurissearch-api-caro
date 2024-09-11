@@ -72,10 +72,10 @@ export class EntriesService {
     }
 
 
-    async listSearchData(RTITLE: string, TYPE: number
+    async listSearchData(RTITLE: string, TYPE: number, TIPO: string
     ): Promise<EntriesModel[]> {
         let queryAsync = procedures.ADMIN.ENTRIES.CRUD;
-        queryAsync += ` @p_cData = '${JSON.stringify({ RTITLE, TYPE })}',`;
+        queryAsync += ` @p_cData = '${JSON.stringify({ RTITLE, TYPE, TIPO})}',`;
         queryAsync += ` @p_cUser = ${null},`;
         queryAsync += ` @p_nTipo = ${12},`
         queryAsync += ` @p_nId = ${0}`;
@@ -182,6 +182,7 @@ export class EntriesService {
         queryAsync += ` @p_nTipo = ${entidad.INDICADOR},`
         queryAsync += ` @p_nId = ${0}`;
 
+        console.log(queryAsync);
         try {
             const result = await this.connection.query(queryAsync);
             return result;

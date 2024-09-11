@@ -71,9 +71,9 @@ let EntriesService = class EntriesService {
             return error;
         }
     }
-    async listSearchData(RTITLE, TYPE) {
+    async listSearchData(RTITLE, TYPE, TIPO) {
         let queryAsync = configMappers_1.default.ADMIN.ENTRIES.CRUD;
-        queryAsync += ` @p_cData = '${JSON.stringify({ RTITLE, TYPE })}',`;
+        queryAsync += ` @p_cData = '${JSON.stringify({ RTITLE, TYPE, TIPO })}',`;
         queryAsync += ` @p_cUser = ${null},`;
         queryAsync += ` @p_nTipo = ${12},`;
         queryAsync += ` @p_nId = ${0}`;
@@ -173,6 +173,7 @@ let EntriesService = class EntriesService {
         queryAsync += ` @p_cUser = ${entidad.UEDCN},`;
         queryAsync += ` @p_nTipo = ${entidad.INDICADOR},`;
         queryAsync += ` @p_nId = ${0}`;
+        console.log(queryAsync);
         try {
             const result = await this.connection.query(queryAsync);
             return result;

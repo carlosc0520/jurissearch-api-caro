@@ -15,8 +15,8 @@ export declare class EntriesController {
     editSingleFile(req: any, entidad: EntriesModel, files?: any[]): Promise<Result>;
     listUsers(entidad: DataTable, TYPE: string): Promise<EntriesModel[]>;
     listData(entidad: DataTable, TYPE: string, BLOG: string, FRESOLUTION: string, TEMA: string, RTITLE: string): Promise<EntriesModel[]>;
-    listSearchData(req: any, RTITLE: string, res: any): Promise<any>;
-    listSearchDataFull(req: any, RTITLE: string): Promise<any>;
+    listSearchData(req: any, RTITLE: string, TYPE: string, res: any): Promise<any>;
+    listSearchDataFull(req: any, RTITLE: string, TYPE: string): Promise<any>;
     deleteUser(req: any, ID: number): Promise<Result>;
     Obtener(ID: number): Promise<EntriesModel>;
     getPrint(ID: number): Promise<EntriesModel>;

@@ -434,9 +434,9 @@ let EntriesController = class EntriesController {
     async listData(entidad, TYPE, BLOG, FRESOLUTION, TEMA, RTITLE) {
         return await this.entriesService.listData(entidad, entidad.DESC, TYPE, null, BLOG, FRESOLUTION, TEMA, RTITLE);
     }
-    async listSearchData(req, RTITLE, res) {
+    async listSearchData(req, RTITLE, TYPE, res) {
         try {
-            let data = await this.entriesService.listSearchData(RTITLE, 2);
+            let data = await this.entriesService.listSearchData(RTITLE, 2, TYPE);
             let zip = new jszip_1.default();
             for (let i = 0; i < data.length; i++) {
                 try {
@@ -457,8 +457,8 @@ let EntriesController = class EntriesController {
             res.status(500).json({ message: 'Error interno del servidor' });
         }
     }
-    async listSearchDataFull(req, RTITLE) {
-        return await this.entriesService.listSearchData(RTITLE, 1);
+    async listSearchDataFull(req, RTITLE, TYPE) {
+        return await this.entriesService.listSearchData(RTITLE, 1, TYPE);
     }
     async deleteUser(req, ID) {
         return await this.entriesService.deleteFilter(ID, req.user.UCRCN);
@@ -1461,17 +1461,19 @@ __decorate([
     (0, common_1.Get)('list-search-data'),
     __param(0, (0, common_1.Request)()),
     __param(1, (0, common_1.Query)('RTITLE')),
-    __param(2, (0, common_1.Res)()),
+    __param(2, (0, common_1.Query)('TYPE')),
+    __param(3, (0, common_1.Res)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, String, Object]),
+    __metadata("design:paramtypes", [Object, String, String, Object]),
     __metadata("design:returntype", Promise)
 ], EntriesController.prototype, "listSearchData", null);
 __decorate([
     (0, common_1.Get)('list-search-data-full'),
     __param(0, (0, common_1.Request)()),
     __param(1, (0, common_1.Query)('RTITLE')),
+    __param(2, (0, common_1.Query)('TYPE')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, String]),
+    __metadata("design:paramtypes", [Object, String, String]),
     __metadata("design:returntype", Promise)
 ], EntriesController.prototype, "listSearchDataFull", null);
 __decorate([
