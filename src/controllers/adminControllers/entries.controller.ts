@@ -819,11 +819,15 @@ export class EntriesController {
   ): Promise<void> {
     try {
       // Obtener los datos
-      const dataArray = await this.entriesService.listSearchData(
+      let dataArray = await this.entriesService.listSearchData(
         RTITLE,
         1,
         TYPE,
       );
+
+      dataArray = dataArray.slice(0, 100);
+
+
       pdfMake.vfs = pdfFonts.pdfMake.vfs;
       const zip = new JSZip();
       let margin = [40, 10, 40, 10];
@@ -1228,7 +1232,6 @@ export class EntriesController {
       res.setHeader('Content-Disposition', `attachment; filename=entradas.zip`);
       res.status(200).send(zipBuffer);
     } catch (error) {
-      console.error('Error generating PDFs:', error);
       res.status(500).json({ message: 'Error interno del servidor' });
     }
   }
