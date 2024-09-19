@@ -37,7 +37,8 @@ import {
 } from 'docx';
 import recursos from './recursos';
 import JSZip from 'jszip';
-import { ReporteModelEntrie } from 'src/models/Admin/reporte.model';
+import pdfMake from 'pdfmake/build/pdfmake';
+import pdfFonts from 'pdfmake/build/vfs_fonts';
 
 @Controller('admin/entries')
 export class EntriesController {
@@ -750,6 +751,7 @@ export class EntriesController {
     @Query('FRESOLUTION') FRESOLUTION: string,
     @Query('TEMA') TEMA: string,
     @Query('RTITLE') RTITLE: string,
+    @Query('FCRCN') FCRCN: string,
   ): Promise<EntriesModel[]> {
     return await this.entriesService.listData(
       entidad,
@@ -760,6 +762,7 @@ export class EntriesController {
       FRESOLUTION,
       TEMA,
       RTITLE,
+      FCRCN,
     );
   }
 
@@ -771,26 +774,30 @@ export class EntriesController {
     @Res() res,
   ): Promise<any> {
     try {
-      let data: EntriesModel[] =
-        await this.entriesService.listSearchData(RTITLE, 2, TYPE);
+      const data: EntriesModel[] = await this.entriesService.listSearchData(
+        RTITLE,
+        2,
+        TYPE,
+      );
 
       let zip = new JSZip();
 
-      for (let i = 0; i < data.length; i++) {
-        try {
-          let file = await this.s3Service.downloadFile(data[i].ENTRIEFILE);
-          zip.file(data[i].TITLE + '.pdf', file);
-        } catch (error) {
-          console.error(
-            `Error al descargar el archivo: ${data[i].ENTRIEFILE}`,
-            error,
-          );
-          continue;
-        }
-      }
+      const downloadPromises = data.map((entry) => {
+        return this.s3Service
+          .downloadFile(entry.ENTRIEFILE)
+          .then((file) => {
+            zip.file(entry.TITLE + '.pdf', file);
+          })
+          .catch((error) => {
+            return null;
+          });
+      });
+
+      await Promise.all(downloadPromises);
 
       const zipBuffer = await zip.generateAsync({ type: 'nodebuffer' });
 
+      // Configurar la respuesta HTTP para la descarga del archivo ZIP
       res.setHeader('Content-Type', 'application/zip');
       res.setHeader(
         'Content-Disposition',
@@ -799,17 +806,473 @@ export class EntriesController {
 
       res.status(200).send(zipBuffer);
     } catch (error) {
+      // Manejar errores del servidor
       res.status(500).json({ message: 'Error interno del servidor' });
     }
   }
 
   @Get('list-search-data-full')
   async listSearchDataFull(
-    @Request() req,
     @Query('RTITLE') RTITLE: string,
     @Query('TYPE') TYPE: string,
-  ): Promise<any> {
-    return await this.entriesService.listSearchData(RTITLE, 1, TYPE);
+    @Res() res: Response,
+  ): Promise<void> {
+    try {
+      // Obtener los datos
+      const dataArray = await this.entriesService.listSearchData(
+        RTITLE,
+        1,
+        TYPE,
+      );
+      pdfMake.vfs = pdfFonts.pdfMake.vfs;
+      const zip = new JSZip();
+      let margin = [40, 10, 40, 10];
+      let totalPages = 0;
+      let fontSize = 11;
+
+      const pdfPromises = dataArray.map((data) => {
+        // Procesar datos
+        let ambit = JSON.parse(data.AMBIT)?.[0]?.LABEL || '';
+        ambit = ambit ? ambit.replace(/\s*,/g, ',') : '';
+        let magistrados = JSON.parse(data.MAGISTRADOS)?.[0]?.LABEL || '';
+        magistrados = magistrados ? magistrados.replace(/\s*,/g, ',') : '';
+        let delitos = JSON.parse(data.DELITO)?.[0]?.LABEL || '';
+        delitos = delitos ? delitos.replace(/\s*,/g, ',') : '';
+        let ojurisdiccional =
+          JSON.parse(data.OJURISDICCIONAL)?.[0]?.LABEL || '';
+        ojurisdiccional = ojurisdiccional
+          ? ojurisdiccional.replace(/\s*,/g, ',')
+          : '';
+        let recursosEntrie = JSON.parse(data.RECURSO)?.[0]?.LABEL || '';
+        recursosEntrie = recursosEntrie
+          ? recursosEntrie.replace(/\s*,/g, ',')
+          : '';
+        let materias = JSON.parse(data.MATERIA)?.[0]?.LABEL || '';
+        materias = materias ? materias.replace(/\s*,/g, ',') : '';
+
+        data = {
+          ...data,
+          ID: data.ID,
+          TITLE: data.TITLE,
+          AMBIT: ambit,
+          FRESOLUTION: data.FRESOLUTION
+            ? new Date(data.FRESOLUTION).toLocaleDateString('es-PE', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+              })
+            : '',
+          OJURISDICCIONAL: ojurisdiccional,
+          MAGISTRATES: magistrados,
+          VDESIDENTE: data.VDESIDENTE,
+          CVOTE: data.CVOTE,
+          ENTRIEFILE: data.ENTRIEFILE,
+          ENTRIEFILERESUMEN: data.ENTRIEFILERESUMEN,
+          KEYWORDS: data.KEYWORDS?.replace(/\s*,/g, ', '),
+          TEMA: data.TEMA,
+          SUBTEMA: data.SUBTEMA,
+          SHORTSUMMARY: data.SHORTSUMMARY,
+          RESUMEN: data.RESUMEN,
+          NENTRIEFILERESUMEN: null,
+          NENTRIEFILE: null,
+          DELITO: delitos,
+          RECURSO: recursosEntrie,
+          MATERIA: materias,
+        };
+
+        // Configurar documento PDF
+        const documentoPDF = {
+          header: (currentPage, pageCount) => ({
+            style: 'headerStyle',
+            columns: [
+              {
+                width: '*',
+                text: '',
+                alignment: 'center',
+                margin: [40, 40, 40, 40],
+              },
+              {
+                width: 'auto',
+                stack: [
+                  {
+                    image: recursos.nuevoLogoJuris,
+                    width: 60,
+                    link: 'http://web-juris-search-caro.s3-website-us-east-1.amazonaws.com/',
+                    alignment: 'center',
+                    margin: [0, 20, 0, 0],
+                  },
+                ],
+              },
+              {
+                width: '*',
+                text: '',
+                alignment: 'center',
+                margin: [40, 40, 40, 40],
+              },
+            ],
+          }),
+          background: [
+            {
+              image: recursos.toIMG,
+              width: 620,
+              height: 600,
+              absolutePosition: { x: 5, y: 150 },
+              alignment: 'center',
+              opacity: 0.5,
+            },
+          ],
+          content: [
+            {
+              text: `${data.TITLE}`,
+              style: 'header',
+              alignment: 'left',
+              margin: [40, -20, 40, 10],
+              bold: true,
+              fontFace: 'Calibri',
+            },
+            {
+              columns: [
+                {
+                  ul: [`Tipo de Recurso:`, `Delitos:`, `Vinculante:`],
+                  margin: [margin[0], 0, 0, 0],
+                  fontSize,
+                  lineHeight: 1.5,
+                  width: '35%',
+                  fontFace: 'Calibri',
+                },
+                {
+                  ul: [
+                    `${data.RECURSO}`,
+                    `${data.DELITO}`,
+                    `${data.ISBINDING ? 'Sí' : 'No'}`,
+                  ],
+                  margin: [0, 5, margin[0] + 20, 0],
+                  fontSize,
+                  lineHeight: 1.5,
+                  width: '65%',
+                  fontFace: 'Calibri',
+                },
+              ],
+            },
+            {
+              style: 'tableExample',
+              table: {
+                dontBreakRows: false,
+                widths: ['35%', '65%'],
+                body: [
+                  [
+                    {
+                      text: 'CONTENIDO',
+                      bold: true,
+                      colSpan: 2,
+                      fontSize,
+                      alignment: 'center',
+                      margin: [20, 15, 20, 15],
+                    },
+                    {},
+                  ],
+                  [
+                    {
+                      text: 'TEMA',
+                      bold: true,
+                      fontSize,
+                      margin: [10, 15, 10, 15],
+                    },
+                    this.renderContent(data.TEMA, fontSize, [10, 15, 10, 15]),
+                  ],
+                  [
+                    {
+                      text: 'SUBTEMA',
+                      bold: true,
+                      fontSize,
+                      margin: [10, 15, 10, 15],
+                    },
+                    this.renderContent(
+                      data.SUBTEMA,
+                      fontSize,
+                      [10, 15, 10, 15],
+                    ),
+                  ],
+                  [
+                    {
+                      text: 'PALABRAS CLAVES',
+                      bold: true,
+                      fontSize,
+                      margin: [10, 15, 10, 15],
+                    },
+                    {
+                      text: data.KEYWORDS,
+                      fontSize,
+                      margin: [10, 15, 10, 15],
+                    },
+                  ],
+                  [
+                    {
+                      text: 'SÍNTESIS DE LOS FUNDAMENTOS JURÍDICOS RELEVANTES',
+                      bold: true,
+                      fontSize,
+                      margin: [10, 15, 10, 15],
+                    },
+                    this.renderContent(
+                      data.SHORTSUMMARY,
+                      fontSize,
+                      [10, 15, 10, 15],
+                    ),
+                  ],
+                  [
+                    {
+                      text: 'FUNDAMENTOS JURÍDICOS RELEVANTES',
+                      bold: true,
+                      fontSize,
+                      margin: [10, 15, 10, 15],
+                      fillColor: '#fff2cc',
+                    },
+
+                    {
+                      ...this.renderContent(
+                        data.RESUMEN,
+                        fontSize,
+                        [10, 15, 10, 15],
+                      ),
+                      fillColor: '#fff2cc',
+                      italics: true,
+                    },
+                  ],
+                  [
+                    {
+                      text: 'IDENTIFICACIÓN',
+                      bold: true,
+                      fontSize,
+                      colSpan: 2,
+                      alignment: 'center',
+                      margin: [10, 15, 10, 15],
+                    },
+                    {},
+                  ],
+                  [
+                    {
+                      text: 'ÁMBITO',
+                      bold: true,
+                      fontSize,
+                      margin: [10, 15, 10, 15],
+                    },
+                    {
+                      text: data.AMBIT,
+                      fontSize,
+                      margin: [10, 15, 10, 15],
+                    },
+                  ],
+                  [
+                    {
+                      text: 'FECHA DE RESOLUCIÓN',
+                      bold: true,
+                      fontSize,
+                      margin: [10, 15, 10, 15],
+                    },
+                    {
+                      text: data.FRESOLUTION,
+                      fontSize,
+                      margin: [10, 15, 10, 15],
+                    },
+                  ],
+                  [
+                    {
+                      text: 'ÓRGANO JURISDICCIONAL',
+                      bold: true,
+                      fontSize,
+                      margin: [10, 15, 10, 15],
+                    },
+                    {
+                      text: data.OJURISDICCIONAL,
+                      fontSize,
+                      margin: [10, 15, 10, 15],
+                    },
+                  ],
+                  [
+                    {
+                      text: 'MAGISTRADOS',
+                      bold: true,
+                      fontSize,
+                      margin: [10, 15, 10, 15],
+                    },
+                    {
+                      text: data.MAGISTRATES,
+                      fontSize,
+                      margin: [10, 15, 10, 15],
+                    },
+                  ],
+                  [
+                    {
+                      text: [
+                        'VOTO DEL DESIDENTE\n',
+                        {
+                          text: 'Voto que discrepa del fallo final adoptado.',
+                          fontSize: fontSize - 2,
+                          bold: false,
+                          italics: true,
+                        },
+                      ],
+                      bold: true,
+                      fontSize,
+                      margin: [10, 15, 10, 15],
+                    },
+                    {
+                      text: data?.VDESIDENTE || '-',
+                      fontSize,
+                      margin: [10, 15, 10, 15],
+                    },
+                  ],
+                  [
+                    {
+                      text: [
+                        'VOTO CONCURRENTE\n',
+                        {
+                          text: 'Voto que disiente de la argumentación jurídica, pero no del fallo final adoptado.',
+                          fontSize: fontSize - 1,
+                          bold: false,
+                          italics: true,
+                        },
+                      ],
+                      bold: true,
+                      fontSize,
+                      margin: [10, 15, 10, 15],
+                    },
+                    {
+                      text: data?.CVOTE || '-',
+                      fontSize,
+                      margin: [10, 15, 10, 15],
+                    },
+                  ],
+                ],
+              },
+            },
+            { text: '\n\n\n' },
+          ],
+          styles: {
+            FontFace: 'Calibri',
+            headerStyle: {
+              fontSize: 18,
+              bold: true,
+              margin: [0, 0, 0, 5],
+            },
+            tableExample: {
+              margin: [margin[0], 10, margin[2], 10],
+              FontFace: 'Calibri',
+            },
+            footer: {
+              FontFace: 'Calibri',
+              fontSize: 10,
+              margin: [40, 50, 40, 10],
+            },
+          },
+          footer: function (currentPage, pageCount) {
+            if (currentPage > totalPages) {
+              totalPages = currentPage;
+            }
+            return {
+              style: 'footer',
+              columns: [
+                {
+                  width: '*',
+                  text: ``,
+                  alignment: 'left',
+                  color: 'transparent',
+                },
+                {
+                  width: 'auto',
+                  text: 'www.',
+                  alignment: 'center',
+                  color: 'gray',
+                },
+                {
+                  width: 'auto',
+                  text: 'ccfirma',
+                  alignment: 'center',
+                  color: '#e81eb2',
+                  link: 'https://ccfirma.com/',
+                },
+                {
+                  width: 'auto',
+                  text: '.com',
+                  alignment: 'center',
+                  color: 'gray',
+                },
+                {
+                  width: '*',
+                  text: `Página ${currentPage} de ${pageCount}`,
+                  alignment: 'right',
+                },
+              ],
+            };
+          },
+
+          pageMargins: [40, 100, 40, 80],
+        };
+
+        // Generar PDF
+        const pdfDoc = pdfMake.createPdf(documentoPDF);
+        return new Promise<Buffer>((resolve, reject) => {
+          pdfDoc.getBuffer((buffer) => {
+            const fileName = `${data.TITLE.toUpperCase()} - RESUMEN EJECUTIVO.pdf`;
+            zip.file(fileName, buffer);
+            resolve(buffer);
+          });
+        });
+      });
+
+      await Promise.all(pdfPromises);
+
+      // Generar y enviar el ZIP
+      const zipBuffer = await zip.generateAsync({ type: 'nodebuffer' });
+      res.setHeader('Content-Type', 'application/zip');
+      res.setHeader('Content-Disposition', `attachment; filename=entradas.zip`);
+      res.status(200).send(zipBuffer);
+    } catch (error) {
+      console.error('Error generating PDFs:', error);
+      res.status(500).json({ message: 'Error interno del servidor' });
+    }
+  }
+
+  private renderContent(content, fontSize, margin) {
+    let decodedContent = this.decodeHtmlEntities(content);
+
+    if (Array.isArray(decodedContent)) {
+      return {
+        ul: decodedContent,
+        fontSize,
+        alignment: 'justify',
+        margin,
+      };
+    }
+
+    return {
+      text: decodedContent,
+      fontSize,
+      alignment: 'justify',
+      margin,
+    };
+  }
+
+  private decodeHtmlEntities(text) {
+    if (text === null) return '';
+    text = text.replace(/&[a-z]+;/g, '');
+    try {
+      if (text.includes('<ul>')) {
+        let t = text
+          .split('<li>')
+          .map((item) => {
+            item = item.replace(/<\/?[^>]+(>|$)/g, '');
+            return item;
+          })
+          .filter((item) => item.trim() !== '');
+
+        return t;
+      }
+
+      return text.replace(/<[^>]*>?/gm, '');
+    } catch (error) {
+      return text.replace(/<[^>]*>?/gm, '');
+    }
   }
 
   @Post('delete')

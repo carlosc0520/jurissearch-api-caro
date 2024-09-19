@@ -52,12 +52,12 @@ export class EntriesService {
     }
 
     async listData(entidad: DataTable, TITLE: string, TYPE: string, TIPO: string,
-        BLOG: string, FRESOLUTION: string, TEMA: string, RTITLE: string
+        BLOG: string, FRESOLUTION: string, TEMA: string, RTITLE: string, FCRCN?: string
     ): Promise<EntriesModel[]> {
         let queryAsync = procedures.ADMIN.ENTRIES.CRUD;
         queryAsync += ` @p_cData = ${entidad ? `'${JSON.stringify({
             ...entidad, TITLE, TYPE, TIPO,
-            BLOG, FRESOLUTION, TEMA, RTITLE
+            BLOG, FRESOLUTION, TEMA, RTITLE, FCRCN
         })}'` : null},`;
         queryAsync += ` @p_cUser = ${null},`;
         queryAsync += ` @p_nTipo = ${4},`

@@ -56,10 +56,10 @@ let EntriesService = class EntriesService {
             return error;
         }
     }
-    async listData(entidad, TITLE, TYPE, TIPO, BLOG, FRESOLUTION, TEMA, RTITLE) {
+    async listData(entidad, TITLE, TYPE, TIPO, BLOG, FRESOLUTION, TEMA, RTITLE, FCRCN) {
         let queryAsync = configMappers_1.default.ADMIN.ENTRIES.CRUD;
         queryAsync += ` @p_cData = ${entidad ? `'${JSON.stringify(Object.assign(Object.assign({}, entidad), { TITLE, TYPE, TIPO,
-            BLOG, FRESOLUTION, TEMA, RTITLE }))}'` : null},`;
+            BLOG, FRESOLUTION, TEMA, RTITLE, FCRCN }))}'` : null},`;
         queryAsync += ` @p_cUser = ${null},`;
         queryAsync += ` @p_nTipo = ${4},`;
         queryAsync += ` @p_nId = ${entidad.ID || 0}`;
@@ -173,7 +173,6 @@ let EntriesService = class EntriesService {
         queryAsync += ` @p_cUser = ${entidad.UEDCN},`;
         queryAsync += ` @p_nTipo = ${entidad.INDICADOR},`;
         queryAsync += ` @p_nId = ${0}`;
-        console.log(queryAsync);
         try {
             const result = await this.connection.query(queryAsync);
             return result;

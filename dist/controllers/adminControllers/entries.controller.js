@@ -53,6 +53,8 @@ const path = __importStar(require("path"));
 const docx_1 = require("docx");
 const recursos_1 = __importDefault(require("./recursos"));
 const jszip_1 = __importDefault(require("jszip"));
+const pdfmake_1 = __importDefault(require("pdfmake/build/pdfmake"));
+const vfs_fonts_1 = __importDefault(require("pdfmake/build/vfs_fonts"));
 let EntriesController = class EntriesController {
     constructor(entriesService, s3Service) {
         this.entriesService = entriesService;
@@ -431,23 +433,24 @@ let EntriesController = class EntriesController {
     async listUsers(entidad, TYPE) {
         return await this.entriesService.list(entidad, entidad.DESC, TYPE, null);
     }
-    async listData(entidad, TYPE, BLOG, FRESOLUTION, TEMA, RTITLE) {
-        return await this.entriesService.listData(entidad, entidad.DESC, TYPE, null, BLOG, FRESOLUTION, TEMA, RTITLE);
+    async listData(entidad, TYPE, BLOG, FRESOLUTION, TEMA, RTITLE, FCRCN) {
+        return await this.entriesService.listData(entidad, entidad.DESC, TYPE, null, BLOG, FRESOLUTION, TEMA, RTITLE, FCRCN);
     }
     async listSearchData(req, RTITLE, TYPE, res) {
         try {
-            let data = await this.entriesService.listSearchData(RTITLE, 2, TYPE);
+            const data = await this.entriesService.listSearchData(RTITLE, 2, TYPE);
             let zip = new jszip_1.default();
-            for (let i = 0; i < data.length; i++) {
-                try {
-                    let file = await this.s3Service.downloadFile(data[i].ENTRIEFILE);
-                    zip.file(data[i].TITLE + '.pdf', file);
-                }
-                catch (error) {
-                    console.error(`Error al descargar el archivo: ${data[i].ENTRIEFILE}`, error);
-                    continue;
-                }
-            }
+            const downloadPromises = data.map((entry) => {
+                return this.s3Service
+                    .downloadFile(entry.ENTRIEFILE)
+                    .then((file) => {
+                    zip.file(entry.TITLE + '.pdf', file);
+                })
+                    .catch((error) => {
+                    return null;
+                });
+            });
+            await Promise.all(downloadPromises);
             const zipBuffer = await zip.generateAsync({ type: 'nodebuffer' });
             res.setHeader('Content-Type', 'application/zip');
             res.setHeader('Content-Disposition', `attachment; filename=asistentes.zip`);
@@ -457,8 +460,405 @@ let EntriesController = class EntriesController {
             res.status(500).json({ message: 'Error interno del servidor' });
         }
     }
-    async listSearchDataFull(req, RTITLE, TYPE) {
-        return await this.entriesService.listSearchData(RTITLE, 1, TYPE);
+    async listSearchDataFull(RTITLE, TYPE, res) {
+        try {
+            const dataArray = await this.entriesService.listSearchData(RTITLE, 1, TYPE);
+            pdfmake_1.default.vfs = vfs_fonts_1.default.pdfMake.vfs;
+            const zip = new jszip_1.default();
+            let margin = [40, 10, 40, 10];
+            let totalPages = 0;
+            let fontSize = 11;
+            const pdfPromises = dataArray.map((data) => {
+                var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o;
+                let ambit = ((_b = (_a = JSON.parse(data.AMBIT)) === null || _a === void 0 ? void 0 : _a[0]) === null || _b === void 0 ? void 0 : _b.LABEL) || '';
+                ambit = ambit ? ambit.replace(/\s*,/g, ',') : '';
+                let magistrados = ((_d = (_c = JSON.parse(data.MAGISTRADOS)) === null || _c === void 0 ? void 0 : _c[0]) === null || _d === void 0 ? void 0 : _d.LABEL) || '';
+                magistrados = magistrados ? magistrados.replace(/\s*,/g, ',') : '';
+                let delitos = ((_f = (_e = JSON.parse(data.DELITO)) === null || _e === void 0 ? void 0 : _e[0]) === null || _f === void 0 ? void 0 : _f.LABEL) || '';
+                delitos = delitos ? delitos.replace(/\s*,/g, ',') : '';
+                let ojurisdiccional = ((_h = (_g = JSON.parse(data.OJURISDICCIONAL)) === null || _g === void 0 ? void 0 : _g[0]) === null || _h === void 0 ? void 0 : _h.LABEL) || '';
+                ojurisdiccional = ojurisdiccional
+                    ? ojurisdiccional.replace(/\s*,/g, ',')
+                    : '';
+                let recursosEntrie = ((_k = (_j = JSON.parse(data.RECURSO)) === null || _j === void 0 ? void 0 : _j[0]) === null || _k === void 0 ? void 0 : _k.LABEL) || '';
+                recursosEntrie = recursosEntrie
+                    ? recursosEntrie.replace(/\s*,/g, ',')
+                    : '';
+                let materias = ((_m = (_l = JSON.parse(data.MATERIA)) === null || _l === void 0 ? void 0 : _l[0]) === null || _m === void 0 ? void 0 : _m.LABEL) || '';
+                materias = materias ? materias.replace(/\s*,/g, ',') : '';
+                data = Object.assign(Object.assign({}, data), { ID: data.ID, TITLE: data.TITLE, AMBIT: ambit, FRESOLUTION: data.FRESOLUTION
+                        ? new Date(data.FRESOLUTION).toLocaleDateString('es-PE', {
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric',
+                        })
+                        : '', OJURISDICCIONAL: ojurisdiccional, MAGISTRATES: magistrados, VDESIDENTE: data.VDESIDENTE, CVOTE: data.CVOTE, ENTRIEFILE: data.ENTRIEFILE, ENTRIEFILERESUMEN: data.ENTRIEFILERESUMEN, KEYWORDS: (_o = data.KEYWORDS) === null || _o === void 0 ? void 0 : _o.replace(/\s*,/g, ', '), TEMA: data.TEMA, SUBTEMA: data.SUBTEMA, SHORTSUMMARY: data.SHORTSUMMARY, RESUMEN: data.RESUMEN, NENTRIEFILERESUMEN: null, NENTRIEFILE: null, DELITO: delitos, RECURSO: recursosEntrie, MATERIA: materias });
+                const documentoPDF = {
+                    header: (currentPage, pageCount) => ({
+                        style: 'headerStyle',
+                        columns: [
+                            {
+                                width: '*',
+                                text: '',
+                                alignment: 'center',
+                                margin: [40, 40, 40, 40],
+                            },
+                            {
+                                width: 'auto',
+                                stack: [
+                                    {
+                                        image: recursos_1.default.nuevoLogoJuris,
+                                        width: 60,
+                                        link: 'http://web-juris-search-caro.s3-website-us-east-1.amazonaws.com/',
+                                        alignment: 'center',
+                                        margin: [0, 20, 0, 0],
+                                    },
+                                ],
+                            },
+                            {
+                                width: '*',
+                                text: '',
+                                alignment: 'center',
+                                margin: [40, 40, 40, 40],
+                            },
+                        ],
+                    }),
+                    background: [
+                        {
+                            image: recursos_1.default.toIMG,
+                            width: 620,
+                            height: 600,
+                            absolutePosition: { x: 5, y: 150 },
+                            alignment: 'center',
+                            opacity: 0.5,
+                        },
+                    ],
+                    content: [
+                        {
+                            text: `${data.TITLE}`,
+                            style: 'header',
+                            alignment: 'left',
+                            margin: [40, -20, 40, 10],
+                            bold: true,
+                            fontFace: 'Calibri',
+                        },
+                        {
+                            columns: [
+                                {
+                                    ul: [`Tipo de Recurso:`, `Delitos:`, `Vinculante:`],
+                                    margin: [margin[0], 0, 0, 0],
+                                    fontSize,
+                                    lineHeight: 1.5,
+                                    width: '35%',
+                                    fontFace: 'Calibri',
+                                },
+                                {
+                                    ul: [
+                                        `${data.RECURSO}`,
+                                        `${data.DELITO}`,
+                                        `${data.ISBINDING ? 'Sí' : 'No'}`,
+                                    ],
+                                    margin: [0, 5, margin[0] + 20, 0],
+                                    fontSize,
+                                    lineHeight: 1.5,
+                                    width: '65%',
+                                    fontFace: 'Calibri',
+                                },
+                            ],
+                        },
+                        {
+                            style: 'tableExample',
+                            table: {
+                                dontBreakRows: false,
+                                widths: ['35%', '65%'],
+                                body: [
+                                    [
+                                        {
+                                            text: 'CONTENIDO',
+                                            bold: true,
+                                            colSpan: 2,
+                                            fontSize,
+                                            alignment: 'center',
+                                            margin: [20, 15, 20, 15],
+                                        },
+                                        {},
+                                    ],
+                                    [
+                                        {
+                                            text: 'TEMA',
+                                            bold: true,
+                                            fontSize,
+                                            margin: [10, 15, 10, 15],
+                                        },
+                                        this.renderContent(data.TEMA, fontSize, [10, 15, 10, 15]),
+                                    ],
+                                    [
+                                        {
+                                            text: 'SUBTEMA',
+                                            bold: true,
+                                            fontSize,
+                                            margin: [10, 15, 10, 15],
+                                        },
+                                        this.renderContent(data.SUBTEMA, fontSize, [10, 15, 10, 15]),
+                                    ],
+                                    [
+                                        {
+                                            text: 'PALABRAS CLAVES',
+                                            bold: true,
+                                            fontSize,
+                                            margin: [10, 15, 10, 15],
+                                        },
+                                        {
+                                            text: data.KEYWORDS,
+                                            fontSize,
+                                            margin: [10, 15, 10, 15],
+                                        },
+                                    ],
+                                    [
+                                        {
+                                            text: 'SÍNTESIS DE LOS FUNDAMENTOS JURÍDICOS RELEVANTES',
+                                            bold: true,
+                                            fontSize,
+                                            margin: [10, 15, 10, 15],
+                                        },
+                                        this.renderContent(data.SHORTSUMMARY, fontSize, [10, 15, 10, 15]),
+                                    ],
+                                    [
+                                        {
+                                            text: 'FUNDAMENTOS JURÍDICOS RELEVANTES',
+                                            bold: true,
+                                            fontSize,
+                                            margin: [10, 15, 10, 15],
+                                            fillColor: '#fff2cc',
+                                        },
+                                        Object.assign(Object.assign({}, this.renderContent(data.RESUMEN, fontSize, [10, 15, 10, 15])), { fillColor: '#fff2cc', italics: true }),
+                                    ],
+                                    [
+                                        {
+                                            text: 'IDENTIFICACIÓN',
+                                            bold: true,
+                                            fontSize,
+                                            colSpan: 2,
+                                            alignment: 'center',
+                                            margin: [10, 15, 10, 15],
+                                        },
+                                        {},
+                                    ],
+                                    [
+                                        {
+                                            text: 'ÁMBITO',
+                                            bold: true,
+                                            fontSize,
+                                            margin: [10, 15, 10, 15],
+                                        },
+                                        {
+                                            text: data.AMBIT,
+                                            fontSize,
+                                            margin: [10, 15, 10, 15],
+                                        },
+                                    ],
+                                    [
+                                        {
+                                            text: 'FECHA DE RESOLUCIÓN',
+                                            bold: true,
+                                            fontSize,
+                                            margin: [10, 15, 10, 15],
+                                        },
+                                        {
+                                            text: data.FRESOLUTION,
+                                            fontSize,
+                                            margin: [10, 15, 10, 15],
+                                        },
+                                    ],
+                                    [
+                                        {
+                                            text: 'ÓRGANO JURISDICCIONAL',
+                                            bold: true,
+                                            fontSize,
+                                            margin: [10, 15, 10, 15],
+                                        },
+                                        {
+                                            text: data.OJURISDICCIONAL,
+                                            fontSize,
+                                            margin: [10, 15, 10, 15],
+                                        },
+                                    ],
+                                    [
+                                        {
+                                            text: 'MAGISTRADOS',
+                                            bold: true,
+                                            fontSize,
+                                            margin: [10, 15, 10, 15],
+                                        },
+                                        {
+                                            text: data.MAGISTRATES,
+                                            fontSize,
+                                            margin: [10, 15, 10, 15],
+                                        },
+                                    ],
+                                    [
+                                        {
+                                            text: [
+                                                'VOTO DEL DESIDENTE\n',
+                                                {
+                                                    text: 'Voto que discrepa del fallo final adoptado.',
+                                                    fontSize: fontSize - 2,
+                                                    bold: false,
+                                                    italics: true,
+                                                },
+                                            ],
+                                            bold: true,
+                                            fontSize,
+                                            margin: [10, 15, 10, 15],
+                                        },
+                                        {
+                                            text: (data === null || data === void 0 ? void 0 : data.VDESIDENTE) || '-',
+                                            fontSize,
+                                            margin: [10, 15, 10, 15],
+                                        },
+                                    ],
+                                    [
+                                        {
+                                            text: [
+                                                'VOTO CONCURRENTE\n',
+                                                {
+                                                    text: 'Voto que disiente de la argumentación jurídica, pero no del fallo final adoptado.',
+                                                    fontSize: fontSize - 1,
+                                                    bold: false,
+                                                    italics: true,
+                                                },
+                                            ],
+                                            bold: true,
+                                            fontSize,
+                                            margin: [10, 15, 10, 15],
+                                        },
+                                        {
+                                            text: (data === null || data === void 0 ? void 0 : data.CVOTE) || '-',
+                                            fontSize,
+                                            margin: [10, 15, 10, 15],
+                                        },
+                                    ],
+                                ],
+                            },
+                        },
+                        { text: '\n\n\n' },
+                    ],
+                    styles: {
+                        FontFace: 'Calibri',
+                        headerStyle: {
+                            fontSize: 18,
+                            bold: true,
+                            margin: [0, 0, 0, 5],
+                        },
+                        tableExample: {
+                            margin: [margin[0], 10, margin[2], 10],
+                            FontFace: 'Calibri',
+                        },
+                        footer: {
+                            FontFace: 'Calibri',
+                            fontSize: 10,
+                            margin: [40, 50, 40, 10],
+                        },
+                    },
+                    footer: function (currentPage, pageCount) {
+                        if (currentPage > totalPages) {
+                            totalPages = currentPage;
+                        }
+                        return {
+                            style: 'footer',
+                            columns: [
+                                {
+                                    width: '*',
+                                    text: ``,
+                                    alignment: 'left',
+                                    color: 'transparent',
+                                },
+                                {
+                                    width: 'auto',
+                                    text: 'www.',
+                                    alignment: 'center',
+                                    color: 'gray',
+                                },
+                                {
+                                    width: 'auto',
+                                    text: 'ccfirma',
+                                    alignment: 'center',
+                                    color: '#e81eb2',
+                                    link: 'https://ccfirma.com/',
+                                },
+                                {
+                                    width: 'auto',
+                                    text: '.com',
+                                    alignment: 'center',
+                                    color: 'gray',
+                                },
+                                {
+                                    width: '*',
+                                    text: `Página ${currentPage} de ${pageCount}`,
+                                    alignment: 'right',
+                                },
+                            ],
+                        };
+                    },
+                    pageMargins: [40, 100, 40, 80],
+                };
+                const pdfDoc = pdfmake_1.default.createPdf(documentoPDF);
+                return new Promise((resolve, reject) => {
+                    pdfDoc.getBuffer((buffer) => {
+                        const fileName = `${data.TITLE.toUpperCase()} - RESUMEN EJECUTIVO.pdf`;
+                        zip.file(fileName, buffer);
+                        resolve(buffer);
+                    });
+                });
+            });
+            await Promise.all(pdfPromises);
+            const zipBuffer = await zip.generateAsync({ type: 'nodebuffer' });
+            res.setHeader('Content-Type', 'application/zip');
+            res.setHeader('Content-Disposition', `attachment; filename=entradas.zip`);
+            res.status(200).send(zipBuffer);
+        }
+        catch (error) {
+            console.error('Error generating PDFs:', error);
+            res.status(500).json({ message: 'Error interno del servidor' });
+        }
+    }
+    renderContent(content, fontSize, margin) {
+        let decodedContent = this.decodeHtmlEntities(content);
+        if (Array.isArray(decodedContent)) {
+            return {
+                ul: decodedContent,
+                fontSize,
+                alignment: 'justify',
+                margin,
+            };
+        }
+        return {
+            text: decodedContent,
+            fontSize,
+            alignment: 'justify',
+            margin,
+        };
+    }
+    decodeHtmlEntities(text) {
+        if (text === null)
+            return '';
+        text = text.replace(/&[a-z]+;/g, '');
+        try {
+            if (text.includes('<ul>')) {
+                let t = text
+                    .split('<li>')
+                    .map((item) => {
+                    item = item.replace(/<\/?[^>]+(>|$)/g, '');
+                    return item;
+                })
+                    .filter((item) => item.trim() !== '');
+                return t;
+            }
+            return text.replace(/<[^>]*>?/gm, '');
+        }
+        catch (error) {
+            return text.replace(/<[^>]*>?/gm, '');
+        }
     }
     async deleteUser(req, ID) {
         return await this.entriesService.deleteFilter(ID, req.user.UCRCN);
@@ -1453,8 +1853,9 @@ __decorate([
     __param(3, (0, common_1.Query)('FRESOLUTION')),
     __param(4, (0, common_1.Query)('TEMA')),
     __param(5, (0, common_1.Query)('RTITLE')),
+    __param(6, (0, common_1.Query)('FCRCN')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [DataTable_model_1.DataTable, String, String, String, String, String]),
+    __metadata("design:paramtypes", [DataTable_model_1.DataTable, String, String, String, String, String, String]),
     __metadata("design:returntype", Promise)
 ], EntriesController.prototype, "listData", null);
 __decorate([
@@ -1469,11 +1870,11 @@ __decorate([
 ], EntriesController.prototype, "listSearchData", null);
 __decorate([
     (0, common_1.Get)('list-search-data-full'),
-    __param(0, (0, common_1.Request)()),
-    __param(1, (0, common_1.Query)('RTITLE')),
-    __param(2, (0, common_1.Query)('TYPE')),
+    __param(0, (0, common_1.Query)('RTITLE')),
+    __param(1, (0, common_1.Query)('TYPE')),
+    __param(2, (0, common_1.Res)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, String, String]),
+    __metadata("design:paramtypes", [String, String, Object]),
     __metadata("design:returntype", Promise)
 ], EntriesController.prototype, "listSearchDataFull", null);
 __decorate([
