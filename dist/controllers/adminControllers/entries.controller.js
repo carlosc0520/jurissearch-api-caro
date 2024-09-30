@@ -145,6 +145,7 @@ let EntriesController = class EntriesController {
             return result;
         }
         catch (error) {
+            console.log(error);
             return { MESSAGE: error.message, STATUS: false };
         }
         finally {
@@ -462,7 +463,8 @@ let EntriesController = class EntriesController {
     }
     async listSearchDataFull(RTITLE, TYPE, res) {
         try {
-            const dataArray = await this.entriesService.listSearchData(RTITLE, 1, TYPE);
+            let dataArray = await this.entriesService.listSearchData(RTITLE, 1, TYPE);
+            dataArray = dataArray.slice(0, 100);
             pdfmake_1.default.vfs = vfs_fonts_1.default.pdfMake.vfs;
             const zip = new jszip_1.default();
             let margin = [40, 10, 40, 10];
@@ -818,7 +820,6 @@ let EntriesController = class EntriesController {
             res.status(200).send(zipBuffer);
         }
         catch (error) {
-            console.error('Error generating PDFs:', error);
             res.status(500).json({ message: 'Error interno del servidor' });
         }
     }

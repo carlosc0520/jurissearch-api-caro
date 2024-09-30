@@ -6,11 +6,14 @@ async function bootstrap() {
   dotenv.config(); // Cargar las variables de entorno desde el archivo .env
 
   const app = await NestFactory.create(AppModule);
-  app.enableCors();
-  console.log(`Server running on ${3000}`)
+  app.enableCors({
+    origin: 'https://jurissearch.com', // Cambia esto por tu dominio
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    // credentials: true, // Si necesitas enviar cookies o autenticación
+  });
+  console.log(`Server running on ${3000}`);
 
   // aumentar memoria de node;
-  
 
   await app.listen(3000);
 }

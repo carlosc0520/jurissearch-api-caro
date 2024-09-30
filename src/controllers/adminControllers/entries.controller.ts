@@ -208,6 +208,7 @@ export class EntriesController {
       const result = await this.entriesService.createEntries(entidad);
       return result;
     } catch (error) {
+      console.log(error);
       return { MESSAGE: error.message, STATUS: false };
     } finally {
       await files.forEach((file) => {
@@ -550,6 +551,7 @@ export class EntriesController {
       const result = await this.entriesService.edit(entidad);
       return result;
     } catch (error) {
+      console.log(error)
       return { MESSAGE: error.message, STATUS: false };
     } finally {
       await files.forEach((file) => {
@@ -818,7 +820,6 @@ export class EntriesController {
     @Res() res: Response,
   ): Promise<void> {
     try {
-      // Obtener los datos
       let dataArray = await this.entriesService.listSearchData(
         RTITLE,
         1,
@@ -826,8 +827,6 @@ export class EntriesController {
       );
 
       dataArray = dataArray.slice(0, 100);
-
-
       pdfMake.vfs = pdfFonts.pdfMake.vfs;
       const zip = new JSZip();
       let margin = [40, 10, 40, 10];

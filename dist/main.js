@@ -29,7 +29,10 @@ const dotenv = __importStar(require("dotenv"));
 async function bootstrap() {
     dotenv.config();
     const app = await core_1.NestFactory.create(app_module_1.AppModule);
-    app.enableCors();
+    app.enableCors({
+        origin: 'https://jurissearch.com',
+        methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    });
     console.log(`Server running on ${3000}`);
     await app.listen(3000);
 }
