@@ -9,7 +9,7 @@ async function bootstrap() {
   app.enableCors({
     origin: 'https://jurissearch.com', // Cambia esto por tu dominio
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-    // credentials: true, // Si necesitas enviar cookies o autenticación
+    credentials: true, // Si necesitas enviar cookies o autenticación
   });
   console.log(`Server running on ${3000}`);
 
