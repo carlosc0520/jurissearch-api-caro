@@ -27,6 +27,7 @@
     "@nestjs/platform-express": "^10.0.0",
     "@nestjs/typeorm": "^10.0.2",
     "aws-sdk": "^2.1615.0",
+    "body-parser": "^1.20.3",
     "cors": "^2.8.5",
     "docx": "^8.5.0",
     "dotenv": "^16.4.5",
