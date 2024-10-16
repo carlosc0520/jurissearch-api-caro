@@ -144,7 +144,6 @@ export class AsistenciaController {
                 throw new Error('Error al procesar los asistentes');
             }
         } catch (error) {
-            console.error('Error en la generación y envío de PDFs:', error);
             res.status(500).json({ message: 'Error en la generación y envío de PDFs' });
         }
     }

@@ -145,7 +145,6 @@ let EntriesController = class EntriesController {
             return result;
         }
         catch (error) {
-            console.log(error);
             return { MESSAGE: error.message, STATUS: false };
         }
         finally {

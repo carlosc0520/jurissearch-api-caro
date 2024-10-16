@@ -43,18 +43,30 @@ let AuthMiddleware = class AuthMiddleware {
     }
     async use(req, res, next) {
         let token = req.headers.authorization;
-        try {
-            token = token.replace('Bearer ', '');
+        if (!token) {
+            return res.status(401).json({ message: 'Token no proporcionado' });
         }
-        catch (error) {
-            token = null;
-        }
+        token = token.replace('Bearer ', '');
         try {
             const decoded = await jwt.verify(token, this.secretKey);
+            this.activeSessions = this.tokenService.readActiveSessionsFromFile();
+            const session = this.activeSessions.get(decoded.sessionId.toString());
+            if (!this.isSessionActive(session)) {
+                return res
+                    .status(401)
+                    .json({ message: 'Token inválido o sesión cerrada' });
+            }
             req['user'] = decoded;
             next();
         }
         catch (error) {
+            if (error instanceof jwt.JsonWebTokenError) {
+                return res.status(401).json({ message: 'Token inválido' });
+            }
+            if (error instanceof common_1.UnauthorizedException) {
+                return res.status(401).json({ message: error.message });
+            }
+            return res.status(500).json({ message: 'Error en la autenticación' });
         }
     }
     isSessionActive(session) {

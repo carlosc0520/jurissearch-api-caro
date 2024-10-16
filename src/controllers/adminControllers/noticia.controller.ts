@@ -117,8 +117,10 @@ export class NoticiaController {
             storage: diskStorage({
                 destination: './uploads',
                 filename: function (req, file, cb) {
-                    const filename = `${Date.now()}-${file.originalname.replace(/\s/g, '')}`;
-                    return cb(null, filename);
+                    if (file){
+                        const filename = `${Date.now()}-${file.originalname.replace(/\s/g, '')}`;
+                        return cb(null, filename);
+                    }
                 }
             }),
             fileFilter: (req, file, cb) => {

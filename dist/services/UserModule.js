@@ -35,6 +35,8 @@ const planes_controller_1 = require("../controllers/adminControllers/planes.cont
 const planes_service_1 = require("./mantenimiento/planes.service");
 const asistencia_controller_1 = require("../controllers/controlAsistencias/asistencia.controller");
 const asistencia_service_1 = require("./controlAsistencias/asistencia.service");
+const helpers_controller_1 = require("../controllers/adminControllers/helpers.controller");
+const helpers_service_1 = require("./Admin/helpers.service");
 let UserModule = class UserModule {
 };
 exports.UserModule = UserModule;
@@ -53,7 +55,8 @@ exports.UserModule = UserModule = __decorate([
             auditoria_controller_1.AuditoriaController,
             planes_controller_1.PlanesController,
             email_controller_1.EmailController,
-            asistencia_controller_1.AsistenciaController
+            asistencia_controller_1.AsistenciaController,
+            helpers_controller_1.HelpersController
         ],
         providers: [
             user_service_1.UserService,
@@ -69,7 +72,8 @@ exports.UserModule = UserModule = __decorate([
             planes_service_1.PlanesService,
             email_service_1.EmailService,
             emailJurisserivce_1.EmailJurisService,
-            asistencia_service_1.AsistenciaService
+            asistencia_service_1.AsistenciaService,
+            helpers_service_1.HelpersService
         ],
     })
 ], UserModule);

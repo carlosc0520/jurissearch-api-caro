@@ -186,8 +186,10 @@ __decorate([
         storage: (0, multer_1.diskStorage)({
             destination: './uploads',
             filename: function (req, file, cb) {
-                const filename = `${Date.now()}-${file.originalname.replace(/\s/g, '')}`;
-                return cb(null, filename);
+                if (file) {
+                    const filename = `${Date.now()}-${file.originalname.replace(/\s/g, '')}`;
+                    return cb(null, filename);
+                }
             }
         }),
         fileFilter: (req, file, cb) => {

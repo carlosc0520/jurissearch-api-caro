@@ -6,6 +6,6 @@ export declare class AuthMiddleware implements NestMiddleware {
     private readonly secretKey;
     private activeSessions;
     constructor(tokenService: TokenService);
-    use(req: Request, res: Response, next: NextFunction): Promise<void>;
+    use(req: Request, res: Response, next: NextFunction): Promise<Response<any, Record<string, any>>>;
     private isSessionActive;
 }

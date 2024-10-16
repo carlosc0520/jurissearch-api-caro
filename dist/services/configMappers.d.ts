@@ -34,6 +34,9 @@ declare const procedures: {
         PLANES: {
             CRUD: string;
         };
+        HELPERS: {
+            CRUD: string;
+        };
     };
     CCFIRMA: {
         SOLICITUDES: {

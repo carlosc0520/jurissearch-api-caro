@@ -31,6 +31,8 @@ import { PlanesService } from './mantenimiento/planes.service';
 import { validateHeaderValue } from 'http';
 import { AsistenciaController } from 'src/controllers/controlAsistencias/asistencia.controller';
 import { AsistenciaService } from './controlAsistencias/asistencia.service';
+import { HelpersController } from 'src/controllers/adminControllers/helpers.controller';
+import { HelpersService } from './Admin/helpers.service';
 
 @Module({
     imports: [TypeOrmModule.forFeature([])],
@@ -48,7 +50,8 @@ import { AsistenciaService } from './controlAsistencias/asistencia.service';
 
         // COMPLIANCE
         EmailController,
-        AsistenciaController
+        AsistenciaController,
+        HelpersController
     ],
     providers: [
         UserService, 
@@ -66,7 +69,8 @@ import { AsistenciaService } from './controlAsistencias/asistencia.service';
         // COMPLIANCE
         EmailService,
         EmailJurisService,
-        AsistenciaService
+        AsistenciaService,
+        HelpersService
     ],
 })
 export class UserModule { }

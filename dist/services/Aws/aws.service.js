@@ -113,6 +113,9 @@ let S3Service = class S3Service {
                 Key: key,
             };
             const stream = this.s3.getObject(params).createReadStream();
+            if (!stream) {
+                return null;
+            }
             const chunks = [];
             try {
                 for (var _d = true, stream_1 = __asyncValues(stream), stream_1_1; stream_1_1 = await stream_1.next(), _a = stream_1_1.done, !_a; _d = true) {

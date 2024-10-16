@@ -208,7 +208,6 @@ export class EntriesController {
       const result = await this.entriesService.createEntries(entidad);
       return result;
     } catch (error) {
-      console.log(error);
       return { MESSAGE: error.message, STATUS: false };
     } finally {
       await files.forEach((file) => {
@@ -551,7 +550,6 @@ export class EntriesController {
       const result = await this.entriesService.edit(entidad);
       return result;
     } catch (error) {
-      console.log(error)
       return { MESSAGE: error.message, STATUS: false };
     } finally {
       await files.forEach((file) => {

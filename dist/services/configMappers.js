@@ -36,6 +36,9 @@ const procedures = {
         "PLANES": {
             "CRUD": "EXEC JURIS.USP_CRUD_PLANES"
         },
+        "HELPERS": {
+            "CRUD": "EXEC JURIS.USP_CRUD_HELPERS"
+        },
     },
     "CCFIRMA": {
         "SOLICITUDES": {

@@ -58,7 +58,7 @@ let LoginController = class LoginController {
                 STATUS: false,
             });
         }
-        const token = this.tokenService.generateToken(usuario, entidad.BANDERA);
+        const token = await this.tokenService.generateToken(usuario, entidad.BANDERA);
         usuario.TOKEN = token;
         return usuario;
     }
@@ -71,8 +71,13 @@ let LoginController = class LoginController {
             let noticias = await this.noticiaService.list(entidad);
             noticias = noticias ? noticias : [];
             const noticiasConImagenes = await Promise.all(noticias.map(async (noticia) => {
-                noticia.IMAGEN2 = await this.s3Service.getImage(noticia.IMAGEN);
-                return noticia;
+                try {
+                    noticia.IMAGEN2 = await this.s3Service.getImage(noticia.IMAGEN);
+                    return noticia;
+                }
+                catch (error) {
+                    return noticia;
+                }
             }));
             return noticiasConImagenes;
         }
