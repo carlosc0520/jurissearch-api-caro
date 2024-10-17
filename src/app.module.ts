@@ -16,30 +16,30 @@ import { TokenService } from './services/User/token.service';
   imports: [
     TypeOrmModule.forRoot(
       {
-        "type": "mssql",
-        "host": "database-caro.crudeh2irmny.us-east-1.rds.amazonaws.com",
-        "port": 1433,
-        "username": "admin",
-        "password": "lo9T@Y[6!xq^lXk<N9H*]S+g49D:",
-        "database": "JURIS_SEARCH",
-        "entities": ["dist/**/*.entity{.ts,.js}"],
-        "synchronize": true,
-        autoLoadEntities: true,
-        extra: {
-          trustServerCertificate: true,
-        }
         // "type": "mssql",
-        // "host": "SQL5112.site4now.net",
+        // "host": "database-caro.crudeh2irmny.us-east-1.rds.amazonaws.com",
         // "port": 1433,
-        // "username": "db_a9ec8e_caroerp_admin",
-        // "password": "ING052001",
-        // "database": "db_a9ec8e_caroerp",
+        // "username": "admin",
+        // "password": "lo9T@Y[6!xq^lXk<N9H*]S+g49D:",
+        // "database": "JURIS_SEARCH",
         // "entities": ["dist/**/*.entity{.ts,.js}"],
         // "synchronize": true,
         // autoLoadEntities: true,
         // extra: {
         //   trustServerCertificate: true,
         // }
+        "type": "mssql",
+        "host": "SQL5112.site4now.net",
+        "port": 1433,
+        "username": "db_a9ec8e_caroerp_admin",
+        "password": "ING052001",
+        "database": "db_a9ec8e_caroerp",
+        "entities": ["dist/**/*.entity{.ts,.js}"],
+        "synchronize": true,
+        autoLoadEntities: true,
+        extra: {
+          trustServerCertificate: true,
+        }
       },
     ),
     UserModule
