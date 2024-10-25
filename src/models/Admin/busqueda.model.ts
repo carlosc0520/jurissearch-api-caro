@@ -12,6 +12,7 @@ export class BusquedaModel {
     JURISDICCION: string = '';
     TPONRMA: string = '';
     NMRCN: string = '';
+    AMBIT: string = '';
     INIT: number;
     ROWS: number;
     DESC: string = null;
@@ -22,4 +23,7 @@ export class BusquedaModel {
     IDUSR?: number = 0;
     OEMISOR?: string = '';
     IDDIRECTORIO?: number = 0;
+    KEYWORDS: string = '';
+    TEMA: string = '';
+    SUBTEMA: string = '';
 }

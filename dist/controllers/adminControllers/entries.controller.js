@@ -920,6 +920,9 @@ let EntriesController = class EntriesController {
         data.MAGISTRATES = JSON.parse(data.MAGISTRADOS)
             .map((item) => item.LABEL)
             .join(', ');
+        data.JURISDICCION = JSON.parse((data === null || data === void 0 ? void 0 : data.JURISDICCION) || '[]')
+            .map((item) => item.LABEL)
+            .join(', ');
         let marginsRows = {
             top: 250,
             right: 250,
@@ -1528,6 +1531,51 @@ let EntriesController = class EntriesController {
                                                 new docx_1.Paragraph({
                                                     children: [
                                                         new docx_1.TextRun({
+                                                            text: 'JURISDICCIÓN',
+                                                            bold: true,
+                                                            size: 22,
+                                                            font: 'Calibri',
+                                                            color: '000000',
+                                                        }),
+                                                    ],
+                                                    alignment: docx_1.AlignmentType.LEFT,
+                                                }),
+                                            ],
+                                        }),
+                                        new docx_1.TableCell({
+                                            width: {
+                                                size: 6000,
+                                                type: docx_1.WidthType.DXA,
+                                            },
+                                            margins: marginsRows,
+                                            children: [
+                                                new docx_1.Paragraph({
+                                                    children: [
+                                                        new docx_1.TextRun({
+                                                            text: `${data.JURISDICCION || '-'}`,
+                                                            size: 22,
+                                                            font: 'Calibri',
+                                                            color: '000000',
+                                                        }),
+                                                    ],
+                                                    alignment: docx_1.AlignmentType.LEFT,
+                                                }),
+                                            ],
+                                        }),
+                                    ],
+                                }),
+                                new docx_1.TableRow({
+                                    children: [
+                                        new docx_1.TableCell({
+                                            width: {
+                                                size: 4000,
+                                                type: docx_1.WidthType.DXA,
+                                            },
+                                            margins: marginsRows,
+                                            children: [
+                                                new docx_1.Paragraph({
+                                                    children: [
+                                                        new docx_1.TextRun({
                                                             text: 'ÓRGANO JURISDICCIONAL',
                                                             bold: true,
                                                             size: 22,
@@ -1739,6 +1787,7 @@ __decorate([
                 return cb(null, filename);
             },
         }),
+        limits: { fileSize: 100 * 1024 * 1024 },
         fileFilter: (req, file, cb) => {
             if (file.mimetype.match(/\/pdf$/)) {
                 cb(null, true);
@@ -1765,6 +1814,7 @@ __decorate([
                 return cb(null, filename);
             },
         }),
+        limits: { fileSize: 100 * 1024 * 1024 },
         fileFilter: (req, file, cb) => {
             if (file.mimetype.match(/\/pdf$/)) {
                 cb(null, true);

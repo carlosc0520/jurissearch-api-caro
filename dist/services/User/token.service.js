@@ -64,7 +64,7 @@ let TokenService = class TokenService {
     async removeSession(token) {
         const payload = jwt.decode(token);
         this.activeSessions = await this.readActiveSessionsFromFile();
-        this.activeSessions.delete(payload.sessionId);
+        this.activeSessions.delete((payload === null || payload === void 0 ? void 0 : payload.sessionId) || '');
         this.writeActiveSessionsToFile();
     }
     writeActiveSessionsToFile() {

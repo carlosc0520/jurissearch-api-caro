@@ -30,10 +30,9 @@ const bodyParser = __importStar(require("body-parser"));
 async function bootstrap() {
     dotenv.config();
     const app = await core_1.NestFactory.create(app_module_1.AppModule);
-    app.use(bodyParser.json({ limit: '50mb' }));
-    app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
+    app.use(bodyParser.json({ limit: '100mb' }));
+    app.use(bodyParser.urlencoded({ limit: '100mb', extended: true }));
     app.enableCors();
-    console.log(`Server running on ${3000}`);
     await app.listen(3000);
 }
 bootstrap();

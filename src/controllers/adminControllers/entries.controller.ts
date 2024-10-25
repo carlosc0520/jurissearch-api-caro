@@ -57,6 +57,7 @@ export class EntriesController {
           return cb(null, filename);
         },
       }),
+      limits: { fileSize: 100 * 1024 * 1024 },
       fileFilter: (req, file, cb) => {
         if (file.mimetype.match(/\/pdf$/)) {
           cb(null, true);
@@ -226,6 +227,7 @@ export class EntriesController {
           return cb(null, filename);
         },
       }),
+      limits: { fileSize: 100 * 1024 * 1024 },
       fileFilter: (req, file, cb) => {
         if (file.mimetype.match(/\/pdf$/)) {
           cb(null, true);
@@ -1372,6 +1374,9 @@ export class EntriesController {
     data.MAGISTRATES = JSON.parse(data.MAGISTRADOS)
       .map((item) => item.LABEL)
       .join(', ');
+    data.JURISDICCION = JSON.parse(data?.JURISDICCION || '[]')
+      .map((item) => item.LABEL)
+      .join(', ');
 
     let marginsRows = {
       top: 250,
@@ -1959,6 +1964,51 @@ export class EntriesController {
                           children: [
                             new TextRun({
                               text: `${setFechaLocale(data.FRESOLUTION)}`,
+                              size: 22,
+                              font: 'Calibri',
+                              color: '000000',
+                            }),
+                          ],
+                          alignment: AlignmentType.LEFT,
+                        }),
+                      ],
+                    }),
+                  ],
+                }),
+                new TableRow({
+                  children: [
+                    new TableCell({
+                      width: {
+                        size: 4000,
+                        type: WidthType.DXA,
+                      },
+                      margins: marginsRows,
+                      children: [
+                        new Paragraph({
+                          children: [
+                            new TextRun({
+                              text: 'JURISDICCIÓN',
+                              bold: true,
+                              size: 22,
+                              font: 'Calibri',
+                              color: '000000',
+                            }),
+                          ],
+                          alignment: AlignmentType.LEFT,
+                        }),
+                      ],
+                    }),
+                    new TableCell({
+                      width: {
+                        size: 6000,
+                        type: WidthType.DXA,
+                      },
+                      margins: marginsRows,
+                      children: [
+                        new Paragraph({
+                          children: [
+                            new TextRun({
+                              text: `${data.JURISDICCION || '-'}`,
                               size: 22,
                               font: 'Calibri',
                               color: '000000',

@@ -28,11 +28,11 @@ exports.AppModule = AppModule = __decorate([
         imports: [
             typeorm_1.TypeOrmModule.forRoot({
                 "type": "mssql",
-                "host": "database-caro.crudeh2irmny.us-east-1.rds.amazonaws.com",
+                "host": "SQL5112.site4now.net",
                 "port": 1433,
-                "username": "admin",
-                "password": "lo9T@Y[6!xq^lXk<N9H*]S+g49D:",
-                "database": "JURIS_SEARCH",
+                "username": "db_a9ec8e_caroerp_admin",
+                "password": "ING052001",
+                "database": "db_a9ec8e_caroerp",
                 "entities": ["dist/**/*.entity{.ts,.js}"],
                 "synchronize": true,
                 autoLoadEntities: true,

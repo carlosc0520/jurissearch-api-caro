@@ -10,6 +10,7 @@ class EntriesModel {
         this.AMBIT = '';
         this.FRESOLUTION = '';
         this.OJURISDICCIONAL = '';
+        this.JURISDICCION = '';
         this.MAGISTRATES = '';
         this.MAGISTRADOS = '';
         this.VDESIDENTE = 1;
