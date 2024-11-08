@@ -133,6 +133,22 @@ export class EntriesService {
         }
     }
 
+    async getEntriePrint(PATH: string): Promise<EntriesModel> {
+        let queryAsync = procedures.ADMIN.ENTRIES.CRUD;
+        queryAsync += ` @p_cData = ${`'${JSON.stringify({ PATH })}'`},`;
+        queryAsync += ` @p_cUser = ${null},`;
+        queryAsync += ` @p_nTipo = ${15},`;
+        queryAsync += ` @p_nId = ${0}`;
+
+        try {
+            const result = await this.connection.query(queryAsync);
+            return result[0] || {};
+        } catch (error) {
+            return error;
+        }
+    }
+
+
     async deleteFilter(id: number, UCRCN: string): Promise<Result> {
         let queryAsync = procedures.ADMIN.ENTRIES.CRUD;
         queryAsync += ` @p_cData = ${null},`;

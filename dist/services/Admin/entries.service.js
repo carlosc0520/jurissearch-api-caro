@@ -127,6 +127,20 @@ let EntriesService = class EntriesService {
             return error;
         }
     }
+    async getEntriePrint(PATH) {
+        let queryAsync = configMappers_1.default.ADMIN.ENTRIES.CRUD;
+        queryAsync += ` @p_cData = ${`'${JSON.stringify({ PATH })}'`},`;
+        queryAsync += ` @p_cUser = ${null},`;
+        queryAsync += ` @p_nTipo = ${15},`;
+        queryAsync += ` @p_nId = ${0}`;
+        try {
+            const result = await this.connection.query(queryAsync);
+            return result[0] || {};
+        }
+        catch (error) {
+            return error;
+        }
+    }
     async deleteFilter(id, UCRCN) {
         var _a, _b, _c;
         let queryAsync = configMappers_1.default.ADMIN.ENTRIES.CRUD;

@@ -13,6 +13,7 @@ export declare class EntriesService {
     listV(entidad: DataTable, TITLE: string, TYPE: string, TIPO: string): Promise<EntriesModel[]>;
     get(ID: number): Promise<EntriesModel>;
     getPrint(ID: number): Promise<EntriesModel>;
+    getEntriePrint(PATH: string): Promise<EntriesModel>;
     deleteFilter(id: number, UCRCN: string): Promise<Result>;
     edit(entidad: EntriesModel): Promise<Result>;
     busqueda(entidad: BusquedaModel): Promise<EntriesModel[]>;

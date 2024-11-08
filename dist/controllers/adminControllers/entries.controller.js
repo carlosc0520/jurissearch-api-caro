@@ -735,6 +735,12 @@ let EntriesController = class EntriesController {
     }
     async downloadFile(PATH, res) {
         try {
+            let data = await this.entriesService.getEntriePrint(PATH);
+            let fecha = new Date('2024-11-08');
+            let modificar = false;
+            if (data.FEDCN > fecha) {
+                modificar = true;
+            }
             const fileBuffer = await this.s3Service.downloadFile(PATH);
             const pathcaroa = path.join(__dirname, '..', '..', 'files/files', 'caroa.png');
             const pathccfirma = path.join(__dirname, '..', '..', 'files/files', 'ccfirma.png');
@@ -746,79 +752,81 @@ let EntriesController = class EntriesController {
             const marcadeaguaImage = await pdfDoc.embedPng(fs.readFileSync(pathmarcadeagua));
             const nuevologoImage = await pdfDoc.embedPng(fs.readFileSync(pathnuevologo));
             const pages = pdfDoc.getPages();
-            for (const page of pages) {
-                const { width, height } = page.getSize();
-                page.drawImage(marcadeaguaImage, {
-                    x: width / 2 - 310,
-                    y: height / 2 - 330,
-                    width: 620,
-                    height: 600,
-                    opacity: 0.7,
-                });
-                page.drawImage(caroaImage, {
-                    x: 10,
-                    y: height - 43,
-                    width: 95,
-                    height: 40,
-                });
-                page.drawText('https://ccfirma.com/', {
-                    x: 10,
-                    y: height - 25,
-                    size: 10,
-                    color: (0, pdf_lib_1.rgb)(0, 0, 0),
-                    opacity: 0.0,
-                });
-                page.drawText('https://ccfirma.com/', {
-                    x: 5,
-                    y: height / 2 - 25,
-                    size: 11,
-                    color: (0, pdf_lib_1.rgb)(0, 0, 0),
-                    opacity: 0.0,
-                    rotate: (0, pdf_lib_1.degrees)(-90),
-                });
-                page.drawText('https://ccfirma.com/', {
-                    x: 5,
-                    y: height / 2 - 90,
-                    size: 11,
-                    color: (0, pdf_lib_1.rgb)(0, 0, 0),
-                    opacity: 0.0,
-                    rotate: (0, pdf_lib_1.degrees)(-90),
-                });
-                page.drawText('https://ccfirma.com/', {
-                    x: 5,
-                    y: height / 2 + 90,
-                    size: 11,
-                    color: (0, pdf_lib_1.rgb)(0, 0, 0),
-                    opacity: 0.0,
-                    rotate: (0, pdf_lib_1.degrees)(-90),
-                });
-                page.drawImage(nuevologoImage, {
-                    x: width / 2 - 25,
-                    y: height - 43,
-                    width: 50,
-                    height: 35,
-                });
-                await page.drawText('https://jurissearch.com/', {
-                    x: width / 2 - 25,
-                    y: height - 30,
-                    size: 10,
-                    color: (0, pdf_lib_1.rgb)(0, 0, 0),
-                    opacity: 0.0,
-                });
-                page.drawImage(ccfirmaImage, {
-                    x: width / 2 - 30,
-                    y: 5,
-                    width: 70,
-                    height: 30,
-                    opacity: 0.9,
-                });
-                page.drawText('https://ccfirma.com/', {
-                    x: width / 2 - 30,
-                    y: 10,
-                    size: 10,
-                    color: (0, pdf_lib_1.rgb)(0, 0, 0),
-                    opacity: 0.0,
-                });
+            if (modificar) {
+                for (const page of pages) {
+                    const { width, height } = page.getSize();
+                    page.drawImage(marcadeaguaImage, {
+                        x: width / 2 - 310,
+                        y: height / 2 - 330,
+                        width: 620,
+                        height: 600,
+                        opacity: 0.7,
+                    });
+                    page.drawImage(caroaImage, {
+                        x: 10,
+                        y: height - 43,
+                        width: 95,
+                        height: 40,
+                    });
+                    page.drawText('https://ccfirma.com/', {
+                        x: 10,
+                        y: height - 25,
+                        size: 10,
+                        color: (0, pdf_lib_1.rgb)(0, 0, 0),
+                        opacity: 0.0,
+                    });
+                    page.drawText('https://ccfirma.com/', {
+                        x: 5,
+                        y: height / 2 - 25,
+                        size: 11,
+                        color: (0, pdf_lib_1.rgb)(0, 0, 0),
+                        opacity: 0.0,
+                        rotate: (0, pdf_lib_1.degrees)(-90),
+                    });
+                    page.drawText('https://ccfirma.com/', {
+                        x: 5,
+                        y: height / 2 - 90,
+                        size: 11,
+                        color: (0, pdf_lib_1.rgb)(0, 0, 0),
+                        opacity: 0.0,
+                        rotate: (0, pdf_lib_1.degrees)(-90),
+                    });
+                    page.drawText('https://ccfirma.com/', {
+                        x: 5,
+                        y: height / 2 + 90,
+                        size: 11,
+                        color: (0, pdf_lib_1.rgb)(0, 0, 0),
+                        opacity: 0.0,
+                        rotate: (0, pdf_lib_1.degrees)(-90),
+                    });
+                    page.drawImage(nuevologoImage, {
+                        x: width / 2 - 25,
+                        y: height - 43,
+                        width: 50,
+                        height: 35,
+                    });
+                    await page.drawText('https://jurissearch.com/', {
+                        x: width / 2 - 25,
+                        y: height - 30,
+                        size: 10,
+                        color: (0, pdf_lib_1.rgb)(0, 0, 0),
+                        opacity: 0.0,
+                    });
+                    page.drawImage(ccfirmaImage, {
+                        x: width / 2 - 30,
+                        y: 5,
+                        width: 70,
+                        height: 30,
+                        opacity: 0.9,
+                    });
+                    page.drawText('https://ccfirma.com/', {
+                        x: width / 2 - 30,
+                        y: 10,
+                        size: 10,
+                        color: (0, pdf_lib_1.rgb)(0, 0, 0),
+                        opacity: 0.0,
+                    });
+                }
             }
             const pdfBytes = await pdfDoc.save();
             res.set({
