@@ -129,7 +129,7 @@ let EmailJurisService = class EmailJurisService {
                     <div class="container_juris">
                         <h1>Bienvenido a <span class="highlight-juris">JURIS </span><span class="highlight-search">SEARCH</span></h1>
                         <p>Estamos encantados de que uses nuestro sistema. A continuación, te adjuntamos un enlace para que puedas acceder al sistema de forma automática:</p>
-                        <p><a href="https://jurissearch.com/auth/autoUser/${token}">Acceder</a></p>
+                        <p><a href="https://side.jurissearch.com/auth/autoUser/${token}">Acceder</a></p>
                         <p>Si tienes alguna pregunta o necesitas asistencia, no dudes en ponerte en contacto con nosotros.</p>
                         <p>¡Gracias por usar <span class="highlight-juris">JURIS </span><span class="highlight-search">SEARCH</span>!</p>
                     </div>

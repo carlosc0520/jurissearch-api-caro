@@ -19,7 +19,7 @@ import * as fs from 'fs';
 import { DataTable } from 'src/models/DataTable.model.';
 import { Response } from 'express';
 import { BusquedaModel } from 'src/models/Admin/busqueda.model';
-import { PDFDocument, rgb, StandardFonts } from 'pdf-lib';
+import { degrees, PDFDocument, rgb, StandardFonts } from 'pdf-lib';
 import * as path from 'path';
 import {
   Document,
@@ -93,102 +93,9 @@ export class EntriesController {
         };
       }
 
-      const pathcaroa = path.join(
-        __dirname,
-        '..',
-        '..',
-        'files/files',
-        'caroa.png',
-      );
-      const pathccfirma = path.join(
-        __dirname,
-        '..',
-        '..',
-        'files/files',
-        'ccfirma.png',
-      );
-      const pathmarcadeagua = path.join(
-        __dirname,
-        '..',
-        '..',
-        'files/files',
-        'marcadeagua.png',
-      );
-      const pathnuevologo = path.join(
-        __dirname,
-        '..',
-        '..',
-        'files/files',
-        'nuevologo.png',
-      );
-
       const [file1] = files;
       const templatePDFBytes = fs.readFileSync(file1.path);
       const pdfDoc = await PDFDocument.load(templatePDFBytes);
-
-      const caroaImage = await pdfDoc.embedPng(fs.readFileSync(pathcaroa));
-      const ccfirmaImage = await pdfDoc.embedPng(fs.readFileSync(pathccfirma));
-      const marcadeaguaImage = await pdfDoc.embedPng(
-        fs.readFileSync(pathmarcadeagua),
-      );
-      const nuevologoImage = await pdfDoc.embedPng(
-        fs.readFileSync(pathnuevologo),
-      );
-      const pages = pdfDoc.getPages();
-
-      for (let i = 0; i < pages.length; i++) {
-        const page = pages[i];
-        const { width, height } = page.getSize();
-
-        const x = width / 2;
-        const y = height / 2;
-
-        await page.drawImage(marcadeaguaImage, {
-          x: x - 310,
-          y: y - 330,
-          width: 620,
-          height: 600,
-          opacity: 0.7,
-        });
-
-        await page.drawImage(caroaImage, {
-          x: x - (width < 500 ? 240 : 290),
-          y: y + (height < 800 ? 345 : 375),
-          width: 95,
-          height: 40,
-        });
-
-        page.drawText('https://ccfirma.com/', {
-          x: x - 290,
-          y: y + 395,
-          size: 10,
-          color: rgb(0, 0, 0),
-          opacity: 0.0,
-        });
-
-        await page.drawImage(nuevologoImage, {
-          x: x - (width < 500 ? 20 : 25),
-          y: y + (height < 800 ? 350 : 380),
-          width: 50,
-          height: 35,
-        });
-
-        await page.drawImage(ccfirmaImage, {
-          x: x - (width < 500 ? 25 : 30),
-          y: y - (height < 800 ? 395 : 415),
-          width: 70,
-          height: 30,
-          opacity: 0.9,
-        });
-
-        page.drawText('https://ccfirma.com/', {
-          x: x - (width < 500 ? 25 : 30),
-          y: y - (height < 800 ? 390 : 415),
-          size: 10,
-          color: rgb(0, 0, 0),
-          opacity: 0.0,
-        });
-      }
 
       const pdfBytes = await pdfDoc.save();
       fs.writeFileSync(file1.path, pdfBytes);
@@ -264,102 +171,9 @@ export class EntriesController {
         };
       }
 
-      const pathcaroa = path.join(
-        __dirname,
-        '..',
-        '..',
-        'files/files',
-        'caroa.png',
-      );
-      const pathccfirma = path.join(
-        __dirname,
-        '..',
-        '..',
-        'files/files',
-        'ccfirma.png',
-      );
-      const pathmarcadeagua = path.join(
-        __dirname,
-        '..',
-        '..',
-        'files/files',
-        'marcadeagua.png',
-      );
-      const pathnuevologo = path.join(
-        __dirname,
-        '..',
-        '..',
-        'files/files',
-        'nuevologo.png',
-      );
-
       const [file1] = files;
       const templatePDFBytes = fs.readFileSync(file1.path);
       const pdfDoc = await PDFDocument.load(templatePDFBytes);
-
-      const caroaImage = await pdfDoc.embedPng(fs.readFileSync(pathcaroa));
-      const ccfirmaImage = await pdfDoc.embedPng(fs.readFileSync(pathccfirma));
-      const marcadeaguaImage = await pdfDoc.embedPng(
-        fs.readFileSync(pathmarcadeagua),
-      );
-      const nuevologoImage = await pdfDoc.embedPng(
-        fs.readFileSync(pathnuevologo),
-      );
-      const pages = pdfDoc.getPages();
-
-      for (let i = 0; i < pages.length; i++) {
-        const page = pages[i];
-        const { width, height } = page.getSize();
-
-        const x = width / 2;
-        const y = height / 2;
-
-        await page.drawImage(marcadeaguaImage, {
-          x: x - 310,
-          y: y - 330,
-          width: 620,
-          height: 600,
-          opacity: 0.7,
-        });
-
-        await page.drawImage(caroaImage, {
-          x: x - (width < 500 ? 240 : 290),
-          y: y + (height < 800 ? 345 : 375),
-          width: 95,
-          height: 40,
-        });
-
-        page.drawText('https://ccfirma.com/', {
-          x: x - 290,
-          y: y + 395,
-          size: 10,
-          color: rgb(0, 0, 0),
-          opacity: 0.0,
-        });
-
-        await page.drawImage(nuevologoImage, {
-          x: x - (width < 500 ? 20 : 25),
-          y: y + (height < 800 ? 350 : 380),
-          width: 50,
-          height: 35,
-        });
-
-        await page.drawImage(ccfirmaImage, {
-          x: x - (width < 500 ? 25 : 30),
-          y: y - (height < 800 ? 395 : 415),
-          width: 70,
-          height: 30,
-          opacity: 0.9,
-        });
-
-        page.drawText('https://ccfirma.com/', {
-          x: x - (width < 500 ? 25 : 30),
-          y: y - (height < 800 ? 390 : 415),
-          size: 10,
-          color: rgb(0, 0, 0),
-          opacity: 0.0,
-        });
-      }
 
       const pdfBytes = await pdfDoc.save();
       fs.writeFileSync(file1.path, pdfBytes);
@@ -437,104 +251,8 @@ export class EntriesController {
       if (![undefined, null].includes(file1)) {
         // await this.s3Service.deleteFile(entidad.ENTRIEFILE);
 
-        const pathcaroa = path.join(
-          __dirname,
-          '..',
-          '..',
-          'files/files',
-          'caroa.png',
-        );
-        const pathccfirma = path.join(
-          __dirname,
-          '..',
-          '..',
-          'files/files',
-          'ccfirma.png',
-        );
-        const pathmarcadeagua = path.join(
-          __dirname,
-          '..',
-          '..',
-          'files/files',
-          'marcadeagua.png',
-        );
-        const pathnuevologo = path.join(
-          __dirname,
-          '..',
-          '..',
-          'files/files',
-          'nuevologo.png',
-        );
-
         const templatePDFBytes = fs.readFileSync(file1.path);
         const pdfDoc = await PDFDocument.load(templatePDFBytes);
-
-        const caroaImage = await pdfDoc.embedPng(fs.readFileSync(pathcaroa));
-        const ccfirmaImage = await pdfDoc.embedPng(
-          fs.readFileSync(pathccfirma),
-        );
-        const marcadeaguaImage = await pdfDoc.embedPng(
-          fs.readFileSync(pathmarcadeagua),
-        );
-        const nuevologoImage = await pdfDoc.embedPng(
-          fs.readFileSync(pathnuevologo),
-        );
-
-        const pages = pdfDoc.getPages();
-
-        for (let i = 0; i < pages.length; i++) {
-          const page = pages[i];
-          const { width, height } = page.getSize();
-
-          const x = width / 2;
-          const y = height / 2;
-
-          await page.drawImage(marcadeaguaImage, {
-            x: x - 310,
-            y: y - 330,
-            width: 620,
-            height: 600,
-            opacity: 0.7,
-          });
-
-          await page.drawImage(caroaImage, {
-            x: x - (width < 500 ? 240 : 290),
-            y: y + (height < 800 ? 345 : 375),
-            width: 95,
-            height: 40,
-          });
-
-          page.drawText('https://ccfirma.com/', {
-            x: x - 290,
-            y: y + 395,
-            size: 10,
-            color: rgb(0, 0, 0),
-            opacity: 0.0,
-          });
-
-          await page.drawImage(nuevologoImage, {
-            x: x - (width < 500 ? 20 : 25),
-            y: y + (height < 800 ? 350 : 380),
-            width: 50,
-            height: 35,
-          });
-
-          await page.drawImage(ccfirmaImage, {
-            x: x - (width < 500 ? 25 : 30),
-            y: y - (height < 800 ? 395 : 415),
-            width: 70,
-            height: 30,
-            opacity: 0.9,
-          });
-
-          page.drawText('https://ccfirma.com/', {
-            x: x - (width < 500 ? 25 : 30),
-            y: y - (height < 800 ? 390 : 415),
-            size: 10,
-            color: rgb(0, 0, 0),
-            opacity: 0.0,
-          });
-        }
 
         const pdfBytes = await pdfDoc.save();
         fs.writeFileSync(file1.path, pdfBytes);
@@ -614,104 +332,8 @@ export class EntriesController {
       if (![undefined, null].includes(file1)) {
         // await this.s3Service.deleteFile(entidad.ENTRIEFILE);
 
-        const pathcaroa = path.join(
-          __dirname,
-          '..',
-          '..',
-          'files/files',
-          'caroa.png',
-        );
-        const pathccfirma = path.join(
-          __dirname,
-          '..',
-          '..',
-          'files/files',
-          'ccfirma.png',
-        );
-        const pathmarcadeagua = path.join(
-          __dirname,
-          '..',
-          '..',
-          'files/files',
-          'marcadeagua.png',
-        );
-        const pathnuevologo = path.join(
-          __dirname,
-          '..',
-          '..',
-          'files/files',
-          'nuevologo.png',
-        );
-
         const templatePDFBytes = fs.readFileSync(file1.path);
         const pdfDoc = await PDFDocument.load(templatePDFBytes);
-
-        const caroaImage = await pdfDoc.embedPng(fs.readFileSync(pathcaroa));
-        const ccfirmaImage = await pdfDoc.embedPng(
-          fs.readFileSync(pathccfirma),
-        );
-        const marcadeaguaImage = await pdfDoc.embedPng(
-          fs.readFileSync(pathmarcadeagua),
-        );
-        const nuevologoImage = await pdfDoc.embedPng(
-          fs.readFileSync(pathnuevologo),
-        );
-
-        const pages = pdfDoc.getPages();
-
-        for (let i = 0; i < pages.length; i++) {
-          const page = pages[i];
-          const { width, height } = page.getSize();
-
-          const x = width / 2;
-          const y = height / 2;
-
-          await page.drawImage(marcadeaguaImage, {
-            x: x - 310,
-            y: y - 330,
-            width: 620,
-            height: 600,
-            opacity: 0.7,
-          });
-
-          await page.drawImage(caroaImage, {
-            x: x - (width < 500 ? 240 : 290),
-            y: y + (height < 800 ? 345 : 375),
-            width: 95,
-            height: 40,
-          });
-
-          page.drawText('https://ccfirma.com/', {
-            x: x - 290,
-            y: y + 395,
-            size: 10,
-            color: rgb(0, 0, 0),
-            opacity: 0.0,
-          });
-
-          await page.drawImage(nuevologoImage, {
-            x: x - (width < 500 ? 20 : 25),
-            y: y + (height < 800 ? 350 : 380),
-            width: 50,
-            height: 35,
-          });
-
-          await page.drawImage(ccfirmaImage, {
-            x: x - (width < 500 ? 25 : 30),
-            y: y - (height < 800 ? 395 : 415),
-            width: 70,
-            height: 30,
-            opacity: 0.9,
-          });
-
-          page.drawText('https://ccfirma.com/', {
-            x: x - (width < 500 ? 25 : 30),
-            y: y - (height < 800 ? 390 : 415),
-            size: 10,
-            color: rgb(0, 0, 0),
-            opacity: 0.0,
-          });
-        }
 
         const pdfBytes = await pdfDoc.save();
         fs.writeFileSync(file1.path, pdfBytes);
@@ -776,23 +398,153 @@ export class EntriesController {
     @Res() res,
   ): Promise<any> {
     try {
-      const data: EntriesModel[] = await this.entriesService.listSearchData(
+      let data: EntriesModel[] = await this.entriesService.listSearchData(
         RTITLE,
         2,
         TYPE,
       );
 
       let zip = new JSZip();
+      const pathcaroa = path.join(
+        __dirname,
+        '..',
+        '..',
+        'files/files',
+        'caroa.png',
+      );
+      const pathccfirma = path.join(
+        __dirname,
+        '..',
+        '..',
+        'files/files',
+        'ccfirma.png',
+      );
+      const pathmarcadeagua = path.join(
+        __dirname,
+        '..',
+        '..',
+        'files/files',
+        'marcadeagua.png',
+      );
+      const pathnuevologo = path.join(
+        __dirname,
+        '..',
+        '..',
+        'files/files',
+        'nuevologo.png',
+      );
 
-      const downloadPromises = data.map((entry) => {
-        return this.s3Service
-          .downloadFile(entry.ENTRIEFILE)
-          .then((file) => {
-            zip.file(entry.TITLE + '.pdf', file);
-          })
-          .catch((error) => {
-            return null;
-          });
+      const downloadPromises = data.map(async (entry) => {
+        try {
+          const fileBuffer = await this.s3Service.downloadFile(
+            entry.ENTRIEFILE,
+          );
+
+          const pdfDoc = await PDFDocument.load(fileBuffer);
+          const caroaImage = await pdfDoc.embedPng(fs.readFileSync(pathcaroa));
+          const ccfirmaImage = await pdfDoc.embedPng(
+            fs.readFileSync(pathccfirma),
+          );
+          const marcadeaguaImage = await pdfDoc.embedPng(
+            fs.readFileSync(pathmarcadeagua),
+          );
+          const nuevologoImage = await pdfDoc.embedPng(
+            fs.readFileSync(pathnuevologo),
+          );
+
+          const pages = await pdfDoc.getPages();
+
+          for (const page of pages) {
+            const { width, height } = page.getSize();
+
+            await page.drawImage(marcadeaguaImage, {
+              x: width / 2 - 310,
+              y: height / 2 - 330,
+              width: 620,
+              height: 600,
+              opacity: 0.7,
+            });
+
+            await page.drawImage(caroaImage, {
+              x: 10,
+              y: height - 43,
+              width: 95,
+              height: 40,
+            });
+
+            await page.drawText('https://ccfirma.com/', {
+              x: 10,
+              y: height - 25,
+              size: 10,
+              color: rgb(0, 0, 0),
+              opacity: 0.0,
+            });
+
+            await page.drawText('https://ccfirma.com/', {
+              x: 5,
+              y: height / 2 - 25,
+              size: 11,
+              color: rgb(0, 0, 0),
+              opacity: 0.0,
+              rotate: degrees(-90),
+            });
+
+            await page.drawText('https://ccfirma.com/', {
+              x: 5,
+              y: height / 2 - 90,
+              size: 11,
+              color: rgb(0, 0, 0),
+              opacity: 0.0,
+              rotate: degrees(-90),
+            });
+
+            await page.drawText('https://ccfirma.com/', {
+              x: 5,
+              y: height / 2 + 90,
+              size: 11,
+              color: rgb(0, 0, 0),
+              opacity: 0.0,
+              rotate: degrees(-90),
+            });
+
+            await page.drawImage(nuevologoImage, {
+              x: width / 2 - 25,
+              y: height - 43,
+              width: 50,
+              height: 35,
+            });
+
+            await page.drawText('https://jurissearch.com/', {
+              x: width / 2 - 25,
+              y: height - 30,
+              size: 10,
+              color: rgb(0, 0, 0),
+              opacity: 0.0,
+            });
+
+            await page.drawImage(ccfirmaImage, {
+              x: width / 2 - 30,
+              y: 5,
+              width: 70,
+              height: 30,
+              opacity: 0.9,
+            });
+
+            await page.drawText('https://ccfirma.com/', {
+              x: width / 2 - 30,
+              y: 10,
+              size: 10,
+              color: rgb(0, 0, 0),
+              opacity: 0.0,
+            });
+          }
+
+          const pdfBytes = await pdfDoc.save();
+
+          zip.file(`${entry.TITLE}.pdf`, pdfBytes);
+        } catch (error) {
+          return null;
+        }
       });
 
       await Promise.all(downloadPromises);
@@ -820,11 +572,7 @@ export class EntriesController {
     @Res() res: Response,
   ): Promise<void> {
     try {
-      let dataArray = await this.entriesService.listSearchData(
-        RTITLE,
-        1,
-        TYPE,
-      );
+      let dataArray = await this.entriesService.listSearchData(RTITLE, 1, TYPE);
 
       dataArray = dataArray.slice(0, 100);
       pdfMake.vfs = pdfFonts.pdfMake.vfs;
@@ -1298,9 +1046,140 @@ export class EntriesController {
     @Res() res: Response,
   ): Promise<any> {
     try {
-      const file = await this.s3Service.downloadFile(PATH);
-      res.set('Content-Type', 'application/pdf');
-      res.send(file);
+      // Descargar archivo de S3
+      const fileBuffer = await this.s3Service.downloadFile(PATH);
+
+      // Definir rutas de las imágenes locales
+      const pathcaroa = path.join(
+        __dirname,
+        '..',
+        '..',
+        'files/files',
+        'caroa.png',
+      );
+      const pathccfirma = path.join(
+        __dirname,
+        '..',
+        '..',
+        'files/files',
+        'ccfirma.png',
+      );
+      const pathmarcadeagua = path.join(
+        __dirname,
+        '..',
+        '..',
+        'files/files',
+        'marcadeagua.png',
+      );
+      const pathnuevologo = path.join(
+        __dirname,
+        '..',
+        '..',
+        'files/files',
+        'nuevologo.png',
+      );
+
+      const pdfDoc = await PDFDocument.load(fileBuffer);
+      const caroaImage = await pdfDoc.embedPng(fs.readFileSync(pathcaroa));
+      const ccfirmaImage = await pdfDoc.embedPng(fs.readFileSync(pathccfirma));
+      const marcadeaguaImage = await pdfDoc.embedPng(
+        fs.readFileSync(pathmarcadeagua),
+      );
+      const nuevologoImage = await pdfDoc.embedPng(
+        fs.readFileSync(pathnuevologo),
+      );
+
+      const pages = pdfDoc.getPages();
+      for (const page of pages) {
+        const { width, height } = page.getSize();
+
+        page.drawImage(marcadeaguaImage, {
+          x: width / 2 - 310,
+          y: height / 2 - 330,
+          width: 620,
+          height: 600,
+          opacity: 0.7,
+        });
+
+        page.drawImage(caroaImage, {
+          x: 10,
+          y: height - 43,
+          width: 95,
+          height: 40,
+        });
+        page.drawText('https://ccfirma.com/', {
+          x: 10,
+          y: height - 25,
+          size: 10,
+          color: rgb(0, 0, 0),
+          opacity: 0.0,
+        });
+
+        page.drawText('https://ccfirma.com/', {
+          x: 5,
+          y: height / 2 - 25,
+          size: 11,
+          color: rgb(0, 0, 0),
+          opacity: 0.0,
+          rotate: degrees(-90),
+        });
+
+        page.drawText('https://ccfirma.com/', {
+          x: 5,
+          y: height / 2 - 90,
+          size: 11,
+          color: rgb(0, 0, 0),
+          opacity: 0.0,
+          rotate: degrees(-90),
+        });
+
+        page.drawText('https://ccfirma.com/', {
+          x: 5,
+          y: height / 2 + 90,
+          size: 11,
+          color: rgb(0, 0, 0),
+          opacity: 0.0,
+          rotate: degrees(-90),
+        });
+
+        page.drawImage(nuevologoImage, {
+          x: width / 2 - 25,
+          y: height - 43,
+          width: 50,
+          height: 35,
+        });
+
+        await page.drawText('https://jurissearch.com/', {
+          x: width / 2 - 25,
+          y: height - 30,
+          size: 10,
+          color: rgb(0, 0, 0),
+          opacity: 0.0,
+        });
+
+        page.drawImage(ccfirmaImage, {
+          x: width / 2 - 30,
+          y: 5,
+          width: 70,
+          height: 30,
+          opacity: 0.9,
+        });
+
+        page.drawText('https://ccfirma.com/', {
+          x: width / 2 - 30,
+          y: 10,
+          size: 10,
+          color: rgb(0, 0, 0),
+          opacity: 0.0,
+        });
+      }
+
+      const pdfBytes = await pdfDoc.save();
+      res.set({
+        'Content-Type': 'application/pdf',
+        'Content-Disposition': `attachment; filename="modified-file.pdf"`,
+      });
+      res.send(Buffer.from(pdfBytes));
     } catch (error) {
       res.status(500).send('Error al descargar el archivo');
     }
