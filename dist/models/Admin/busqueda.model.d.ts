@@ -20,6 +20,7 @@ export declare class BusquedaModel {
     ID?: number;
     IDENTRIE?: number;
     UEDCN?: string;
+    BLOG?: string;
     IDUSR?: number;
     OEMISOR?: string;
     IDDIRECTORIO?: number;

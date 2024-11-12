@@ -20,6 +20,7 @@ export class BusquedaModel {
     ID?: number = 0;
     IDENTRIE?: number = 0;
     UEDCN?: string = '';
+    BLOG?: string = '';
     IDUSR?: number = 0;
     OEMISOR?: string = '';
     IDDIRECTORIO?: number = 0;

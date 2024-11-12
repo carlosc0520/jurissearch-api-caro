@@ -21,6 +21,7 @@ class BusquedaModel {
         this.ID = 0;
         this.IDENTRIE = 0;
         this.UEDCN = '';
+        this.BLOG = '';
         this.IDUSR = 0;
         this.OEMISOR = '';
         this.IDDIRECTORIO = 0;
