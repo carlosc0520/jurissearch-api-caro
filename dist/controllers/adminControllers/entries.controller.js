@@ -844,6 +844,11 @@ let EntriesController = class EntriesController {
         busqueda.IDUSR = req.user.ID;
         return await this.entriesService.busqueda(busqueda);
     }
+    async busquedaSugges(req, busqueda) {
+        busqueda.UEDCN = req.user.UCRCN;
+        busqueda.IDUSR = req.user.ID;
+        return await this.entriesService.busquedaSugges(busqueda);
+    }
     async busquedaFavorites(req, busqueda) {
         busqueda.UEDCN = req.user.UCRCN;
         busqueda.IDUSR = req.user.ID;
@@ -1925,6 +1930,14 @@ __decorate([
     __metadata("design:paramtypes", [Object, busqueda_model_1.BusquedaModel]),
     __metadata("design:returntype", Promise)
 ], EntriesController.prototype, "busqueda", null);
+__decorate([
+    (0, common_1.Get)('busqueda-sugges'),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Query)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, busqueda_model_1.BusquedaModel]),
+    __metadata("design:returntype", Promise)
+], EntriesController.prototype, "busquedaSugges", null);
 __decorate([
     (0, common_1.Get)('busqueda-favorites'),
     __param(0, (0, common_1.Request)()),

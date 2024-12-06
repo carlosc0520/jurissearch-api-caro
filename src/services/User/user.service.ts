@@ -148,11 +148,45 @@ export class UserService {
         }
     }
 
+    async deleteFavoriteDirectory (IDDIRECTORIO: number, IDENTRIE: number, UCRCN: string): Promise<Result> {
+        let queryAsync = procedures.ADMIN.USUARIO.CRUD;
+        queryAsync += ` @p_cData = '${JSON.stringify({ IDDIRECTORIO, IDENTRIE })}',`;
+        queryAsync += ` @p_cUser = '${UCRCN}',`;
+        queryAsync += ` @p_nTipo = ${10},`;
+        queryAsync += ` @p_nId = ${0}`;
+
+        try {
+            const result = await this.connection.query(queryAsync);
+            const isSuccess = result?.[0]?.RESULT > 0;
+            const MESSAGE = isSuccess ? "Entrada eliminada deL directorio correctamente" : "Ocurrió un error al intentar eliminar la entrada del directorio";
+            return { MESSAGE, STATUS: isSuccess };
+        } catch (error) {
+            const MESSAGE = error.originalError?.info?.message || "Ocurrió un error al intentar eliminar la entrada del directorio";
+            return { MESSAGE, STATUS: false };
+        }
+
+    }
+
     async list(entidad: DataTable, IDROLE: string): Promise<User[]> {
         let queryAsync = procedures.ADMIN.USUARIO.CRUD;
         queryAsync += ` @p_cData = ${entidad ? `'${JSON.stringify({ ...entidad, IDROLE })}'` : null},`;
         queryAsync += ` @p_cUser = ${null},`;
         queryAsync += ` @p_nTipo = ${4},`;
+        queryAsync += ` @p_nId = ${0}`;
+
+        try {
+            const result = await this.connection.query(queryAsync);
+            return result;
+        } catch (error) {
+            return error;
+        }
+    }
+
+    async listUserEmail(): Promise<User[]> {
+        let queryAsync = procedures.ADMIN.USUARIO.CRUD;
+        queryAsync += ` @p_cData = ${null},`;
+        queryAsync += ` @p_cUser = ${null},`;
+        queryAsync += ` @p_nTipo = ${11},`;
         queryAsync += ` @p_nId = ${0}`;
 
         try {
@@ -214,6 +248,24 @@ export class UserService {
             return { MESSAGE, STATUS: isSuccess };
         } catch (error) {
             const MESSAGE = error.originalError?.info?.message || "Ocurrió un error al intentar crear el directorio";
+            return { MESSAGE, STATUS: false };
+        }
+    }
+
+    async sharedDirectory(entidad: any): Promise<Result> {
+        let queryAsync = procedures.ADMIN.USUARIO.CRUD2;
+        queryAsync += ` @p_cData = ${entidad ? `'${JSON.stringify(entidad)}'` : null},`;
+        queryAsync += ` @p_cUser = ${entidad?.USER ? `'${entidad.USER}'` : null},`;
+        queryAsync += ` @p_nTipo = ${7},`;
+        queryAsync += ` @p_nId = ${entidad.ID}`;
+
+        try {
+            const result = await this.connection.query(queryAsync);
+            const isSuccess = result?.[0]?.RESULT > 0;
+            const MESSAGE = isSuccess ? "Directorio compartido correctamente" : "Ocurrió un error al intentar compartir el directorio";
+            return { MESSAGE, STATUS: isSuccess };
+        } catch (error) {
+            const MESSAGE = error.originalError?.info?.message || "Ocurrió un error al intentar compartir el directorio";
             return { MESSAGE, STATUS: false };
         }
     }

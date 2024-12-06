@@ -1,6 +1,7 @@
 export declare class HelpersModel {
     ID: number;
-    USUARIOS: number;
-    ENTRADAS: number;
-    VISTAS: number;
+    USUARIOS: string;
+    ENTRADAS: string;
+    PALABRAS: string;
+    VISTAS: string;
 }

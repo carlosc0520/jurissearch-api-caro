@@ -72,6 +72,14 @@ export class UsuarioController {
         return await this.userService.deleteUser(ID, req.user.UCRCN);
     }
 
+    @Post('delete-favorite-directory')
+    async deleteFavoriteDirectory(@Request() req, 
+        @Body('IDDIRECTORIO') IDDIRECTORIO: number,
+        @Body('IDENTRIE') IDENTRIE: number
+    ): Promise<Result> {
+        return await this.userService.deleteFavoriteDirectory(IDDIRECTORIO, IDENTRIE, req.user.UCRCN);
+    }
+
     @Post('edit')
     async editUser(@Request() req, @Body() entidad: User): Promise<Result> {
         entidad.USER = req.user.UCRCN;
@@ -92,6 +100,12 @@ export class UsuarioController {
         return await this.userService.createDirectory(entidad);
     }
 
+    @Post('shared-directory')
+    async sharedDirectory(@Request() req, @Body() entidad: any): Promise<Result> {
+        entidad.USER = req.user.UCRCN;
+        entidad.ID = req.user.ID;
+        return await this.userService.sharedDirectory(entidad);
+    }
 
     @Get('list-directory')
     async listDirectory(@Request() req, @Query('DSCRPCN') DSCRPCN: string, @Query('TYPE') TYPE: string): Promise<any> {

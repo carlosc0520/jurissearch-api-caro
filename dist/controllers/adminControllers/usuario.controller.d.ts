@@ -42,9 +42,11 @@ export declare class UsuarioController {
     listUsers(entidad: DataTable, IDROLE: string): Promise<User[]>;
     getUser(req: any): Promise<User>;
     deleteUser(req: any, ID: number): Promise<Result>;
+    deleteFavoriteDirectory(req: any, IDDIRECTORIO: number, IDENTRIE: number): Promise<Result>;
     editUser(req: any, entidad: User): Promise<Result>;
     editUserForce(req: any, entidad: User): Promise<Result>;
     createDirectory(req: any, entidad: any): Promise<Result>;
+    sharedDirectory(req: any, entidad: any): Promise<Result>;
     listDirectory(req: any, DSCRPCN: string, TYPE: string): Promise<any>;
     listDirectoryAll(req: any): Promise<any>;
     addFavoriteUser(req: any, IDENTRIE: number): Promise<any>;

@@ -28,7 +28,7 @@ let EntriesService = class EntriesService {
         entidad.SUBTEMA = entidad.SUBTEMA ? entidad.SUBTEMA.replace(/'/g, "''") : entidad.SUBTEMA;
         entidad.TEMA = entidad.TEMA ? entidad.TEMA.replace(/'/g, "''") : entidad.TEMA;
         queryAsync += ` @p_cData = ${entidad ? `'${JSON.stringify(entidad)}'` : null},`;
-        queryAsync += ` @p_cUser = ${entidad.UCRCN},`;
+        queryAsync += ` @p_cUser = '${entidad.UCRCN}',`;
         queryAsync += ` @p_nTipo = ${1},`;
         queryAsync += ` @p_nId = ${0}`;
         try {
@@ -145,7 +145,7 @@ let EntriesService = class EntriesService {
         var _a, _b, _c;
         let queryAsync = configMappers_1.default.ADMIN.ENTRIES.CRUD;
         queryAsync += ` @p_cData = ${null},`;
-        queryAsync += ` @p_cUser = ${UCRCN},`;
+        queryAsync += ` @p_cUser = '${UCRCN}',`;
         queryAsync += ` @p_nTipo = ${2},`;
         queryAsync += ` @p_nId = ${id}`;
         try {
@@ -184,8 +184,22 @@ let EntriesService = class EntriesService {
     async busqueda(entidad) {
         let queryAsync = configMappers_1.default.ADMIN.BUSQUEDAS.CRUD;
         queryAsync += ` @p_cData = ${entidad ? `'${JSON.stringify(entidad)}'` : null},`;
-        queryAsync += ` @p_cUser = ${entidad.UEDCN},`;
+        queryAsync += ` @p_cUser = '${entidad.UEDCN}',`;
         queryAsync += ` @p_nTipo = ${entidad.INDICADOR},`;
+        queryAsync += ` @p_nId = ${0}`;
+        try {
+            const result = await this.connection.query(queryAsync);
+            return result;
+        }
+        catch (error) {
+            return error;
+        }
+    }
+    async busquedaSugges(entidad) {
+        let queryAsync = configMappers_1.default.ADMIN.BUSQUEDAS.CRUD;
+        queryAsync += ` @p_cData = ${entidad ? `'${JSON.stringify(entidad)}'` : null},`;
+        queryAsync += ` @p_cUser = '${entidad.UEDCN}',`;
+        queryAsync += ` @p_nTipo = ${15},`;
         queryAsync += ` @p_nId = ${0}`;
         try {
             const result = await this.connection.query(queryAsync);
@@ -198,7 +212,7 @@ let EntriesService = class EntriesService {
     async busquedaFavorites(entidad) {
         let queryAsync = configMappers_1.default.ADMIN.BUSQUEDAS.CRUD;
         queryAsync += ` @p_cData = ${entidad ? `'${JSON.stringify(entidad)}'` : null},`;
-        queryAsync += ` @p_cUser = ${entidad.UEDCN},`;
+        queryAsync += ` @p_cUser = '${entidad.UEDCN}',`;
         queryAsync += ` @p_nTipo = ${3},`;
         queryAsync += ` @p_nId = ${0}`;
         try {
@@ -212,7 +226,7 @@ let EntriesService = class EntriesService {
     async busquedaFavoritesEntrie(entidad) {
         let queryAsync = configMappers_1.default.ADMIN.BUSQUEDAS.CRUD;
         queryAsync += ` @p_cData = ${entidad ? `'${JSON.stringify(entidad)}'` : null},`;
-        queryAsync += ` @p_cUser = ${entidad.UEDCN},`;
+        queryAsync += ` @p_cUser = '${entidad.UEDCN}',`;
         queryAsync += ` @p_nTipo = ${8},`;
         queryAsync += ` @p_nId = ${0}`;
         try {

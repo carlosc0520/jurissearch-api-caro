@@ -4,9 +4,10 @@ exports.HelpersModel = void 0;
 class HelpersModel {
     constructor() {
         this.ID = 0;
-        this.USUARIOS = 0;
-        this.ENTRADAS = 0;
-        this.VISTAS = 0;
+        this.USUARIOS = '';
+        this.ENTRADAS = '';
+        this.PALABRAS = '';
+        this.VISTAS = '';
     }
 }
 exports.HelpersModel = HelpersModel;

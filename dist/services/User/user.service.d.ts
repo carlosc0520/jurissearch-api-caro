@@ -39,10 +39,13 @@ export declare class UserService {
     updatePassword(entidad: User): Promise<Result>;
     editUser(entidad: User): Promise<Result>;
     deleteUser(id: number, UCRCN: string): Promise<Result>;
+    deleteFavoriteDirectory(IDDIRECTORIO: number, IDENTRIE: number, UCRCN: string): Promise<Result>;
     list(entidad: DataTable, IDROLE: string): Promise<User[]>;
+    listUserEmail(): Promise<User[]>;
     addFavoriteUser(USER: string, IDUSER: number, IDENTRIE: number): Promise<Result>;
     getUser(ID: number): Promise<User>;
     createDirectory(entidad: any): Promise<Result>;
+    sharedDirectory(entidad: any): Promise<Result>;
     listDirectory(IDUSUARIO: number, DSCRPCN: string, TYPE: string): Promise<any>;
     listDirectoryAll(IDUSUARIO: number): Promise<any>;
 }

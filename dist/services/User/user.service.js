@@ -124,11 +124,43 @@ let UserService = class UserService {
             return { MESSAGE, STATUS: false };
         }
     }
+    async deleteFavoriteDirectory(IDDIRECTORIO, IDENTRIE, UCRCN) {
+        var _a, _b, _c;
+        let queryAsync = configMappers_1.default.ADMIN.USUARIO.CRUD;
+        queryAsync += ` @p_cData = '${JSON.stringify({ IDDIRECTORIO, IDENTRIE })}',`;
+        queryAsync += ` @p_cUser = '${UCRCN}',`;
+        queryAsync += ` @p_nTipo = ${10},`;
+        queryAsync += ` @p_nId = ${0}`;
+        try {
+            const result = await this.connection.query(queryAsync);
+            const isSuccess = ((_a = result === null || result === void 0 ? void 0 : result[0]) === null || _a === void 0 ? void 0 : _a.RESULT) > 0;
+            const MESSAGE = isSuccess ? "Entrada eliminada deL directorio correctamente" : "Ocurrió un error al intentar eliminar la entrada del directorio";
+            return { MESSAGE, STATUS: isSuccess };
+        }
+        catch (error) {
+            const MESSAGE = ((_c = (_b = error.originalError) === null || _b === void 0 ? void 0 : _b.info) === null || _c === void 0 ? void 0 : _c.message) || "Ocurrió un error al intentar eliminar la entrada del directorio";
+            return { MESSAGE, STATUS: false };
+        }
+    }
     async list(entidad, IDROLE) {
         let queryAsync = configMappers_1.default.ADMIN.USUARIO.CRUD;
         queryAsync += ` @p_cData = ${entidad ? `'${JSON.stringify(Object.assign(Object.assign({}, entidad), { IDROLE }))}'` : null},`;
         queryAsync += ` @p_cUser = ${null},`;
         queryAsync += ` @p_nTipo = ${4},`;
+        queryAsync += ` @p_nId = ${0}`;
+        try {
+            const result = await this.connection.query(queryAsync);
+            return result;
+        }
+        catch (error) {
+            return error;
+        }
+    }
+    async listUserEmail() {
+        let queryAsync = configMappers_1.default.ADMIN.USUARIO.CRUD;
+        queryAsync += ` @p_cData = ${null},`;
+        queryAsync += ` @p_cUser = ${null},`;
+        queryAsync += ` @p_nTipo = ${11},`;
         queryAsync += ` @p_nId = ${0}`;
         try {
             const result = await this.connection.query(queryAsync);
@@ -189,6 +221,24 @@ let UserService = class UserService {
         }
         catch (error) {
             const MESSAGE = ((_c = (_b = error.originalError) === null || _b === void 0 ? void 0 : _b.info) === null || _c === void 0 ? void 0 : _c.message) || "Ocurrió un error al intentar crear el directorio";
+            return { MESSAGE, STATUS: false };
+        }
+    }
+    async sharedDirectory(entidad) {
+        var _a, _b, _c;
+        let queryAsync = configMappers_1.default.ADMIN.USUARIO.CRUD2;
+        queryAsync += ` @p_cData = ${entidad ? `'${JSON.stringify(entidad)}'` : null},`;
+        queryAsync += ` @p_cUser = ${(entidad === null || entidad === void 0 ? void 0 : entidad.USER) ? `'${entidad.USER}'` : null},`;
+        queryAsync += ` @p_nTipo = ${7},`;
+        queryAsync += ` @p_nId = ${entidad.ID}`;
+        try {
+            const result = await this.connection.query(queryAsync);
+            const isSuccess = ((_a = result === null || result === void 0 ? void 0 : result[0]) === null || _a === void 0 ? void 0 : _a.RESULT) > 0;
+            const MESSAGE = isSuccess ? "Directorio compartido correctamente" : "Ocurrió un error al intentar compartir el directorio";
+            return { MESSAGE, STATUS: isSuccess };
+        }
+        catch (error) {
+            const MESSAGE = ((_c = (_b = error.originalError) === null || _b === void 0 ? void 0 : _b.info) === null || _c === void 0 ? void 0 : _c.message) || "Ocurrió un error al intentar compartir el directorio";
             return { MESSAGE, STATUS: false };
         }
     }

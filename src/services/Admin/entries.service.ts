@@ -21,7 +21,7 @@ export class EntriesService {
         entidad.TEMA = entidad.TEMA ? entidad.TEMA.replace(/'/g, "''") : entidad.TEMA;
 
         queryAsync += ` @p_cData = ${entidad ? `'${JSON.stringify(entidad)}'` : null},`;
-        queryAsync += ` @p_cUser = ${entidad.UCRCN},`;
+        queryAsync += ` @p_cUser = '${entidad.UCRCN}',`;
         queryAsync += ` @p_nTipo = ${1},`;
         queryAsync += ` @p_nId = ${0}`;
 
@@ -152,7 +152,7 @@ export class EntriesService {
     async deleteFilter(id: number, UCRCN: string): Promise<Result> {
         let queryAsync = procedures.ADMIN.ENTRIES.CRUD;
         queryAsync += ` @p_cData = ${null},`;
-        queryAsync += ` @p_cUser = ${UCRCN},`;
+        queryAsync += ` @p_cUser = '${UCRCN}',`;
         queryAsync += ` @p_nTipo = ${2},`;
         queryAsync += ` @p_nId = ${id}`;
 
@@ -194,8 +194,23 @@ export class EntriesService {
     async busqueda(entidad: BusquedaModel): Promise<EntriesModel[]> {
         let queryAsync = procedures.ADMIN.BUSQUEDAS.CRUD;
         queryAsync += ` @p_cData = ${entidad ? `'${JSON.stringify(entidad)}'` : null},`;
-        queryAsync += ` @p_cUser = ${entidad.UEDCN},`;
+        queryAsync += ` @p_cUser = '${entidad.UEDCN}',`;
         queryAsync += ` @p_nTipo = ${entidad.INDICADOR},`
+        queryAsync += ` @p_nId = ${0}`;
+
+        try {
+            const result = await this.connection.query(queryAsync);
+            return result;
+        } catch (error) {
+            return error;
+        }
+    }
+
+    async busquedaSugges(entidad: BusquedaModel): Promise<any[]> {
+        let queryAsync = procedures.ADMIN.BUSQUEDAS.CRUD;
+        queryAsync += ` @p_cData = ${entidad ? `'${JSON.stringify(entidad)}'` : null},`;
+        queryAsync += ` @p_cUser = '${entidad.UEDCN}',`;
+        queryAsync += ` @p_nTipo = ${15},`
         queryAsync += ` @p_nId = ${0}`;
 
         try {
@@ -209,7 +224,7 @@ export class EntriesService {
     async busquedaFavorites(entidad: BusquedaModel): Promise<EntriesModel[]> {
         let queryAsync = procedures.ADMIN.BUSQUEDAS.CRUD;
         queryAsync += ` @p_cData = ${entidad ? `'${JSON.stringify(entidad)}'` : null},`;
-        queryAsync += ` @p_cUser = ${entidad.UEDCN},`;
+        queryAsync += ` @p_cUser = '${entidad.UEDCN}',`;
         queryAsync += ` @p_nTipo = ${3},`
         queryAsync += ` @p_nId = ${0}`;
 
@@ -224,7 +239,7 @@ export class EntriesService {
     async busquedaFavoritesEntrie(entidad: BusquedaModel): Promise<EntriesModel[]> {
         let queryAsync = procedures.ADMIN.BUSQUEDAS.CRUD;
         queryAsync += ` @p_cData = ${entidad ? `'${JSON.stringify(entidad)}'` : null},`;
-        queryAsync += ` @p_cUser = ${entidad.UEDCN},`;
+        queryAsync += ` @p_cUser = '${entidad.UEDCN}',`;
         queryAsync += ` @p_nTipo = ${8},`
         queryAsync += ` @p_nId = ${0}`;
 

@@ -37,12 +37,28 @@ const asistencia_controller_1 = require("../controllers/controlAsistencias/asist
 const asistencia_service_1 = require("./controlAsistencias/asistencia.service");
 const helpers_controller_1 = require("../controllers/adminControllers/helpers.controller");
 const helpers_service_1 = require("./Admin/helpers.service");
+const boletin_controller_1 = require("../controllers/adminControllers/boletin.controller");
+const boletin_service_1 = require("./Admin/boletin.service");
+const nestjs_ftp_1 = require("nestjs-ftp");
 let UserModule = class UserModule {
 };
 exports.UserModule = UserModule;
 exports.UserModule = UserModule = __decorate([
     (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([])],
+        imports: [
+            typeorm_1.TypeOrmModule.forFeature([]),
+            nestjs_ftp_1.FtpModule.forRootFtpAsync({
+                useFactory: async () => {
+                    return {
+                        host: 'ccfirma.com',
+                        port: 21,
+                        user: 'u551436692.jurissearch.com',
+                        password: '2051CCfirma1091#',
+                        secure: false,
+                    };
+                },
+            }),
+        ],
         controllers: [
             login_controller_1.LoginController,
             usuario_controller_1.UsuarioController,
@@ -56,7 +72,8 @@ exports.UserModule = UserModule = __decorate([
             planes_controller_1.PlanesController,
             email_controller_1.EmailController,
             asistencia_controller_1.AsistenciaController,
-            helpers_controller_1.HelpersController
+            helpers_controller_1.HelpersController,
+            boletin_controller_1.BoletinController,
         ],
         providers: [
             user_service_1.UserService,
@@ -70,10 +87,11 @@ exports.UserModule = UserModule = __decorate([
             preguntas_service_1.PreguntasService,
             auditoria_service_1.AuditoriaService,
             planes_service_1.PlanesService,
+            boletin_service_1.BoletinService,
             email_service_1.EmailService,
             emailJurisserivce_1.EmailJurisService,
             asistencia_service_1.AsistenciaService,
-            helpers_service_1.HelpersService
+            helpers_service_1.HelpersService,
         ],
     })
 ], UserModule);

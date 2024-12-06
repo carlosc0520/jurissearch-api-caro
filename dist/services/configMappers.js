@@ -39,6 +39,9 @@ const procedures = {
         "HELPERS": {
             "CRUD": "EXEC JURIS.USP_CRUD_HELPERS"
         },
+        "BOLETINES": {
+            "CRUD": "EXEC JURIS.USP_CRUD_BOLETINES"
+        }
     },
     "CCFIRMA": {
         "SOLICITUDES": {

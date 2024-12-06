@@ -1206,6 +1206,16 @@ export class EntriesController {
     return await this.entriesService.busqueda(busqueda);
   }
 
+  @Get('busqueda-sugges')
+  async busquedaSugges(
+    @Request() req,
+    @Query() busqueda: BusquedaModel,
+  ): Promise<EntriesModel[]> {
+    busqueda.UEDCN = req.user.UCRCN;
+    busqueda.IDUSR = req.user.ID;
+    return await this.entriesService.busquedaSugges(busqueda);
+  }
+
   @Get('busqueda-favorites')
   async busquedaFavorites(
     @Request() req,

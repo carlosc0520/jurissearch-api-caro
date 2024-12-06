@@ -28,50 +28,67 @@ import { EmailService } from './acompliance/email.service';
 import { EmailJurisService } from './acompliance/emailJurisserivce';
 import { PlanesController } from 'src/controllers/adminControllers/planes.controller';
 import { PlanesService } from './mantenimiento/planes.service';
-import { validateHeaderValue } from 'http';
 import { AsistenciaController } from 'src/controllers/controlAsistencias/asistencia.controller';
 import { AsistenciaService } from './controlAsistencias/asistencia.service';
 import { HelpersController } from 'src/controllers/adminControllers/helpers.controller';
 import { HelpersService } from './Admin/helpers.service';
+import { BoletinController } from 'src/controllers/adminControllers/boletin.controller';
+import { BoletinService } from './Admin/boletin.service';
+import { FtpModule } from 'nestjs-ftp';
 
 @Module({
-    imports: [TypeOrmModule.forFeature([])],
-    controllers: [
-        LoginController,
-        UsuarioController, 
-        FiltrosController, 
-        EntriesController,
-        MagistradoController,
-        HelpController,
-        NoticiaController,
-        PreguntasController,
-        AuditoriaController,
-        PlanesController,
+  imports: [
+    TypeOrmModule.forFeature([]),
+    // Configuración de FTP para subir archivos
+    FtpModule.forRootFtpAsync({
+      useFactory: async () => {
+        return {
+          host: 'ccfirma.com',
+          port: 21, // Puerto FTP (generalmente es 21)
+          user: 'u551436692.jurissearch.com',
+          password: '2051CCfirma1091#',
+          secure: false, // Si es conexión segura (FTPS), si no usa FTP normal
+        };
+      },
+    }),
+  ],
+  controllers: [
+    LoginController,
+    UsuarioController,
+    FiltrosController,
+    EntriesController,
+    MagistradoController,
+    HelpController,
+    NoticiaController,
+    PreguntasController,
+    AuditoriaController,
+    PlanesController,
 
-        // COMPLIANCE
-        EmailController,
-        AsistenciaController,
-        HelpersController
-    ],
-    providers: [
-        UserService, 
-        TokenService, 
-        filtrosService, 
-        EntriesService, 
-        S3Service,
-        MagistradosService,
-        HelpService,
-        NoticiaService,
-        PreguntasService,
-        AuditoriaService,
-        PlanesService,
+    // COMPLIANCE
+    EmailController,
+    AsistenciaController,
+    HelpersController,
+    BoletinController,
+  ],
+  providers: [
+    UserService,
+    TokenService,
+    filtrosService,
+    EntriesService,
+    S3Service,
+    MagistradosService,
+    HelpService,
+    NoticiaService,
+    PreguntasService,
+    AuditoriaService,
+    PlanesService,
+    BoletinService,
 
-        // COMPLIANCE
-        EmailService,
-        EmailJurisService,
-        AsistenciaService,
-        HelpersService
-    ],
+    // COMPLIANCE
+    EmailService,
+    EmailJurisService,
+    AsistenciaService,
+    HelpersService,
+  ],
 })
-export class UserModule { }
-
+export class UserModule {}

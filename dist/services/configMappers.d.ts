@@ -37,6 +37,9 @@ declare const procedures: {
         HELPERS: {
             CRUD: string;
         };
+        BOLETINES: {
+            CRUD: string;
+        };
     };
     CCFIRMA: {
         SOLICITUDES: {
