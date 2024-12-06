@@ -60,9 +60,9 @@ export class BoletinController {
 
     
       let usuarios =   await this.userService.listUserEmail();
-      console.log(usuarios);
       let result =  await this.emailService.emailBoletines(usuarios, entidad);
       if(result.STATUS){
+        entidad.UCRCN = req.user.UCRCN;
         return await this.boletinService.add(entidad);
       }
 
