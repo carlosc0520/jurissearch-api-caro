@@ -43,16 +43,16 @@ export class BoletinService {
     let queryAsync = procedures.ADMIN.BOLETINES.CRUD;
     queryAsync += ` @p_cData = ${entidad ? `'${JSON.stringify({ ...entidad })}'` : null},`;
     queryAsync += ` @p_cUser = ${null},`;
-    queryAsync += ` @p_nTipo = ${4},`
+    queryAsync += ` @p_nTipo = ${4},`;
     queryAsync += ` @p_nId = ${entidad.ID || 0}`;
 
     try {
-        const result = await this.connection.query(queryAsync);
-        return result;
+      const result = await this.connection.query(queryAsync);
+      return result;
     } catch (error) {
-        return error;
+      return error;
     }
-}
+  }
 
   // FTP
   private async uploadToFtp(
@@ -60,8 +60,11 @@ export class BoletinService {
     remotePath: string,
   ): Promise<string> {
     try {
-      // Subir archivo al servidor FTP
-      const remoteFilePath = `${remotePath}/${file.originalname}`;
+      let nameSimple = file.originalname
+        .normalize('NFD') 
+        .replace(/[\u0300-\u036f]/g, '') 
+        .replace(/[^a-zA-Z0-9.]/g, '_'); 
+      const remoteFilePath = `${remotePath}/${nameSimple}`;
 
       await this.ftpService.upload(file.path, remoteFilePath); // Subir archivo usando FTP
       console.log('Archivo subido:', remoteFilePath);
