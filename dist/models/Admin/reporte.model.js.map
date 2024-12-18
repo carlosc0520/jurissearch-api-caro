@@ -1,1 +1,1 @@
-{"version":3,"file":"reporte.model.js","sourceRoot":"","sources":["../../../src/models/Admin/reporte.model.ts"],"names":[],"mappings":";;;AAAA,MAAa,kBAAkB;IAA/B;QACI,WAAM,GAAY,EAAE,CAAC;IACzB,CAAC;CAAA;AAFD,gDAEC"}
+{"version":3,"file":"reporte.model.js","sourceRoot":"","sources":["../../../src/models/Admin/reporte.model.ts"],"names":[],"mappings":";;;AAEA,MAAa,kBAAkB;IAA/B;QACE,WAAM,GAAY,EAAE,CAAC;QACrB,UAAK,GAAY,EAAE,CAAC;QACpB,UAAK,GAAY,EAAE,CAAC;QACpB,QAAG,GAAY,CAAC,CAAC;QACjB,gBAAW,GAAY,EAAE,CAAC;QAC1B,YAAO,GAAY,EAAE,CAAC;IACxB,CAAC;CAAA;AAPD,gDAOC"}

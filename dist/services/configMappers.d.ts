@@ -40,6 +40,9 @@ declare const procedures: {
         BOLETINES: {
             CRUD: string;
         };
+        REPORTES: {
+            CRUD: string;
+        };
     };
     CCFIRMA: {
         SOLICITUDES: {

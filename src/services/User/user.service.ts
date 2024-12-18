@@ -4,6 +4,7 @@ import procedures from '../configMappers';
 // import { User } from '../../models/admin/user.model'
 import { Result } from '../../models/result.model';
 import { DataTable } from '../../models/DataTable.model.';
+import { ReporteModelEntrie } from 'src/models/Admin/reporte.model';
 
 class User {
     ID: number;
@@ -292,6 +293,22 @@ export class UserService {
         queryAsync += ` @p_nTipo = ${5},`;
         queryAsync += ` @p_nId = ${0}`;
 
+        try {
+            const result = await this.connection.query(queryAsync);
+            return result;
+        } catch (error) {
+            return error;
+        }
+    }
+
+    async reporteEstadisticos(entidad: ReporteModelEntrie): Promise<any> {
+        let queryAsync = procedures.ADMIN.REPORTES.CRUD;
+        queryAsync += ` @p_cData = ${entidad ? `'${JSON.stringify(entidad)}'` : null},`;
+        queryAsync += ` @p_cUser = ${'USUARIO'},`;
+        queryAsync += ` @p_nTipo = ${entidad.IND},`;
+        queryAsync += ` @p_nId = ${0}`;
+
+        console.log(queryAsync);
         try {
             const result = await this.connection.query(queryAsync);
             return result;

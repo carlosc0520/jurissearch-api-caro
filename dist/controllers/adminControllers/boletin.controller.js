@@ -57,11 +57,11 @@ let BoletinController = class BoletinController {
         try {
             const [file1, file2] = files;
             entidad.IMAGEN = await this.boletinService.upload('BOLETINES/IMAGENES', file1);
-            entidad.BOLETIN = await this.boletinService.upload('BOLETINES/IMAGENES', file2);
+            entidad.BOLETIN = await this.boletinService.upload('BOLETINES/PDF', file2);
             let usuarios = await this.userService.listUserEmail();
-            console.log(usuarios);
             let result = await this.emailService.emailBoletines(usuarios, entidad);
             if (result.STATUS) {
+                entidad.UCRCN = req.user.UCRCN;
                 return await this.boletinService.add(entidad);
             }
             return { MESSAGE: 'errormessage', STATUS: false };

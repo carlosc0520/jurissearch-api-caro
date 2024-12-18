@@ -1,6 +1,7 @@
 import { UserService } from '../../services/User/user.service';
 import { Result } from '../../models/result.model';
 import { DataTable } from '../../models/DataTable.model.';
+import { ReporteModelEntrie } from 'src/models/Admin/reporte.model';
 declare class User {
     ID: number;
     USER: string;
@@ -50,5 +51,6 @@ export declare class UsuarioController {
     listDirectory(req: any, DSCRPCN: string, TYPE: string): Promise<any>;
     listDirectoryAll(req: any): Promise<any>;
     addFavoriteUser(req: any, IDENTRIE: number): Promise<any>;
+    reporteEstadisticos(req: any, entidad: ReporteModelEntrie): Promise<any>;
 }
 export {};

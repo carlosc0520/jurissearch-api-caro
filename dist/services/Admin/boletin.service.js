@@ -63,7 +63,11 @@ let BoletinService = class BoletinService {
     }
     async uploadToFtp(file, remotePath) {
         try {
-            const remoteFilePath = `${remotePath}/${file.originalname}`;
+            let nameSimple = file.originalname
+                .normalize('NFD')
+                .replace(/[\u0300-\u036f]/g, '')
+                .replace(/[^a-zA-Z0-9.]/g, '_');
+            const remoteFilePath = `${remotePath}/${nameSimple}`;
             await this.ftpService.upload(file.path, remoteFilePath);
             console.log('Archivo subido:', remoteFilePath);
             return remoteFilePath;

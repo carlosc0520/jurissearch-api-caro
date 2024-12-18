@@ -270,6 +270,21 @@ let UserService = class UserService {
             return error;
         }
     }
+    async reporteEstadisticos(entidad) {
+        let queryAsync = configMappers_1.default.ADMIN.REPORTES.CRUD;
+        queryAsync += ` @p_cData = ${entidad ? `'${JSON.stringify(entidad)}'` : null},`;
+        queryAsync += ` @p_cUser = ${'USUARIO'},`;
+        queryAsync += ` @p_nTipo = ${entidad.IND},`;
+        queryAsync += ` @p_nId = ${0}`;
+        console.log(queryAsync);
+        try {
+            const result = await this.connection.query(queryAsync);
+            return result;
+        }
+        catch (error) {
+            return error;
+        }
+    }
 };
 exports.UserService = UserService;
 exports.UserService = UserService = __decorate([

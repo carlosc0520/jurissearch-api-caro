@@ -16,6 +16,7 @@ exports.UsuarioController = void 0;
 const common_1 = require("@nestjs/common");
 const user_service_1 = require("../../services/User/user.service");
 const DataTable_model_1 = require("../../models/DataTable.model.");
+const reporte_model_1 = require("../../models/Admin/reporte.model");
 class User {
 }
 let UsuarioController = class UsuarioController {
@@ -29,8 +30,8 @@ let UsuarioController = class UsuarioController {
             STATUS: true,
             DATA: {
                 IDR,
-                ROLE: IDR === 0 ? "ADMINISTRADOR" : IDR === 1 ? "DIGITADOR" : "USUARIO",
-                PERM: ((_a = req === null || req === void 0 ? void 0 : req.user) === null || _a === void 0 ? void 0 : _a.PERM) || []
+                ROLE: IDR === 0 ? 'ADMINISTRADOR' : IDR === 1 ? 'DIGITADOR' : 'USUARIO',
+                PERM: ((_a = req === null || req === void 0 ? void 0 : req.user) === null || _a === void 0 ? void 0 : _a.PERM) || [],
             },
         };
     }
@@ -78,6 +79,9 @@ let UsuarioController = class UsuarioController {
     }
     async addFavoriteUser(req, IDENTRIE) {
         return await this.userService.addFavoriteUser(req.user.UCRCN, req.user.ID, IDENTRIE);
+    }
+    async reporteEstadisticos(req, entidad) {
+        return await this.userService.reporteEstadisticos(entidad);
     }
 };
 exports.UsuarioController = UsuarioController;
@@ -179,11 +183,19 @@ __decorate([
 __decorate([
     (0, common_1.Get)('add-favorite'),
     __param(0, (0, common_1.Request)()),
-    __param(1, (0, common_1.Query)("IDENTRIE")),
+    __param(1, (0, common_1.Query)('IDENTRIE')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, Number]),
     __metadata("design:returntype", Promise)
 ], UsuarioController.prototype, "addFavoriteUser", null);
+__decorate([
+    (0, common_1.Get)('reporte-estadisticos'),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Query)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, reporte_model_1.ReporteModelEntrie]),
+    __metadata("design:returntype", Promise)
+], UsuarioController.prototype, "reporteEstadisticos", null);
 exports.UsuarioController = UsuarioController = __decorate([
     (0, common_1.Controller)('admin/user'),
     __metadata("design:paramtypes", [user_service_1.UserService])

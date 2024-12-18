@@ -1,6 +1,7 @@
 import { DataSource } from 'typeorm';
 import { Result } from '../../models/result.model';
 import { DataTable } from '../../models/DataTable.model.';
+import { ReporteModelEntrie } from 'src/models/Admin/reporte.model';
 declare class User {
     ID: number;
     USER: string;
@@ -48,5 +49,6 @@ export declare class UserService {
     sharedDirectory(entidad: any): Promise<Result>;
     listDirectory(IDUSUARIO: number, DSCRPCN: string, TYPE: string): Promise<any>;
     listDirectoryAll(IDUSUARIO: number): Promise<any>;
+    reporteEstadisticos(entidad: ReporteModelEntrie): Promise<any>;
 }
 export {};

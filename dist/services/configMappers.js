@@ -41,7 +41,10 @@ const procedures = {
         },
         "BOLETINES": {
             "CRUD": "EXEC JURIS.USP_CRUD_BOLETINES"
-        }
+        },
+        "REPORTES": {
+            "CRUD": "EXEC JURIS.USP_CRUD_REPORTES"
+        },
     },
     "CCFIRMA": {
         "SOLICITUDES": {
