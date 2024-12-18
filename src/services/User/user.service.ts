@@ -308,7 +308,6 @@ export class UserService {
         queryAsync += ` @p_nTipo = ${entidad.IND},`;
         queryAsync += ` @p_nId = ${0}`;
 
-        console.log(queryAsync);
         try {
             const result = await this.connection.query(queryAsync);
             return result;
