@@ -565,6 +565,189 @@ export class EntriesController {
     }
   }
 
+  @Post('list-search-data-allZip')
+  async listSearchDataAllZip(
+    @Request() req,
+    @Body('paths') paths: string,
+    @Res() res,
+  ) {
+    let pathArray = JSON.parse(paths);
+    console.log(pathArray);
+    // CADA UNO TIENE ENTRIEFILE(RUTA) Y TITLE (NOMBRE)
+    try {
+      let zip = new JSZip();
+      const pathcaroa = path.join(
+        __dirname,
+        '..',
+        '..',
+        'files/files',
+        'caroa.png',
+      );
+      const pathccfirma = path.join(
+        __dirname,
+        '..',
+        '..',
+        'files/files',
+        'ccfirma.png',
+      );
+      const pathmarcadeagua = path.join(
+        __dirname,
+        '..',
+        '..',
+        'files/files',
+        'marcadeagua.png',
+      );
+      const pathnuevologo = path.join(
+        __dirname,
+        '..',
+        '..',
+        'files/files',
+        'nuevologo.png',
+      );
+      let fecha = new Date('2024-11-08');
+
+      const downloadPromises = pathArray.map(async (entry) => {
+        try {
+          const fileBuffer = await this.s3Service.downloadFile(
+            entry.ENTRIEFILE,
+          );
+
+          const pdfDoc = await PDFDocument.load(fileBuffer);
+
+          let fEntry = new Date(entry.FRESOLUTION);
+          let modificar = false;
+          if (fEntry > fecha) {
+            modificar = true;
+          }
+
+          if (modificar) {
+            const caroaImage = await pdfDoc.embedPng(
+              fs.readFileSync(pathcaroa),
+            );
+            const ccfirmaImage = await pdfDoc.embedPng(
+              fs.readFileSync(pathccfirma),
+            );
+            const marcadeaguaImage = await pdfDoc.embedPng(
+              fs.readFileSync(pathmarcadeagua),
+            );
+            const nuevologoImage = await pdfDoc.embedPng(
+              fs.readFileSync(pathnuevologo),
+            );
+
+            const pages = await pdfDoc.getPages();
+
+            for (const page of pages) {
+              const { width, height } = page.getSize();
+
+              await page.drawImage(marcadeaguaImage, {
+                x: width / 2 - 310,
+                y: height / 2 - 330,
+                width: 620,
+                height: 600,
+                opacity: 0.7,
+              });
+
+              await page.drawImage(caroaImage, {
+                x: 10,
+                y: height - 43,
+                width: 95,
+                height: 40,
+              });
+
+              await page.drawText('https://ccfirma.com/', {
+                x: 10,
+                y: height - 25,
+                size: 10,
+                color: rgb(0, 0, 0),
+                opacity: 0.0,
+              });
+
+              await page.drawText('https://ccfirma.com/', {
+                x: 5,
+                y: height / 2 - 25,
+                size: 11,
+                color: rgb(0, 0, 0),
+                opacity: 0.0,
+                rotate: degrees(-90),
+              });
+
+              await page.drawText('https://ccfirma.com/', {
+                x: 5,
+                y: height / 2 - 90,
+                size: 11,
+                color: rgb(0, 0, 0),
+                opacity: 0.0,
+                rotate: degrees(-90),
+              });
+
+              await page.drawText('https://ccfirma.com/', {
+                x: 5,
+                y: height / 2 + 90,
+                size: 11,
+                color: rgb(0, 0, 0),
+                opacity: 0.0,
+                rotate: degrees(-90),
+              });
+
+              await page.drawImage(nuevologoImage, {
+                x: width / 2 - 25,
+                y: height - 43,
+                width: 50,
+                height: 35,
+              });
+
+              await page.drawText('https://jurissearch.com/', {
+                x: width / 2 - 25,
+                y: height - 30,
+                size: 10,
+                color: rgb(0, 0, 0),
+                opacity: 0.0,
+              });
+
+              await page.drawImage(ccfirmaImage, {
+                x: width / 2 - 30,
+                y: 5,
+                width: 70,
+                height: 30,
+                opacity: 0.9,
+              });
+
+              await page.drawText('https://ccfirma.com/', {
+                x: width / 2 - 30,
+                y: 10,
+                size: 10,
+                color: rgb(0, 0, 0),
+                opacity: 0.0,
+              });
+            }
+          }
+
+          const pdfBytes = await pdfDoc.save();
+
+          zip.file(`${entry.TITLE}.pdf`, pdfBytes);
+        } catch (error) {
+          return null;
+        }
+      });
+
+      await Promise.all(downloadPromises);
+
+      const zipBuffer = await zip.generateAsync({ type: 'nodebuffer' });
+
+      // Configurar la respuesta HTTP para la descarga del archivo ZIP
+      res.setHeader('Content-Type', 'application/zip');
+      res.setHeader(
+        'Content-Disposition',
+        `attachment; filename=asistentes.zip`,
+      );
+
+      res.status(200).send(zipBuffer);
+    } catch (error) {
+      // Manejar errores del servidor
+      res.status(500).json({ message: 'Error interno del servidor' });
+    }
+  }
+
   @Get('list-search-data-full')
   async listSearchDataFull(
     @Query('RTITLE') RTITLE: string,
@@ -1048,7 +1231,6 @@ export class EntriesController {
     try {
       let data = await this.entriesService.getEntriePrint(PATH);
 
-      // si la data.FEDCN es mayor al 08/11/2024
       let fecha = new Date('2024-11-08');
       let modificar = false;
       if (data.FEDCN > fecha) {

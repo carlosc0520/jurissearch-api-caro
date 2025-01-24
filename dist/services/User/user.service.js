@@ -276,7 +276,6 @@ let UserService = class UserService {
         queryAsync += ` @p_cUser = ${'USUARIO'},`;
         queryAsync += ` @p_nTipo = ${entidad.IND},`;
         queryAsync += ` @p_nId = ${0}`;
-
         try {
             const result = await this.connection.query(queryAsync);
             return result;

@@ -16,6 +16,7 @@ export declare class EntriesController {
     listUsers(entidad: DataTable, TYPE: string): Promise<EntriesModel[]>;
     listData(entidad: DataTable, TYPE: string, BLOG: string, FRESOLUTION: string, TEMA: string, RTITLE: string, FCRCN: string): Promise<EntriesModel[]>;
     listSearchData(req: any, RTITLE: string, TYPE: string, res: any): Promise<any>;
+    listSearchDataAllZip(req: any, paths: string, res: any): Promise<void>;
     listSearchDataFull(RTITLE: string, TYPE: string, res: Response): Promise<void>;
     private renderContent;
     private decodeHtmlEntities;

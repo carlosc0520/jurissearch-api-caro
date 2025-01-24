@@ -324,6 +324,123 @@ let EntriesController = class EntriesController {
             res.status(500).json({ message: 'Error interno del servidor' });
         }
     }
+    async listSearchDataAllZip(req, paths, res) {
+        let pathArray = JSON.parse(paths);
+        console.log(pathArray);
+        try {
+            let zip = new jszip_1.default();
+            const pathcaroa = path.join(__dirname, '..', '..', 'files/files', 'caroa.png');
+            const pathccfirma = path.join(__dirname, '..', '..', 'files/files', 'ccfirma.png');
+            const pathmarcadeagua = path.join(__dirname, '..', '..', 'files/files', 'marcadeagua.png');
+            const pathnuevologo = path.join(__dirname, '..', '..', 'files/files', 'nuevologo.png');
+            let fecha = new Date('2024-11-08');
+            const downloadPromises = pathArray.map(async (entry) => {
+                try {
+                    const fileBuffer = await this.s3Service.downloadFile(entry.ENTRIEFILE);
+                    const pdfDoc = await pdf_lib_1.PDFDocument.load(fileBuffer);
+                    let fEntry = new Date(entry.FRESOLUTION);
+                    let modificar = false;
+                    if (fEntry > fecha) {
+                        modificar = true;
+                    }
+                    if (modificar) {
+                        const caroaImage = await pdfDoc.embedPng(fs.readFileSync(pathcaroa));
+                        const ccfirmaImage = await pdfDoc.embedPng(fs.readFileSync(pathccfirma));
+                        const marcadeaguaImage = await pdfDoc.embedPng(fs.readFileSync(pathmarcadeagua));
+                        const nuevologoImage = await pdfDoc.embedPng(fs.readFileSync(pathnuevologo));
+                        const pages = await pdfDoc.getPages();
+                        for (const page of pages) {
+                            const { width, height } = page.getSize();
+                            await page.drawImage(marcadeaguaImage, {
+                                x: width / 2 - 310,
+                                y: height / 2 - 330,
+                                width: 620,
+                                height: 600,
+                                opacity: 0.7,
+                            });
+                            await page.drawImage(caroaImage, {
+                                x: 10,
+                                y: height - 43,
+                                width: 95,
+                                height: 40,
+                            });
+                            await page.drawText('https://ccfirma.com/', {
+                                x: 10,
+                                y: height - 25,
+                                size: 10,
+                                color: (0, pdf_lib_1.rgb)(0, 0, 0),
+                                opacity: 0.0,
+                            });
+                            await page.drawText('https://ccfirma.com/', {
+                                x: 5,
+                                y: height / 2 - 25,
+                                size: 11,
+                                color: (0, pdf_lib_1.rgb)(0, 0, 0),
+                                opacity: 0.0,
+                                rotate: (0, pdf_lib_1.degrees)(-90),
+                            });
+                            await page.drawText('https://ccfirma.com/', {
+                                x: 5,
+                                y: height / 2 - 90,
+                                size: 11,
+                                color: (0, pdf_lib_1.rgb)(0, 0, 0),
+                                opacity: 0.0,
+                                rotate: (0, pdf_lib_1.degrees)(-90),
+                            });
+                            await page.drawText('https://ccfirma.com/', {
+                                x: 5,
+                                y: height / 2 + 90,
+                                size: 11,
+                                color: (0, pdf_lib_1.rgb)(0, 0, 0),
+                                opacity: 0.0,
+                                rotate: (0, pdf_lib_1.degrees)(-90),
+                            });
+                            await page.drawImage(nuevologoImage, {
+                                x: width / 2 - 25,
+                                y: height - 43,
+                                width: 50,
+                                height: 35,
+                            });
+                            await page.drawText('https://jurissearch.com/', {
+                                x: width / 2 - 25,
+                                y: height - 30,
+                                size: 10,
+                                color: (0, pdf_lib_1.rgb)(0, 0, 0),
+                                opacity: 0.0,
+                            });
+                            await page.drawImage(ccfirmaImage, {
+                                x: width / 2 - 30,
+                                y: 5,
+                                width: 70,
+                                height: 30,
+                                opacity: 0.9,
+                            });
+                            await page.drawText('https://ccfirma.com/', {
+                                x: width / 2 - 30,
+                                y: 10,
+                                size: 10,
+                                color: (0, pdf_lib_1.rgb)(0, 0, 0),
+                                opacity: 0.0,
+                            });
+                        }
+                    }
+                    const pdfBytes = await pdfDoc.save();
+                    zip.file(`${entry.TITLE}.pdf`, pdfBytes);
+                }
+                catch (error) {
+                    return null;
+                }
+            });
+            await Promise.all(downloadPromises);
+            const zipBuffer = await zip.generateAsync({ type: 'nodebuffer' });
+            res.setHeader('Content-Type', 'application/zip');
+            res.setHeader('Content-Disposition', `attachment; filename=asistentes.zip`);
+            res.status(200).send(zipBuffer);
+        }
+        catch (error) {
+            res.status(500).json({ message: 'Error interno del servidor' });
+        }
+    }
     async listSearchDataFull(RTITLE, TYPE, res) {
         try {
             let dataArray = await this.entriesService.listSearchData(RTITLE, 1, TYPE);
@@ -1883,6 +2000,15 @@ __decorate([
     __metadata("design:paramtypes", [Object, String, String, Object]),
     __metadata("design:returntype", Promise)
 ], EntriesController.prototype, "listSearchData", null);
+__decorate([
+    (0, common_1.Post)('list-search-data-allZip'),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Body)('paths')),
+    __param(2, (0, common_1.Res)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, String, Object]),
+    __metadata("design:returntype", Promise)
+], EntriesController.prototype, "listSearchDataAllZip", null);
 __decorate([
     (0, common_1.Get)('list-search-data-full'),
     __param(0, (0, common_1.Query)('RTITLE')),
