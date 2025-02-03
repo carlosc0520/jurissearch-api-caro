@@ -216,99 +216,108 @@ let EntriesController = class EntriesController {
     async listData(entidad, TYPE, BLOG, FRESOLUTION, TEMA, RTITLE, FCRCN) {
         return await this.entriesService.listData(entidad, entidad.DESC, TYPE, null, BLOG, FRESOLUTION, TEMA, RTITLE, FCRCN);
     }
-    async listSearchData(req, RTITLE, TYPE, res) {
+    async listSearchData(req, RTITLE, TYPE, BLOG, res) {
         try {
-            let data = await this.entriesService.listSearchData(RTITLE, 2, TYPE);
+            let data = await this.entriesService.listSearchData(RTITLE, 2, TYPE, BLOG);
             let zip = new jszip_1.default();
             const pathcaroa = path.join(__dirname, '..', '..', 'files/files', 'caroa.png');
             const pathccfirma = path.join(__dirname, '..', '..', 'files/files', 'ccfirma.png');
             const pathmarcadeagua = path.join(__dirname, '..', '..', 'files/files', 'marcadeagua.png');
             const pathnuevologo = path.join(__dirname, '..', '..', 'files/files', 'nuevologo.png');
+            let fecha = new Date('2024-11-08');
             const downloadPromises = data.map(async (entry) => {
                 try {
                     const fileBuffer = await this.s3Service.downloadFile(entry.ENTRIEFILE);
+                    let fEntry = new Date(entry.FCRCN);
+                    let modificar = false;
+                    if (fEntry > fecha) {
+                        modificar = true;
+                    }
                     const pdfDoc = await pdf_lib_1.PDFDocument.load(fileBuffer);
-                    const caroaImage = await pdfDoc.embedPng(fs.readFileSync(pathcaroa));
-                    const ccfirmaImage = await pdfDoc.embedPng(fs.readFileSync(pathccfirma));
-                    const marcadeaguaImage = await pdfDoc.embedPng(fs.readFileSync(pathmarcadeagua));
-                    const nuevologoImage = await pdfDoc.embedPng(fs.readFileSync(pathnuevologo));
-                    const pages = await pdfDoc.getPages();
-                    for (const page of pages) {
-                        const { width, height } = page.getSize();
-                        await page.drawImage(marcadeaguaImage, {
-                            x: width / 2 - 310,
-                            y: height / 2 - 330,
-                            width: 620,
-                            height: 600,
-                            opacity: 0.7,
-                        });
-                        await page.drawImage(caroaImage, {
-                            x: 10,
-                            y: height - 43,
-                            width: 95,
-                            height: 40,
-                        });
-                        await page.drawText('https://ccfirma.com/', {
-                            x: 10,
-                            y: height - 25,
-                            size: 10,
-                            color: (0, pdf_lib_1.rgb)(0, 0, 0),
-                            opacity: 0.0,
-                        });
-                        await page.drawText('https://ccfirma.com/', {
-                            x: 5,
-                            y: height / 2 - 25,
-                            size: 11,
-                            color: (0, pdf_lib_1.rgb)(0, 0, 0),
-                            opacity: 0.0,
-                            rotate: (0, pdf_lib_1.degrees)(-90),
-                        });
-                        await page.drawText('https://ccfirma.com/', {
-                            x: 5,
-                            y: height / 2 - 90,
-                            size: 11,
-                            color: (0, pdf_lib_1.rgb)(0, 0, 0),
-                            opacity: 0.0,
-                            rotate: (0, pdf_lib_1.degrees)(-90),
-                        });
-                        await page.drawText('https://ccfirma.com/', {
-                            x: 5,
-                            y: height / 2 + 90,
-                            size: 11,
-                            color: (0, pdf_lib_1.rgb)(0, 0, 0),
-                            opacity: 0.0,
-                            rotate: (0, pdf_lib_1.degrees)(-90),
-                        });
-                        await page.drawImage(nuevologoImage, {
-                            x: width / 2 - 25,
-                            y: height - 43,
-                            width: 50,
-                            height: 35,
-                        });
-                        await page.drawText('https://jurissearch.com/', {
-                            x: width / 2 - 25,
-                            y: height - 30,
-                            size: 10,
-                            color: (0, pdf_lib_1.rgb)(0, 0, 0),
-                            opacity: 0.0,
-                        });
-                        await page.drawImage(ccfirmaImage, {
-                            x: width / 2 - 30,
-                            y: 5,
-                            width: 70,
-                            height: 30,
-                            opacity: 0.9,
-                        });
-                        await page.drawText('https://ccfirma.com/', {
-                            x: width / 2 - 30,
-                            y: 10,
-                            size: 10,
-                            color: (0, pdf_lib_1.rgb)(0, 0, 0),
-                            opacity: 0.0,
-                        });
+                    if (modificar) {
+                        const caroaImage = await pdfDoc.embedPng(fs.readFileSync(pathcaroa));
+                        const ccfirmaImage = await pdfDoc.embedPng(fs.readFileSync(pathccfirma));
+                        const marcadeaguaImage = await pdfDoc.embedPng(fs.readFileSync(pathmarcadeagua));
+                        const nuevologoImage = await pdfDoc.embedPng(fs.readFileSync(pathnuevologo));
+                        const pages = await pdfDoc.getPages();
+                        for (const page of pages) {
+                            const { width, height } = page.getSize();
+                            await page.drawImage(marcadeaguaImage, {
+                                x: width / 2 - 310,
+                                y: height / 2 - 330,
+                                width: 620,
+                                height: 600,
+                                opacity: 0.7,
+                            });
+                            await page.drawImage(caroaImage, {
+                                x: 10,
+                                y: height - 43,
+                                width: 95,
+                                height: 40,
+                            });
+                            await page.drawText('https://ccfirma.com/', {
+                                x: 10,
+                                y: height - 25,
+                                size: 10,
+                                color: (0, pdf_lib_1.rgb)(0, 0, 0),
+                                opacity: 0.0,
+                            });
+                            await page.drawText('https://ccfirma.com/', {
+                                x: 5,
+                                y: height / 2 - 25,
+                                size: 11,
+                                color: (0, pdf_lib_1.rgb)(0, 0, 0),
+                                opacity: 0.0,
+                                rotate: (0, pdf_lib_1.degrees)(-90),
+                            });
+                            await page.drawText('https://ccfirma.com/', {
+                                x: 5,
+                                y: height / 2 - 90,
+                                size: 11,
+                                color: (0, pdf_lib_1.rgb)(0, 0, 0),
+                                opacity: 0.0,
+                                rotate: (0, pdf_lib_1.degrees)(-90),
+                            });
+                            await page.drawText('https://ccfirma.com/', {
+                                x: 5,
+                                y: height / 2 + 90,
+                                size: 11,
+                                color: (0, pdf_lib_1.rgb)(0, 0, 0),
+                                opacity: 0.0,
+                                rotate: (0, pdf_lib_1.degrees)(-90),
+                            });
+                            await page.drawImage(nuevologoImage, {
+                                x: width / 2 - 25,
+                                y: height - 43,
+                                width: 50,
+                                height: 35,
+                            });
+                            await page.drawText('https://jurissearch.com/', {
+                                x: width / 2 - 25,
+                                y: height - 30,
+                                size: 10,
+                                color: (0, pdf_lib_1.rgb)(0, 0, 0),
+                                opacity: 0.0,
+                            });
+                            await page.drawImage(ccfirmaImage, {
+                                x: width / 2 - 30,
+                                y: 5,
+                                width: 70,
+                                height: 30,
+                                opacity: 0.9,
+                            });
+                            await page.drawText('https://ccfirma.com/', {
+                                x: width / 2 - 30,
+                                y: 10,
+                                size: 10,
+                                color: (0, pdf_lib_1.rgb)(0, 0, 0),
+                                opacity: 0.0,
+                            });
+                        }
                     }
                     const pdfBytes = await pdfDoc.save();
-                    zip.file(`${entry.TITLE}.pdf`, pdfBytes);
+                    let title = entry.TITLE.replace(/\//g, '-');
+                    zip.file(`${title}.pdf`, pdfBytes);
                 }
                 catch (error) {
                     return null;
@@ -326,7 +335,6 @@ let EntriesController = class EntriesController {
     }
     async listSearchDataAllZip(req, paths, res) {
         let pathArray = JSON.parse(paths);
-        console.log(pathArray);
         try {
             let zip = new jszip_1.default();
             const pathcaroa = path.join(__dirname, '..', '..', 'files/files', 'caroa.png');
@@ -338,7 +346,7 @@ let EntriesController = class EntriesController {
                 try {
                     const fileBuffer = await this.s3Service.downloadFile(entry.ENTRIEFILE);
                     const pdfDoc = await pdf_lib_1.PDFDocument.load(fileBuffer);
-                    let fEntry = new Date(entry.FRESOLUTION);
+                    let fEntry = new Date(entry.FCRCN);
                     let modificar = false;
                     if (fEntry > fecha) {
                         modificar = true;
@@ -425,7 +433,8 @@ let EntriesController = class EntriesController {
                         }
                     }
                     const pdfBytes = await pdfDoc.save();
-                    zip.file(`${entry.TITLE}.pdf`, pdfBytes);
+                    let title = entry.TITLE.replace(/\//g, '-');
+                    zip.file(`${title}.pdf`, pdfBytes);
                 }
                 catch (error) {
                     return null;
@@ -443,8 +452,9 @@ let EntriesController = class EntriesController {
     }
     async listSearchDataFull(RTITLE, TYPE, res) {
         try {
+            RTITLE = null;
             let dataArray = await this.entriesService.listSearchData(RTITLE, 1, TYPE);
-            dataArray = dataArray.slice(0, 100);
+            dataArray = dataArray.slice(0, 1000);
             pdfmake_1.default.vfs = vfs_fonts_1.default.pdfMake.vfs;
             const zip = new jszip_1.default();
             let margin = [40, 10, 40, 10];
@@ -787,7 +797,8 @@ let EntriesController = class EntriesController {
                 const pdfDoc = pdfmake_1.default.createPdf(documentoPDF);
                 return new Promise((resolve, reject) => {
                     pdfDoc.getBuffer((buffer) => {
-                        const fileName = `${data.TITLE.toUpperCase()} - RESUMEN EJECUTIVO.pdf`;
+                        let title = data.TITLE.replace(/\//g, '-');
+                        const fileName = `${title.toUpperCase()} - RESUMEN EJECUTIVO.pdf`;
                         zip.file(fileName, buffer);
                         resolve(buffer);
                     });
@@ -1995,9 +2006,10 @@ __decorate([
     __param(0, (0, common_1.Request)()),
     __param(1, (0, common_1.Query)('RTITLE')),
     __param(2, (0, common_1.Query)('TYPE')),
-    __param(3, (0, common_1.Res)()),
+    __param(3, (0, common_1.Query)('BLOG')),
+    __param(4, (0, common_1.Res)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, String, String, Object]),
+    __metadata("design:paramtypes", [Object, String, String, String, Object]),
     __metadata("design:returntype", Promise)
 ], EntriesController.prototype, "listSearchData", null);
 __decorate([
