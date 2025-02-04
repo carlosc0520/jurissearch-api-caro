@@ -67,7 +67,6 @@ export class BoletinService {
       const remoteFilePath = `${remotePath}/${nameSimple}`;
 
       await this.ftpService.upload(file.path, remoteFilePath); // Subir archivo usando FTP
-      console.log('Archivo subido:', remoteFilePath);
       return remoteFilePath; // Retornar la ruta remota
     } catch (error) {
       console.error('Error al subir archivo:', error);

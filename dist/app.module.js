@@ -40,7 +40,7 @@ exports.AppModule = AppModule = __decorate([
                     trustServerCertificate: true,
                 }
             }),
-            UserModule_1.UserModule
+            UserModule_1.UserModule,
         ],
         exports: [
             token_service_1.TokenService

@@ -35,9 +35,12 @@ import { HelpersService } from './Admin/helpers.service';
 import { BoletinController } from 'src/controllers/adminControllers/boletin.controller';
 import { BoletinService } from './Admin/boletin.service';
 import { FtpModule } from 'nestjs-ftp';
+import { ComplytoolsController } from 'src/controllers/acompliance/complytools.controller';
+import { HttpModule } from '@nestjs/axios';
 
 @Module({
   imports: [
+    HttpModule,
     TypeOrmModule.forFeature([]),
     // Configuración de FTP para subir archivos
     FtpModule.forRootFtpAsync({
@@ -69,6 +72,7 @@ import { FtpModule } from 'nestjs-ftp';
     AsistenciaController,
     HelpersController,
     BoletinController,
+    ComplytoolsController
   ],
   providers: [
     UserService,

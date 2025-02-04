@@ -27,9 +27,16 @@ const core_1 = require("@nestjs/core");
 const app_module_1 = require("./app.module");
 const dotenv = __importStar(require("dotenv"));
 const bodyParser = __importStar(require("body-parser"));
+const fs = __importStar(require("fs"));
 async function bootstrap() {
     dotenv.config();
-    const app = await core_1.NestFactory.create(app_module_1.AppModule);
+    const httpsOptions = {
+        key: fs.readFileSync('C:/Certificados/server.key'),
+        cert: fs.readFileSync('C:/Certificados/server.crt'),
+    };
+    const app = await core_1.NestFactory.create(app_module_1.AppModule, {
+        httpsOptions,
+    });
     app.use(bodyParser.json({ limit: '100mb' }));
     app.use(bodyParser.urlencoded({ limit: '100mb', extended: true }));
     app.enableCors();

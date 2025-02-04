@@ -40,12 +40,15 @@ const helpers_service_1 = require("./Admin/helpers.service");
 const boletin_controller_1 = require("../controllers/adminControllers/boletin.controller");
 const boletin_service_1 = require("./Admin/boletin.service");
 const nestjs_ftp_1 = require("nestjs-ftp");
+const complytools_controller_1 = require("../controllers/acompliance/complytools.controller");
+const axios_1 = require("@nestjs/axios");
 let UserModule = class UserModule {
 };
 exports.UserModule = UserModule;
 exports.UserModule = UserModule = __decorate([
     (0, common_1.Module)({
         imports: [
+            axios_1.HttpModule,
             typeorm_1.TypeOrmModule.forFeature([]),
             nestjs_ftp_1.FtpModule.forRootFtpAsync({
                 useFactory: async () => {
@@ -74,6 +77,7 @@ exports.UserModule = UserModule = __decorate([
             asistencia_controller_1.AsistenciaController,
             helpers_controller_1.HelpersController,
             boletin_controller_1.BoletinController,
+            complytools_controller_1.ComplytoolsController
         ],
         providers: [
             user_service_1.UserService,

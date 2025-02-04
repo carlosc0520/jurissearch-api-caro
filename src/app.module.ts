@@ -11,7 +11,6 @@
   import { AuthMiddleware } from './middleware/auth.middleware';
   import { TokenService } from './services/User/token.service';
 
-
   @Module({
     imports: [
       TypeOrmModule.forRoot(
@@ -42,7 +41,7 @@
         }
       },
     ),
-    UserModule
+    UserModule,
   ],
   exports: [
     TokenService

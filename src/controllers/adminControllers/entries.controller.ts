@@ -1220,7 +1220,7 @@ export class EntriesController {
   async busquedaFavorites(
     @Request() req,
     @Query() busqueda: BusquedaModel,
-  ): Promise<EntriesModel[]> {
+  ): Promise<EntriesModel[]> {  
     busqueda.UEDCN = req.user.UCRCN;
     busqueda.IDUSR = req.user.ID;
     return await this.entriesService.busquedaFavorites(busqueda);

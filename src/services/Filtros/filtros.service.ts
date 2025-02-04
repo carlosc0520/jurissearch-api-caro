@@ -80,7 +80,4 @@ export class filtrosService {
             return { MESSAGE, STATUS: false };
         }
     }
-
-
-
 }

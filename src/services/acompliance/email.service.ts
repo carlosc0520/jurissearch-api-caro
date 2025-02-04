@@ -38,13 +38,13 @@ export class EmailService {
   async sendEmail(email: EmailModel): Promise<Result> {
     try {
       const html = `
-                <h2>Detalles del Formulario</h2>
-                <p><strong>Fecha:</strong> ${new Date().toLocaleDateString()} - ${new Date().toLocaleTimeString()}</p>
-                <p><strong>Usuario:</strong> ${email.NOMBRES}</p>
-                <p><strong>Correo:</strong> ${email.CORREO}</p>
-                <p><strong>Teléfono:</strong> ${email.TELEFONO}</p>
-                <p><strong>Provincia:</strong> ${email.PROVINCIA}</p>
-            `;
+          <h2>Detalles del Formulario</h2>
+          <p><strong>Fecha:</strong> ${new Date().toLocaleDateString()} - ${new Date().toLocaleTimeString()}</p>
+          <p><strong>Usuario:</strong> ${email.NOMBRES}</p>
+          <p><strong>Correo:</strong> ${email.CORREO}</p>
+          <p><strong>Teléfono:</strong> ${email.TELEFONO}</p>
+          <p><strong>Provincia:</strong> ${email.PROVINCIA}</p>
+      `;
 
       const mailOptions = {
         from: process.env.EMAIL_ACOMPLIANCE1,
@@ -81,7 +81,6 @@ export class EmailService {
         ],
       };
 
-      // Enviar el correo electrónico con el PDF adjunto
       await this.transporter3.sendMail(mailOptions);
     } catch (error) {
       throw new Error(`Error al enviar PDF a ${destinatario}`);
@@ -89,22 +88,18 @@ export class EmailService {
   }
 
   async emailBoletines(usuarios, entidad) {
-    // Validar que los correos sean válidos y sean de Gmail
     const validarEmail = (email) => {
       const regex = /^[\w.%+-]+@gmail\.com$/;
       return regex.test(email);
     };
   
     try {
-      // Crear el HTML del correo
       const html = `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #f9f9f9; border: 1px solid #ddd; border-radius: 8px; overflow: hidden;">
-        <!-- Encabezado -->
         <div style="background-color: #0056b3; color: #ffffff; padding: 16px; text-align: center;">
           <h1 style="margin: 0; font-size: 24px;">¡Novedades en JurisSearch!</h1>
         </div>
     
-        <!-- Contenido Principal -->
         <div style="padding: 20px; text-align: center;">
           <a href="https://jurissearch.com/${entidad.BOLETIN}" style="text-decoration: none; color: #000;">
             <img src="https://jurissearch.com/${entidad.IMAGEN}" alt="Boletín" style="width: 100%; max-width: 560px; height: auto; border-radius: 8px; margin-bottom: 16px;" />
@@ -118,7 +113,6 @@ export class EmailService {
           </a>
         </div>
     
-        <!-- Pie de página -->
         <div style="background-color: #f1f1f1; padding: 16px; text-align: center; font-size: 14px; color: #666;">
           <p style="margin: 0;">¿Tienes preguntas? Visítanos en <a href="https://jurissearch.com" style="color: #0056b3; text-decoration: none;">jurissearch.com</a></p>
         </div>

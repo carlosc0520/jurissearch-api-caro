@@ -69,7 +69,6 @@ let BoletinService = class BoletinService {
                 .replace(/[^a-zA-Z0-9.]/g, '_');
             const remoteFilePath = `${remotePath}/${nameSimple}`;
             await this.ftpService.upload(file.path, remoteFilePath);
-            console.log('Archivo subido:', remoteFilePath);
             return remoteFilePath;
         }
         catch (error) {
