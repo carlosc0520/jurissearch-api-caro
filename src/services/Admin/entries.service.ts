@@ -20,6 +20,11 @@ export class EntriesService {
         entidad.SUBTEMA = entidad.SUBTEMA ? entidad.SUBTEMA.replace(/'/g, "''") : entidad.SUBTEMA;
         entidad.TEMA = entidad.TEMA ? entidad.TEMA.replace(/'/g, "''") : entidad.TEMA;
 
+        entidad.RESUMEN = entidad.RESUMEN ? entidad.RESUMEN.replace(/‟/g, '"').replace(/”/g, '"').replace(/“/g, '"') : entidad.RESUMEN;
+        entidad.SHORTSUMMARY = entidad.SHORTSUMMARY ? entidad.SHORTSUMMARY.replace(/‟/g, '"').replace(/”/g, '"').replace(/“/g, '"') : entidad.SHORTSUMMARY;
+        entidad.SUBTEMA = entidad.SUBTEMA ? entidad.SUBTEMA.replace(/‟/g, '"').replace(/”/g, '"').replace(/“/g, '"') : entidad.SUBTEMA;
+        entidad.TEMA = entidad.TEMA ? entidad.TEMA.replace(/‟/g, '"').replace(/”/g, '"').replace(/“/g, '"') : entidad.TEMA;
+        
         queryAsync += ` @p_cData = ${entidad ? `'${JSON.stringify(entidad)}'` : null},`;
         queryAsync += ` @p_cUser = '${entidad.UCRCN}',`;
         queryAsync += ` @p_nTipo = ${1},`;
@@ -72,10 +77,10 @@ export class EntriesService {
     }
 
 
-    async listSearchData(RTITLE: string, TYPE: number, TIPO: string
+    async listSearchData(RTITLE: string, TYPE: number, TIPO: string, BLOG: string = ''
     ): Promise<EntriesModel[]> {
         let queryAsync = procedures.ADMIN.ENTRIES.CRUD;
-        queryAsync += ` @p_cData = '${JSON.stringify({ RTITLE, TYPE, TIPO})}',`;
+        queryAsync += ` @p_cData = '${JSON.stringify({ RTITLE, TYPE, TIPO, BLOG})}',`;
         queryAsync += ` @p_cUser = ${null},`;
         queryAsync += ` @p_nTipo = ${12},`
         queryAsync += ` @p_nId = ${0}`;
@@ -173,7 +178,12 @@ export class EntriesService {
         entidad.SHORTSUMMARY = entidad.SHORTSUMMARY ? entidad.SHORTSUMMARY.replace(/'/g, "''") : entidad.SHORTSUMMARY;
         entidad.SUBTEMA = entidad.SUBTEMA ? entidad.SUBTEMA.replace(/'/g, "''") : entidad.SUBTEMA;
         entidad.TEMA = entidad.TEMA ? entidad.TEMA.replace(/'/g, "''") : entidad.TEMA;
-        
+
+        entidad.RESUMEN = entidad.RESUMEN ? entidad.RESUMEN.replace(/‟/g, '"').replace(/”/g, '"').replace(/“/g, '"') : entidad.RESUMEN;
+        entidad.SHORTSUMMARY = entidad.SHORTSUMMARY ? entidad.SHORTSUMMARY.replace(/‟/g, '"').replace(/”/g, '"').replace(/“/g, '"') : entidad.SHORTSUMMARY;
+        entidad.SUBTEMA = entidad.SUBTEMA ? entidad.SUBTEMA.replace(/‟/g, '"').replace(/”/g, '"').replace(/“/g, '"') : entidad.SUBTEMA;
+        entidad.TEMA = entidad.TEMA ? entidad.TEMA.replace(/‟/g, '"').replace(/”/g, '"').replace(/“/g, '"') : entidad.TEMA;
+    
         queryAsync += ` @p_cData = ${entidad ? `'${JSON.stringify(entidad)}'` : null},`;
         queryAsync += ` @p_cUser = ${entidad.UCRCN},`;
         queryAsync += ` @p_nTipo = ${1},`;

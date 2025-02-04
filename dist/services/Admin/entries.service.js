@@ -27,6 +27,10 @@ let EntriesService = class EntriesService {
         entidad.SHORTSUMMARY = entidad.SHORTSUMMARY ? entidad.SHORTSUMMARY.replace(/'/g, "''") : entidad.SHORTSUMMARY;
         entidad.SUBTEMA = entidad.SUBTEMA ? entidad.SUBTEMA.replace(/'/g, "''") : entidad.SUBTEMA;
         entidad.TEMA = entidad.TEMA ? entidad.TEMA.replace(/'/g, "''") : entidad.TEMA;
+        entidad.RESUMEN = entidad.RESUMEN ? entidad.RESUMEN.replace(/‟/g, '"').replace(/”/g, '"').replace(/“/g, '"') : entidad.RESUMEN;
+        entidad.SHORTSUMMARY = entidad.SHORTSUMMARY ? entidad.SHORTSUMMARY.replace(/‟/g, '"').replace(/”/g, '"').replace(/“/g, '"') : entidad.SHORTSUMMARY;
+        entidad.SUBTEMA = entidad.SUBTEMA ? entidad.SUBTEMA.replace(/‟/g, '"').replace(/”/g, '"').replace(/“/g, '"') : entidad.SUBTEMA;
+        entidad.TEMA = entidad.TEMA ? entidad.TEMA.replace(/‟/g, '"').replace(/”/g, '"').replace(/“/g, '"') : entidad.TEMA;
         queryAsync += ` @p_cData = ${entidad ? `'${JSON.stringify(entidad)}'` : null},`;
         queryAsync += ` @p_cUser = '${entidad.UCRCN}',`;
         queryAsync += ` @p_nTipo = ${1},`;
@@ -71,9 +75,9 @@ let EntriesService = class EntriesService {
             return error;
         }
     }
-    async listSearchData(RTITLE, TYPE, TIPO) {
+    async listSearchData(RTITLE, TYPE, TIPO, BLOG = '') {
         let queryAsync = configMappers_1.default.ADMIN.ENTRIES.CRUD;
-        queryAsync += ` @p_cData = '${JSON.stringify({ RTITLE, TYPE, TIPO })}',`;
+        queryAsync += ` @p_cData = '${JSON.stringify({ RTITLE, TYPE, TIPO, BLOG })}',`;
         queryAsync += ` @p_cUser = ${null},`;
         queryAsync += ` @p_nTipo = ${12},`;
         queryAsync += ` @p_nId = ${0}`;
@@ -166,6 +170,10 @@ let EntriesService = class EntriesService {
         entidad.SHORTSUMMARY = entidad.SHORTSUMMARY ? entidad.SHORTSUMMARY.replace(/'/g, "''") : entidad.SHORTSUMMARY;
         entidad.SUBTEMA = entidad.SUBTEMA ? entidad.SUBTEMA.replace(/'/g, "''") : entidad.SUBTEMA;
         entidad.TEMA = entidad.TEMA ? entidad.TEMA.replace(/'/g, "''") : entidad.TEMA;
+        entidad.RESUMEN = entidad.RESUMEN ? entidad.RESUMEN.replace(/‟/g, '"').replace(/”/g, '"').replace(/“/g, '"') : entidad.RESUMEN;
+        entidad.SHORTSUMMARY = entidad.SHORTSUMMARY ? entidad.SHORTSUMMARY.replace(/‟/g, '"').replace(/”/g, '"').replace(/“/g, '"') : entidad.SHORTSUMMARY;
+        entidad.SUBTEMA = entidad.SUBTEMA ? entidad.SUBTEMA.replace(/‟/g, '"').replace(/”/g, '"').replace(/“/g, '"') : entidad.SUBTEMA;
+        entidad.TEMA = entidad.TEMA ? entidad.TEMA.replace(/‟/g, '"').replace(/”/g, '"').replace(/“/g, '"') : entidad.TEMA;
         queryAsync += ` @p_cData = ${entidad ? `'${JSON.stringify(entidad)}'` : null},`;
         queryAsync += ` @p_cUser = ${entidad.UCRCN},`;
         queryAsync += ` @p_nTipo = ${1},`;
