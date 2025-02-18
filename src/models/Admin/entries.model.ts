@@ -36,4 +36,5 @@ export class EntriesModel {
     TITLEALT: string = '';
     IDFAV: number = 0;
     OEMISOR: string = '';
+    FLGDOC: string = '';
 }

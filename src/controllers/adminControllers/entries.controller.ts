@@ -448,7 +448,7 @@ export class EntriesController {
           
           let fEntry = new Date(entry.FCRCN);
           let modificar = false;
-          if (fEntry > fecha) {
+          if (fEntry > fecha || entry.FLGDOC === '1') {
             modificar = true;
           }
           const pdfDoc = await PDFDocument.load(fileBuffer);
@@ -630,7 +630,7 @@ export class EntriesController {
 
           let fEntry = new Date(entry.FCRCN);
           let modificar = false;
-          if (fEntry > fecha) {
+          if (fEntry > fecha || entry.FLGDOC === '1') {
             modificar = true;
           }
 
@@ -1251,7 +1251,7 @@ export class EntriesController {
 
       let fecha = new Date('2024-11-08');
       let modificar = false;
-      if (data.FEDCN > fecha) {
+      if (data.FEDCN > fecha || data.FLGDOC === '1') {
         modificar = true;
       }
 
