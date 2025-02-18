@@ -230,7 +230,7 @@ let EntriesController = class EntriesController {
                     const fileBuffer = await this.s3Service.downloadFile(entry.ENTRIEFILE);
                     let fEntry = new Date(entry.FCRCN);
                     let modificar = false;
-                    if (fEntry > fecha) {
+                    if (fEntry > fecha || entry.FLGDOC === '1') {
                         modificar = true;
                     }
                     const pdfDoc = await pdf_lib_1.PDFDocument.load(fileBuffer);
@@ -348,7 +348,7 @@ let EntriesController = class EntriesController {
                     const pdfDoc = await pdf_lib_1.PDFDocument.load(fileBuffer);
                     let fEntry = new Date(entry.FCRCN);
                     let modificar = false;
-                    if (fEntry > fecha) {
+                    if (fEntry > fecha || entry.FLGDOC === '1') {
                         modificar = true;
                     }
                     if (modificar) {
@@ -866,7 +866,7 @@ let EntriesController = class EntriesController {
             let data = await this.entriesService.getEntriePrint(PATH);
             let fecha = new Date('2024-11-08');
             let modificar = false;
-            if (data.FEDCN > fecha) {
+            if (data.FEDCN > fecha || data.FLGDOC === '1') {
                 modificar = true;
             }
             const fileBuffer = await this.s3Service.downloadFile(PATH);

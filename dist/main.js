@@ -32,7 +32,12 @@ async function bootstrap() {
     const app = await core_1.NestFactory.create(app_module_1.AppModule);
     app.use(bodyParser.json({ limit: '100mb' }));
     app.use(bodyParser.urlencoded({ limit: '100mb', extended: true }));
-    app.enableCors();
+    app.enableCors({
+        origin: '*',
+        methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+        allowedHeaders: 'Content-Type, Authorization',
+        credentials: true,
+    });
     await app.listen(3000);
 }
 bootstrap();

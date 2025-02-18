@@ -74,6 +74,12 @@ let ComplytoolsController = class ComplytoolsController {
             'proxy-9': 'https://rnas.minjus.gob.pe/rnas/public/sancionado/sancionadoMain.xhtml',
         };
     }
+    async Hola(res) {
+        res.status(200).send({
+            status: true,
+            message: 'Hola mundo',
+        });
+    }
     async Proxy1(entidad, res) {
         const proxyUrl = this.Proxys['proxy-1'];
         if (!proxyUrl) {
@@ -646,6 +652,7 @@ let ComplytoolsController = class ComplytoolsController {
             catch (error) { }
         }
         catch (error) {
+            console.log(error);
             res.status(500).send({ error: 'Error durante la ejecución del proxy' });
         }
         finally {
@@ -1178,6 +1185,13 @@ let ComplytoolsController = class ComplytoolsController {
     }
 };
 exports.ComplytoolsController = ComplytoolsController;
+__decorate([
+    (0, common_1.Get)('hola'),
+    __param(0, (0, common_1.Res)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], ComplytoolsController.prototype, "Hola", null);
 __decorate([
     (0, common_1.Get)('proxy-1'),
     __param(0, (0, common_1.Query)()),

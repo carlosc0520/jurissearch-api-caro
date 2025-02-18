@@ -45,6 +45,14 @@ export class ComplytoolsController {
     };
   }
 
+  @Get('hola')
+  async Hola(@Res() res): Promise<void> {
+    res.status(200).send({
+      status: true,
+      message: 'Hola mundo',
+    });
+  }
+
   @Get('proxy-1')
   async Proxy1(@Query() entidad: any, @Res() res): Promise<void> {
     const proxyUrl = this.Proxys['proxy-1'];
@@ -797,6 +805,7 @@ export class ComplytoolsController {
         await page.waitForSelector('h5', { timeout: 10000 });
       } catch (error) {}
     } catch (error) {
+      console.log(error)
       res.status(500).send({ error: 'Error durante la ejecución del proxy' });
     } finally {
       await browserP.close();

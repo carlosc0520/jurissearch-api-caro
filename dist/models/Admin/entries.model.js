@@ -40,6 +40,7 @@ class EntriesModel {
         this.TITLEALT = '';
         this.IDFAV = 0;
         this.OEMISOR = '';
+        this.FLGDOC = '';
     }
 }
 exports.EntriesModel = EntriesModel;
