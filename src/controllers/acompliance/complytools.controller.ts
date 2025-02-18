@@ -663,7 +663,7 @@ export class ComplytoolsController {
     }
 
     const browserP = puppeteer.launch({
-      args: ['--no-sandbox', '--disable-setuid-sandbox'],
+      executablePath: '/usr/bin/chromium-browser',
       headless: true,
     });
 
