@@ -9,7 +9,19 @@ import * as nodemailer from 'nodemailer';
 @Controller('complytools')
 export class ComplytoolsController {
   private transporter: nodemailer.Transporter;
-
+  private AMBIT = "PROD" // PROD
+  private CONFIG = {
+    "DEV": {
+      args: ['--no-sandbox', '--disable-setuid-sandbox'],
+      headless: true,
+      dumpio: true,
+    },
+    "PROD": {
+      executablePath: '/usr/bin/chromium-browser',
+      headless: true,
+      args: ['--no-sandbox', '--disable-setuid-sandbox']
+    }
+  }
   private Proxys: { [key: string]: any };
 
   constructor(private readonly httpService: HttpService) {
@@ -45,14 +57,6 @@ export class ComplytoolsController {
     };
   }
 
-  @Get('hola')
-  async Hola(@Res() res): Promise<void> {
-    res.status(200).send({
-      status: true,
-      message: 'Hola mundo',
-    });
-  }
-
   @Get('proxy-1')
   async Proxy1(@Query() entidad: any, @Res() res): Promise<void> {
     const proxyUrl = this.Proxys['proxy-1'];
@@ -60,10 +64,7 @@ export class ComplytoolsController {
       throw new Error('El proxy solicitado no existe.');
     }
 
-    const browserP = puppeteer.launch({
-      args: ['--no-sandbox', '--disable-setuid-sandbox'],
-      headless: true,
-    });
+    const browserP = puppeteer.launch(...this.CONFIG[this.AMBIT]);
 
     (async () => {
       let page = await (await browserP).newPage();
@@ -164,10 +165,7 @@ export class ComplytoolsController {
       return;
     }
 
-    const browserP = puppeteer.launch({
-      args: ['--no-sandbox', '--disable-setuid-sandbox'],
-      headless: true,
-    });
+    const browserP = puppeteer.launch(...this.CONFIG[this.AMBIT]);
 
     (async () => {
       const browser = await browserP;
@@ -287,10 +285,7 @@ export class ComplytoolsController {
       return;
     }
 
-    const browserP = puppeteer.launch({
-      args: ['--no-sandbox', '--disable-setuid-sandbox'],
-      headless: true,
-    });
+    const browserP = puppeteer.launch(...this.CONFIG[this.AMBIT]);
 
     (async () => {
       const browser = await browserP;
@@ -420,10 +415,7 @@ export class ComplytoolsController {
       });
     }
 
-    const browserP = puppeteer.launch({
-      args: ['--no-sandbox', '--disable-setuid-sandbox'],
-      headless: true,
-    });
+    const browserP = puppeteer.launch(...this.CONFIG[this.AMBIT]);
 
     (async () => {
       const browser = await browserP;
@@ -520,10 +512,7 @@ export class ComplytoolsController {
 
     const proxyUrl = entidad.completo;
 
-    const browserP = puppeteer.launch({
-      args: ['--no-sandbox', '--disable-setuid-sandbox'],
-      headless: true,
-    });
+    const browserP = puppeteer.launch(...this.CONFIG[this.AMBIT]);
 
     (async () => {
       const browser = await browserP;
@@ -662,11 +651,7 @@ export class ComplytoolsController {
       return;
     }
 
-    const browserP = puppeteer.launch({
-      executablePath: '/usr/bin/chromium-browser',
-      headless: true,
-      args: ['--no-sandbox', '--disable-setuid-sandbox']
-    });
+    const browserP = puppeteer.launch(...this.CONFIG[this.AMBIT]);
 
     (async () => {
       const browser = await browserP;
@@ -731,11 +716,7 @@ export class ComplytoolsController {
     let page;
 
     try {
-      browserP = await puppeteer.launch({
-        args: ['--no-sandbox', '--disable-setuid-sandbox'],
-        headless: true,
-        dumpio: true,
-      });
+      browserP = await puppeteer.launch(...this.CONFIG[this.AMBIT]);
 
       page = await browserP.newPage();
       await page.setUserAgent(
@@ -818,10 +799,7 @@ export class ComplytoolsController {
     try {
       let hashIds = JSON.parse(entidad.entidad);
 
-      const browser = await puppeteer.launch({
-        args: ['--no-sandbox', '--disable-setuid-sandbox'],
-        headless: true,
-      });
+      const browser = await puppeteer.launch(...this.CONFIG[this.AMBIT]);
 
       const scrapePage = async (pageUrl: string) => {
         const page = await browser.newPage();
@@ -936,10 +914,7 @@ export class ComplytoolsController {
     let url1 = proxyUrl + 'inhabil_publi_mes.asp';
     let url2 = proxyUrl + 'Sancionadosmulta_publi_mes.asp';
 
-    const browserP = puppeteer.launch({
-      args: ['--no-sandbox', '--disable-setuid-sandbox'],
-      headless: true,
-    });
+    const browserP = puppeteer.launch(...this.CONFIG[this.AMBIT]);
 
     (async () => {
       const browser = await browserP;
@@ -1139,10 +1114,7 @@ export class ComplytoolsController {
 
     let url1 = proxyUrl;
 
-    const browserP = puppeteer.launch({
-      args: ['--no-sandbox', '--disable-setuid-sandbox'],
-      headless: true,
-    });
+    const browserP = puppeteer.launch(...this.CONFIG[this.AMBIT]);
 
     (async () => {
       const browser = await browserP;
