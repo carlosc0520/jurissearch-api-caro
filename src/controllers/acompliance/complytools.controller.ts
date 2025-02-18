@@ -64,7 +64,7 @@ export class ComplytoolsController {
       throw new Error('El proxy solicitado no existe.');
     }
 
-    const browserP = puppeteer.launch(...this.CONFIG[this.AMBIT]);
+    const browserP = puppeteer.launch({...this.CONFIG[this.AMBIT]});
 
     (async () => {
       let page = await (await browserP).newPage();
@@ -165,7 +165,7 @@ export class ComplytoolsController {
       return;
     }
 
-    const browserP = puppeteer.launch(...this.CONFIG[this.AMBIT]);
+    const browserP = puppeteer.launch({...this.CONFIG[this.AMBIT]});
 
     (async () => {
       const browser = await browserP;
@@ -285,7 +285,7 @@ export class ComplytoolsController {
       return;
     }
 
-    const browserP = puppeteer.launch(...this.CONFIG[this.AMBIT]);
+    const browserP = puppeteer.launch({...this.CONFIG[this.AMBIT]});
 
     (async () => {
       const browser = await browserP;
@@ -415,7 +415,7 @@ export class ComplytoolsController {
       });
     }
 
-    const browserP = puppeteer.launch(...this.CONFIG[this.AMBIT]);
+    const browserP = puppeteer.launch({...this.CONFIG[this.AMBIT]});
 
     (async () => {
       const browser = await browserP;
@@ -512,7 +512,7 @@ export class ComplytoolsController {
 
     const proxyUrl = entidad.completo;
 
-    const browserP = puppeteer.launch(...this.CONFIG[this.AMBIT]);
+    const browserP = puppeteer.launch({...this.CONFIG[this.AMBIT]});
 
     (async () => {
       const browser = await browserP;
@@ -651,7 +651,7 @@ export class ComplytoolsController {
       return;
     }
 
-    const browserP = puppeteer.launch(...this.CONFIG[this.AMBIT]);
+    const browserP = puppeteer.launch({...this.CONFIG[this.AMBIT]});
 
     (async () => {
       const browser = await browserP;
@@ -716,7 +716,7 @@ export class ComplytoolsController {
     let page;
 
     try {
-      browserP = await puppeteer.launch(...this.CONFIG[this.AMBIT]);
+      browserP = await puppeteer.launch({...this.CONFIG[this.AMBIT]});
 
       page = await browserP.newPage();
       await page.setUserAgent(
@@ -799,7 +799,7 @@ export class ComplytoolsController {
     try {
       let hashIds = JSON.parse(entidad.entidad);
 
-      const browser = await puppeteer.launch(...this.CONFIG[this.AMBIT]);
+      const browser = await puppeteer.launch({...this.CONFIG[this.AMBIT]});
 
       const scrapePage = async (pageUrl: string) => {
         const page = await browser.newPage();
@@ -914,7 +914,7 @@ export class ComplytoolsController {
     let url1 = proxyUrl + 'inhabil_publi_mes.asp';
     let url2 = proxyUrl + 'Sancionadosmulta_publi_mes.asp';
 
-    const browserP = puppeteer.launch(...this.CONFIG[this.AMBIT]);
+    const browserP = puppeteer.launch({...this.CONFIG[this.AMBIT]});
 
     (async () => {
       const browser = await browserP;
@@ -1114,7 +1114,7 @@ export class ComplytoolsController {
 
     let url1 = proxyUrl;
 
-    const browserP = puppeteer.launch(...this.CONFIG[this.AMBIT]);
+    const browserP = puppeteer.launch({...this.CONFIG[this.AMBIT]});
 
     (async () => {
       const browser = await browserP;
