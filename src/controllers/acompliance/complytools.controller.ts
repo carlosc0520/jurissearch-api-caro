@@ -741,7 +741,7 @@ export class ComplytoolsController {
           if (postData) {
             const data = JSON.parse(postData);
             data.pageInfo.page = 1; // Cambiar la página
-            data.pageInfo.size = 50; // Cambiar el tamaño
+            data.pageInfo.size = 30; // Cambiar el tamaño
             request.continue({ postData: JSON.stringify(data) });
           } else {
             request.continue();
@@ -781,7 +781,7 @@ export class ComplytoolsController {
 
       await page.goto(proxyUrl, {
         waitUntil: 'domcontentloaded',
-        timeout: 60000,
+        timeout: 100000,
       });
       try {
         await page.waitForSelector('h5', { timeout: 10000 });
