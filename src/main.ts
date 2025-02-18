@@ -18,7 +18,12 @@ async function bootstrap() {
   //   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
   //   credentials: true, // Si necesitas enviar cookies o autenticación
   // });
-  app.enableCors();
+  app.enableCors({
+    origin: '*', // Permitir cualquier origen
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    allowedHeaders: 'Content-Type, Authorization',
+    credentials: true, // Habilita cookies y credenciales
+  });
 
   // aumentar memoria de node;
 
