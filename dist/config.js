@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const entorno = "DEV";
+const entorno = "PROD";
 const DBS = {
     "DEV": {
         "host": "SQL5113.site4now.net",

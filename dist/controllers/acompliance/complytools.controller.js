@@ -629,7 +629,7 @@ let ComplytoolsController = class ComplytoolsController {
             });
             await page.goto(proxyUrl, {
                 waitUntil: 'domcontentloaded',
-                timeout: 100000,
+                timeout: 10000,
             });
             try {
                 await page.waitForSelector('h5', { timeout: 10000 });
