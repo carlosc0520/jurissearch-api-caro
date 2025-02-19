@@ -1,5 +1,5 @@
 // const entorno = "DEV" // PROD
-const entorno = "DEV" // PROD
+const entorno = "PROD" // PROD
 const DBS = {
   "DEV": {
     "host": "SQL5113.site4now.net",

@@ -46,6 +46,19 @@ const nodemailer = __importStar(require("nodemailer"));
 let ComplytoolsController = class ComplytoolsController {
     constructor(httpService) {
         this.httpService = httpService;
+        this.AMBIT = "PROD";
+        this.CONFIG = {
+            "DEV": {
+                args: ['--no-sandbox', '--disable-setuid-sandbox'],
+                headless: true,
+                dumpio: true,
+            },
+            "PROD": {
+                executablePath: '/usr/bin/chromium-browser',
+                headless: true,
+                args: ['--no-sandbox', '--disable-setuid-sandbox']
+            }
+        };
         this.transporter = nodemailer.createTransport({
             service: 'gmail',
             auth: {
@@ -74,21 +87,12 @@ let ComplytoolsController = class ComplytoolsController {
             'proxy-9': 'https://rnas.minjus.gob.pe/rnas/public/sancionado/sancionadoMain.xhtml',
         };
     }
-    async Hola(res) {
-        res.status(200).send({
-            status: true,
-            message: 'Hola mundo',
-        });
-    }
     async Proxy1(entidad, res) {
         const proxyUrl = this.Proxys['proxy-1'];
         if (!proxyUrl) {
             throw new Error('El proxy solicitado no existe.');
         }
-        const browserP = puppeteer.launch({
-            args: ['--no-sandbox', '--disable-setuid-sandbox'],
-            headless: true,
-        });
+        const browserP = puppeteer.launch(Object.assign({}, this.CONFIG[this.AMBIT]));
         (async () => {
             let page = await (await browserP).newPage();
             await page.setUserAgent('5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36');
@@ -170,10 +174,7 @@ let ComplytoolsController = class ComplytoolsController {
             });
             return;
         }
-        const browserP = puppeteer.launch({
-            args: ['--no-sandbox', '--disable-setuid-sandbox'],
-            headless: true,
-        });
+        const browserP = puppeteer.launch(Object.assign({}, this.CONFIG[this.AMBIT]));
         (async () => {
             const browser = await browserP;
             const scrapePage = async (pageUrl) => {
@@ -255,10 +256,7 @@ let ComplytoolsController = class ComplytoolsController {
             });
             return;
         }
-        const browserP = puppeteer.launch({
-            args: ['--no-sandbox', '--disable-setuid-sandbox'],
-            headless: true,
-        });
+        const browserP = puppeteer.launch(Object.assign({}, this.CONFIG[this.AMBIT]));
         (async () => {
             const browser = await browserP;
             const page = await browser.newPage();
@@ -357,10 +355,7 @@ let ComplytoolsController = class ComplytoolsController {
                 message: 'El proxy solicitado no existe.',
             });
         }
-        const browserP = puppeteer.launch({
-            args: ['--no-sandbox', '--disable-setuid-sandbox'],
-            headless: true,
-        });
+        const browserP = puppeteer.launch(Object.assign({}, this.CONFIG[this.AMBIT]));
         (async () => {
             const browser = await browserP;
             const scrapePage = async (pageUrl) => {
@@ -432,10 +427,7 @@ let ComplytoolsController = class ComplytoolsController {
             return;
         }
         const proxyUrl = entidad.completo;
-        const browserP = puppeteer.launch({
-            args: ['--no-sandbox', '--disable-setuid-sandbox'],
-            headless: true,
-        });
+        const browserP = puppeteer.launch(Object.assign({}, this.CONFIG[this.AMBIT]));
         (async () => {
             const browser = await browserP;
             const page = await browser.newPage();
@@ -534,10 +526,7 @@ let ComplytoolsController = class ComplytoolsController {
             });
             return;
         }
-        const browserP = puppeteer.launch({
-            args: ['--no-sandbox', '--disable-setuid-sandbox'],
-            headless: true,
-        });
+        const browserP = puppeteer.launch(Object.assign({}, this.CONFIG[this.AMBIT]));
         (async () => {
             const browser = await browserP;
             const scrapePage = async (pageUrl) => {
@@ -589,11 +578,7 @@ let ComplytoolsController = class ComplytoolsController {
         let browserP;
         let page;
         try {
-            browserP = await puppeteer.launch({
-                args: ['--no-sandbox', '--disable-setuid-sandbox'],
-                headless: true,
-                dumpio: true,
-            });
+            browserP = await puppeteer.launch(Object.assign({}, this.CONFIG[this.AMBIT]));
             page = await browserP.newPage();
             await page.setUserAgent('5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36');
             await page.setExtraHTTPHeaders({
@@ -609,7 +594,7 @@ let ComplytoolsController = class ComplytoolsController {
                     if (postData) {
                         const data = JSON.parse(postData);
                         data.pageInfo.page = 1;
-                        data.pageInfo.size = 50;
+                        data.pageInfo.size = 30;
                         request.continue({ postData: JSON.stringify(data) });
                     }
                     else {
@@ -644,7 +629,7 @@ let ComplytoolsController = class ComplytoolsController {
             });
             await page.goto(proxyUrl, {
                 waitUntil: 'domcontentloaded',
-                timeout: 60000,
+                timeout: 100000,
             });
             try {
                 await page.waitForSelector('h5', { timeout: 10000 });
@@ -662,10 +647,7 @@ let ComplytoolsController = class ComplytoolsController {
     async Proxy7_7(entidad, res) {
         try {
             let hashIds = JSON.parse(entidad.entidad);
-            const browser = await puppeteer.launch({
-                args: ['--no-sandbox', '--disable-setuid-sandbox'],
-                headless: true,
-            });
+            const browser = await puppeteer.launch(Object.assign({}, this.CONFIG[this.AMBIT]));
             const scrapePage = async (pageUrl) => {
                 const page = await browser.newPage();
                 try {
@@ -753,10 +735,7 @@ let ComplytoolsController = class ComplytoolsController {
         }
         let url1 = proxyUrl + 'inhabil_publi_mes.asp';
         let url2 = proxyUrl + 'Sancionadosmulta_publi_mes.asp';
-        const browserP = puppeteer.launch({
-            args: ['--no-sandbox', '--disable-setuid-sandbox'],
-            headless: true,
-        });
+        const browserP = puppeteer.launch(Object.assign({}, this.CONFIG[this.AMBIT]));
         (async () => {
             const browser = await browserP;
             const scrapePage = async (pageUrl, ind) => {
@@ -917,10 +896,7 @@ let ComplytoolsController = class ComplytoolsController {
             return;
         }
         let url1 = proxyUrl;
-        const browserP = puppeteer.launch({
-            args: ['--no-sandbox', '--disable-setuid-sandbox'],
-            headless: true,
-        });
+        const browserP = puppeteer.launch(Object.assign({}, this.CONFIG[this.AMBIT]));
         (async () => {
             const browser = await browserP;
             const scrapePage = async (pageUrl, ind) => {
@@ -1185,13 +1161,6 @@ let ComplytoolsController = class ComplytoolsController {
     }
 };
 exports.ComplytoolsController = ComplytoolsController;
-__decorate([
-    (0, common_1.Get)('hola'),
-    __param(0, (0, common_1.Res)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], ComplytoolsController.prototype, "Hola", null);
 __decorate([
     (0, common_1.Get)('proxy-1'),
     __param(0, (0, common_1.Query)()),

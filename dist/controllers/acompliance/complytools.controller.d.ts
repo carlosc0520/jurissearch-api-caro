@@ -2,9 +2,10 @@ import { HttpService } from '@nestjs/axios';
 export declare class ComplytoolsController {
     private readonly httpService;
     private transporter;
+    private AMBIT;
+    private CONFIG;
     private Proxys;
     constructor(httpService: HttpService);
-    Hola(res: any): Promise<void>;
     Proxy1(entidad: any, res: any): Promise<void>;
     Proxy2(entidad: any, res: any): Promise<void>;
     Proxy2_2(entidad: any, res: any): Promise<void>;

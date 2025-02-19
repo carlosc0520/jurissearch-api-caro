@@ -241,77 +241,94 @@ let EntriesController = class EntriesController {
                         const nuevologoImage = await pdfDoc.embedPng(fs.readFileSync(pathnuevologo));
                         const pages = await pdfDoc.getPages();
                         for (const page of pages) {
-                            const { width, height } = page.getSize();
+                            let { width, height } = page.getSize();
+                            let isLandscape = width > height;
+                            let pageWidth = isLandscape ? height : width;
+                            let pageHeight = isLandscape ? width : height;
+                            let centerX = pageWidth / 2;
+                            let logoTopX = 10;
+                            let logoTopY = pageHeight - 43;
+                            if (isLandscape) {
+                                logoTopX = pageHeight - 43;
+                                logoTopY = pageWidth - 20;
+                            }
                             await page.drawImage(marcadeaguaImage, {
-                                x: width / 2 - 310,
-                                y: height / 2 - 330,
+                                x: isLandscape ? (100) : (width / 2 - 310),
+                                y: isLandscape ? logoTopY + 35 : (height / 2 - 330),
                                 width: 620,
                                 height: 600,
                                 opacity: 0.7,
+                                rotate: isLandscape ? (0, pdf_lib_1.degrees)(-90) : (0, pdf_lib_1.degrees)(0),
                             });
                             await page.drawImage(caroaImage, {
-                                x: 10,
-                                y: height - 43,
+                                x: isLandscape ? logoTopX : 10,
+                                y: isLandscape ? logoTopY : (height - 43),
                                 width: 95,
                                 height: 40,
-                            });
-                            await page.drawText('https://ccfirma.com/', {
-                                x: 10,
-                                y: height - 25,
-                                size: 10,
-                                color: (0, pdf_lib_1.rgb)(0, 0, 0),
-                                opacity: 0.0,
-                            });
-                            await page.drawText('https://ccfirma.com/', {
-                                x: 5,
-                                y: height / 2 - 25,
-                                size: 11,
-                                color: (0, pdf_lib_1.rgb)(0, 0, 0),
-                                opacity: 0.0,
-                                rotate: (0, pdf_lib_1.degrees)(-90),
-                            });
-                            await page.drawText('https://ccfirma.com/', {
-                                x: 5,
-                                y: height / 2 - 90,
-                                size: 11,
-                                color: (0, pdf_lib_1.rgb)(0, 0, 0),
-                                opacity: 0.0,
-                                rotate: (0, pdf_lib_1.degrees)(-90),
-                            });
-                            await page.drawText('https://ccfirma.com/', {
-                                x: 5,
-                                y: height / 2 + 90,
-                                size: 11,
-                                color: (0, pdf_lib_1.rgb)(0, 0, 0),
-                                opacity: 0.0,
-                                rotate: (0, pdf_lib_1.degrees)(-90),
+                                rotate: isLandscape ? (0, pdf_lib_1.degrees)(-90) : (0, pdf_lib_1.degrees)(0),
                             });
                             await page.drawImage(nuevologoImage, {
-                                x: width / 2 - 25,
-                                y: height - 43,
+                                x: isLandscape ? logoTopX : (width / 2 - 25),
+                                y: isLandscape ? ((logoTopY + 42) - centerX) : (height - 43),
                                 width: 50,
                                 height: 35,
-                            });
-                            await page.drawText('https://jurissearch.com/', {
-                                x: width / 2 - 25,
-                                y: height - 30,
-                                size: 10,
-                                color: (0, pdf_lib_1.rgb)(0, 0, 0),
-                                opacity: 0.0,
+                                rotate: isLandscape ? (0, pdf_lib_1.degrees)(-90) : (0, pdf_lib_1.degrees)(0),
                             });
                             await page.drawImage(ccfirmaImage, {
-                                x: width / 2 - 30,
-                                y: 5,
+                                x: isLandscape ? 10 : (width / 2 - 30),
+                                y: isLandscape ? ((logoTopY + 47) - centerX) : (5),
                                 width: 70,
                                 height: 30,
                                 opacity: 0.9,
+                                rotate: isLandscape ? (0, pdf_lib_1.degrees)(-90) : (0, pdf_lib_1.degrees)(0),
                             });
                             await page.drawText('https://ccfirma.com/', {
-                                x: width / 2 - 30,
-                                y: 10,
+                                x: isLandscape ? logoTopX + 10 : 10,
+                                y: isLandscape ? logoTopY : (pageHeight - 25),
                                 size: 10,
                                 color: (0, pdf_lib_1.rgb)(0, 0, 0),
                                 opacity: 0.0,
+                                rotate: isLandscape ? (0, pdf_lib_1.degrees)(-90) : (0, pdf_lib_1.degrees)(0),
+                            });
+                            await page.drawText('https://jurissearch.com/', {
+                                x: isLandscape ? pageHeight - 30 : (width / 2 - 25),
+                                y: isLandscape ? (pageWidth / 2) + 25 : (height - 30),
+                                size: 10,
+                                color: (0, pdf_lib_1.rgb)(0, 0, 0),
+                                opacity: 0.0,
+                                rotate: isLandscape ? (0, pdf_lib_1.degrees)(-90) : (0, pdf_lib_1.degrees)(0),
+                            });
+                            await page.drawText('https://ccfirma.com/', {
+                                x: isLandscape ? 20 : (width / 2 - 30),
+                                y: isLandscape ? (pageWidth / 2) + 25 : 10,
+                                size: 10,
+                                color: (0, pdf_lib_1.rgb)(0, 0, 0),
+                                opacity: 0.0,
+                                rotate: isLandscape ? (0, pdf_lib_1.degrees)(-90) : (0, pdf_lib_1.degrees)(0),
+                            });
+                            await page.drawText('https://ccfirma.com/', {
+                                x: isLandscape ? (pageHeight / 2) + 50 : 5,
+                                y: isLandscape ? (pageWidth - 20) : height / 2 - 25,
+                                size: 11,
+                                color: (0, pdf_lib_1.rgb)(0, 0, 0),
+                                opacity: 0.0,
+                                rotate: isLandscape ? (0, pdf_lib_1.degrees)(0) : (0, pdf_lib_1.degrees)(-90),
+                            });
+                            await page.drawText('https://ccfirma.com/', {
+                                x: isLandscape ? (pageHeight / 2) - 70 : 5,
+                                y: isLandscape ? (pageWidth - 20) : height / 2 - 90,
+                                size: 11,
+                                color: (0, pdf_lib_1.rgb)(0, 0, 0),
+                                opacity: 0.0,
+                                rotate: isLandscape ? (0, pdf_lib_1.degrees)(0) : (0, pdf_lib_1.degrees)(-90),
+                            });
+                            await page.drawText('https://ccfirma.com/', {
+                                x: isLandscape ? (pageHeight / 2) - 190 : 5,
+                                y: isLandscape ? (pageWidth - 20) : height / 2 + 90,
+                                size: 11,
+                                color: (0, pdf_lib_1.rgb)(0, 0, 0),
+                                opacity: 0.0,
+                                rotate: isLandscape ? (0, pdf_lib_1.degrees)(0) : (0, pdf_lib_1.degrees)(-90),
                             });
                         }
                     }
@@ -358,77 +375,94 @@ let EntriesController = class EntriesController {
                         const nuevologoImage = await pdfDoc.embedPng(fs.readFileSync(pathnuevologo));
                         const pages = await pdfDoc.getPages();
                         for (const page of pages) {
-                            const { width, height } = page.getSize();
+                            let { width, height } = page.getSize();
+                            let isLandscape = width > height;
+                            let pageWidth = isLandscape ? height : width;
+                            let pageHeight = isLandscape ? width : height;
+                            let centerX = pageWidth / 2;
+                            let logoTopX = 10;
+                            let logoTopY = pageHeight - 43;
+                            if (isLandscape) {
+                                logoTopX = pageHeight - 43;
+                                logoTopY = pageWidth - 20;
+                            }
                             await page.drawImage(marcadeaguaImage, {
-                                x: width / 2 - 310,
-                                y: height / 2 - 330,
+                                x: isLandscape ? (100) : (width / 2 - 310),
+                                y: isLandscape ? logoTopY + 35 : (height / 2 - 330),
                                 width: 620,
                                 height: 600,
                                 opacity: 0.7,
+                                rotate: isLandscape ? (0, pdf_lib_1.degrees)(-90) : (0, pdf_lib_1.degrees)(0),
                             });
                             await page.drawImage(caroaImage, {
-                                x: 10,
-                                y: height - 43,
+                                x: isLandscape ? logoTopX : 10,
+                                y: isLandscape ? logoTopY : (height - 43),
                                 width: 95,
                                 height: 40,
-                            });
-                            await page.drawText('https://ccfirma.com/', {
-                                x: 10,
-                                y: height - 25,
-                                size: 10,
-                                color: (0, pdf_lib_1.rgb)(0, 0, 0),
-                                opacity: 0.0,
-                            });
-                            await page.drawText('https://ccfirma.com/', {
-                                x: 5,
-                                y: height / 2 - 25,
-                                size: 11,
-                                color: (0, pdf_lib_1.rgb)(0, 0, 0),
-                                opacity: 0.0,
-                                rotate: (0, pdf_lib_1.degrees)(-90),
-                            });
-                            await page.drawText('https://ccfirma.com/', {
-                                x: 5,
-                                y: height / 2 - 90,
-                                size: 11,
-                                color: (0, pdf_lib_1.rgb)(0, 0, 0),
-                                opacity: 0.0,
-                                rotate: (0, pdf_lib_1.degrees)(-90),
-                            });
-                            await page.drawText('https://ccfirma.com/', {
-                                x: 5,
-                                y: height / 2 + 90,
-                                size: 11,
-                                color: (0, pdf_lib_1.rgb)(0, 0, 0),
-                                opacity: 0.0,
-                                rotate: (0, pdf_lib_1.degrees)(-90),
+                                rotate: isLandscape ? (0, pdf_lib_1.degrees)(-90) : (0, pdf_lib_1.degrees)(0),
                             });
                             await page.drawImage(nuevologoImage, {
-                                x: width / 2 - 25,
-                                y: height - 43,
+                                x: isLandscape ? logoTopX : (width / 2 - 25),
+                                y: isLandscape ? ((logoTopY + 42) - centerX) : (height - 43),
                                 width: 50,
                                 height: 35,
-                            });
-                            await page.drawText('https://jurissearch.com/', {
-                                x: width / 2 - 25,
-                                y: height - 30,
-                                size: 10,
-                                color: (0, pdf_lib_1.rgb)(0, 0, 0),
-                                opacity: 0.0,
+                                rotate: isLandscape ? (0, pdf_lib_1.degrees)(-90) : (0, pdf_lib_1.degrees)(0),
                             });
                             await page.drawImage(ccfirmaImage, {
-                                x: width / 2 - 30,
-                                y: 5,
+                                x: isLandscape ? 10 : (width / 2 - 30),
+                                y: isLandscape ? ((logoTopY + 47) - centerX) : (5),
                                 width: 70,
                                 height: 30,
                                 opacity: 0.9,
+                                rotate: isLandscape ? (0, pdf_lib_1.degrees)(-90) : (0, pdf_lib_1.degrees)(0),
                             });
                             await page.drawText('https://ccfirma.com/', {
-                                x: width / 2 - 30,
-                                y: 10,
+                                x: isLandscape ? logoTopX + 10 : 10,
+                                y: isLandscape ? logoTopY : (pageHeight - 25),
                                 size: 10,
                                 color: (0, pdf_lib_1.rgb)(0, 0, 0),
                                 opacity: 0.0,
+                                rotate: isLandscape ? (0, pdf_lib_1.degrees)(-90) : (0, pdf_lib_1.degrees)(0),
+                            });
+                            await page.drawText('https://jurissearch.com/', {
+                                x: isLandscape ? pageHeight - 30 : (width / 2 - 25),
+                                y: isLandscape ? (pageWidth / 2) + 25 : (height - 30),
+                                size: 10,
+                                color: (0, pdf_lib_1.rgb)(0, 0, 0),
+                                opacity: 0.0,
+                                rotate: isLandscape ? (0, pdf_lib_1.degrees)(-90) : (0, pdf_lib_1.degrees)(0),
+                            });
+                            await page.drawText('https://ccfirma.com/', {
+                                x: isLandscape ? 20 : (width / 2 - 30),
+                                y: isLandscape ? (pageWidth / 2) + 25 : 10,
+                                size: 10,
+                                color: (0, pdf_lib_1.rgb)(0, 0, 0),
+                                opacity: 0.0,
+                                rotate: isLandscape ? (0, pdf_lib_1.degrees)(-90) : (0, pdf_lib_1.degrees)(0),
+                            });
+                            await page.drawText('https://ccfirma.com/', {
+                                x: isLandscape ? (pageHeight / 2) + 50 : 5,
+                                y: isLandscape ? (pageWidth - 20) : height / 2 - 25,
+                                size: 11,
+                                color: (0, pdf_lib_1.rgb)(0, 0, 0),
+                                opacity: 0.0,
+                                rotate: isLandscape ? (0, pdf_lib_1.degrees)(0) : (0, pdf_lib_1.degrees)(-90),
+                            });
+                            await page.drawText('https://ccfirma.com/', {
+                                x: isLandscape ? (pageHeight / 2) - 70 : 5,
+                                y: isLandscape ? (pageWidth - 20) : height / 2 - 90,
+                                size: 11,
+                                color: (0, pdf_lib_1.rgb)(0, 0, 0),
+                                opacity: 0.0,
+                                rotate: isLandscape ? (0, pdf_lib_1.degrees)(0) : (0, pdf_lib_1.degrees)(-90),
+                            });
+                            await page.drawText('https://ccfirma.com/', {
+                                x: isLandscape ? (pageHeight / 2) - 190 : 5,
+                                y: isLandscape ? (pageWidth - 20) : height / 2 + 90,
+                                size: 11,
+                                color: (0, pdf_lib_1.rgb)(0, 0, 0),
+                                opacity: 0.0,
+                                rotate: isLandscape ? (0, pdf_lib_1.degrees)(0) : (0, pdf_lib_1.degrees)(-90),
                             });
                         }
                     }
@@ -882,77 +916,94 @@ let EntriesController = class EntriesController {
             const pages = pdfDoc.getPages();
             if (modificar) {
                 for (const page of pages) {
-                    const { width, height } = page.getSize();
+                    let { width, height } = page.getSize();
+                    let isLandscape = width > height;
+                    let pageWidth = isLandscape ? height : width;
+                    let pageHeight = isLandscape ? width : height;
+                    let centerX = pageWidth / 2;
+                    let logoTopX = 10;
+                    let logoTopY = pageHeight - 43;
+                    if (isLandscape) {
+                        logoTopX = pageHeight - 43;
+                        logoTopY = pageWidth - 20;
+                    }
                     page.drawImage(marcadeaguaImage, {
-                        x: width / 2 - 310,
-                        y: height / 2 - 330,
+                        x: isLandscape ? (100) : (width / 2 - 310),
+                        y: isLandscape ? logoTopY + 35 : (height / 2 - 330),
                         width: 620,
                         height: 600,
                         opacity: 0.7,
+                        rotate: isLandscape ? (0, pdf_lib_1.degrees)(-90) : (0, pdf_lib_1.degrees)(0),
                     });
                     page.drawImage(caroaImage, {
-                        x: 10,
-                        y: height - 43,
+                        x: isLandscape ? logoTopX : 10,
+                        y: isLandscape ? logoTopY : (height - 43),
                         width: 95,
                         height: 40,
-                    });
-                    page.drawText('https://ccfirma.com/', {
-                        x: 10,
-                        y: height - 25,
-                        size: 10,
-                        color: (0, pdf_lib_1.rgb)(0, 0, 0),
-                        opacity: 0.0,
-                    });
-                    page.drawText('https://ccfirma.com/', {
-                        x: 5,
-                        y: height / 2 - 25,
-                        size: 11,
-                        color: (0, pdf_lib_1.rgb)(0, 0, 0),
-                        opacity: 0.0,
-                        rotate: (0, pdf_lib_1.degrees)(-90),
-                    });
-                    page.drawText('https://ccfirma.com/', {
-                        x: 5,
-                        y: height / 2 - 90,
-                        size: 11,
-                        color: (0, pdf_lib_1.rgb)(0, 0, 0),
-                        opacity: 0.0,
-                        rotate: (0, pdf_lib_1.degrees)(-90),
-                    });
-                    page.drawText('https://ccfirma.com/', {
-                        x: 5,
-                        y: height / 2 + 90,
-                        size: 11,
-                        color: (0, pdf_lib_1.rgb)(0, 0, 0),
-                        opacity: 0.0,
-                        rotate: (0, pdf_lib_1.degrees)(-90),
+                        rotate: isLandscape ? (0, pdf_lib_1.degrees)(-90) : (0, pdf_lib_1.degrees)(0),
                     });
                     page.drawImage(nuevologoImage, {
-                        x: width / 2 - 25,
-                        y: height - 43,
+                        x: isLandscape ? logoTopX : (width / 2 - 25),
+                        y: isLandscape ? ((logoTopY + 42) - centerX) : (height - 43),
                         width: 50,
                         height: 35,
-                    });
-                    await page.drawText('https://jurissearch.com/', {
-                        x: width / 2 - 25,
-                        y: height - 30,
-                        size: 10,
-                        color: (0, pdf_lib_1.rgb)(0, 0, 0),
-                        opacity: 0.0,
+                        rotate: isLandscape ? (0, pdf_lib_1.degrees)(-90) : (0, pdf_lib_1.degrees)(0),
                     });
                     page.drawImage(ccfirmaImage, {
-                        x: width / 2 - 30,
-                        y: 5,
+                        x: isLandscape ? 10 : (width / 2 - 30),
+                        y: isLandscape ? ((logoTopY + 47) - centerX) : (5),
                         width: 70,
                         height: 30,
                         opacity: 0.9,
+                        rotate: isLandscape ? (0, pdf_lib_1.degrees)(-90) : (0, pdf_lib_1.degrees)(0),
                     });
                     page.drawText('https://ccfirma.com/', {
-                        x: width / 2 - 30,
-                        y: 10,
+                        x: isLandscape ? logoTopX + 10 : 10,
+                        y: isLandscape ? logoTopY : (pageHeight - 25),
                         size: 10,
                         color: (0, pdf_lib_1.rgb)(0, 0, 0),
                         opacity: 0.0,
+                        rotate: isLandscape ? (0, pdf_lib_1.degrees)(-90) : (0, pdf_lib_1.degrees)(0),
+                    });
+                    page.drawText('https://jurissearch.com/', {
+                        x: isLandscape ? pageHeight - 30 : (width / 2 - 25),
+                        y: isLandscape ? (pageWidth / 2) + 25 : (height - 30),
+                        size: 10,
+                        color: (0, pdf_lib_1.rgb)(0, 0, 0),
+                        opacity: 0.0,
+                        rotate: isLandscape ? (0, pdf_lib_1.degrees)(-90) : (0, pdf_lib_1.degrees)(0),
+                    });
+                    page.drawText('https://ccfirma.com/', {
+                        x: isLandscape ? 20 : (width / 2 - 30),
+                        y: isLandscape ? (pageWidth / 2) + 25 : 10,
+                        size: 10,
+                        color: (0, pdf_lib_1.rgb)(0, 0, 0),
+                        opacity: 0.0,
+                        rotate: isLandscape ? (0, pdf_lib_1.degrees)(-90) : (0, pdf_lib_1.degrees)(0),
+                    });
+                    page.drawText('https://ccfirma.com/', {
+                        x: isLandscape ? (pageHeight / 2) + 50 : 5,
+                        y: isLandscape ? (pageWidth - 20) : height / 2 - 25,
+                        size: 11,
+                        color: (0, pdf_lib_1.rgb)(0, 0, 0),
+                        opacity: 0.0,
+                        rotate: isLandscape ? (0, pdf_lib_1.degrees)(0) : (0, pdf_lib_1.degrees)(-90),
+                    });
+                    page.drawText('https://ccfirma.com/', {
+                        x: isLandscape ? (pageHeight / 2) - 70 : 5,
+                        y: isLandscape ? (pageWidth - 20) : height / 2 - 90,
+                        size: 11,
+                        color: (0, pdf_lib_1.rgb)(0, 0, 0),
+                        opacity: 0.0,
+                        rotate: isLandscape ? (0, pdf_lib_1.degrees)(0) : (0, pdf_lib_1.degrees)(-90),
+                    });
+                    page.drawText('https://ccfirma.com/', {
+                        x: isLandscape ? (pageHeight / 2) - 190 : 5,
+                        y: isLandscape ? (pageWidth - 20) : height / 2 + 90,
+                        size: 11,
+                        color: (0, pdf_lib_1.rgb)(0, 0, 0),
+                        opacity: 0.0,
+                        rotate: isLandscape ? (0, pdf_lib_1.degrees)(0) : (0, pdf_lib_1.degrees)(-90),
                     });
                 }
             }
