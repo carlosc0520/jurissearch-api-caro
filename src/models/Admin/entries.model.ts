@@ -5,6 +5,7 @@ export class EntriesModel {
     ISBINDING: boolean = false;
     AMBIT: string = '';
     FRESOLUTION: string = '';
+    FRESOLUTIONSTRING: string = '';
     OJURISDICCIONAL: string = '';
     JURISDICCION: string = '';
     MAGISTRATES: string = '';

@@ -13,6 +13,7 @@ export declare class TokenService {
     removeSession(token: string): Promise<void>;
     private writeActiveSessionsToFile;
     generateToken(user: User, bandera?: boolean): string;
+    refreshToken(token: string): string;
     private isSessionActive;
     generateTokenSolicitud(user: SolicitudModel): string;
     validateToken(token: string): boolean;

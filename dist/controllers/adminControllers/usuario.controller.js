@@ -17,11 +17,15 @@ const common_1 = require("@nestjs/common");
 const user_service_1 = require("../../services/User/user.service");
 const DataTable_model_1 = require("../../models/DataTable.model.");
 const reporte_model_1 = require("../../models/Admin/reporte.model");
+const hostinger_service_1 = require("../../services/Aws/hostinger.service");
+const platform_express_1 = require("@nestjs/platform-express");
+const multer_1 = require("multer");
 class User {
 }
 let UsuarioController = class UsuarioController {
-    constructor(userService) {
+    constructor(userService, hostingerService) {
         this.userService = userService;
+        this.hostingerService = hostingerService;
     }
     async validateToken(req) {
         var _a;
@@ -44,7 +48,9 @@ let UsuarioController = class UsuarioController {
         return await this.userService.list(entidad, IDROLE);
     }
     async getUser(req) {
-        return await this.userService.getUser(req.user.ID);
+        let result = await this.userService.getUser(req.user.ID);
+        result.RTAFTO = result.RTAFTO ? process.env.DOMINIO + result.RTAFTO : null;
+        return result;
     }
     async deleteUser(req, ID) {
         return await this.userService.deleteUser(ID, req.user.UCRCN);
@@ -56,7 +62,15 @@ let UsuarioController = class UsuarioController {
         entidad.USER = req.user.UCRCN;
         return await this.userService.editUser(entidad);
     }
-    async editUserForce(req, entidad) {
+    async editUserForce(req, entidad, files) {
+        entidad.RTAFTO = entidad.RTAFTO ? entidad.RTAFTO.replace(process.env.DOMINIO, '') : null;
+        if (files && files.length > 0) {
+            let file = files[0];
+            if (entidad.RTAFTO)
+                await this.hostingerService.deleteFile(entidad.RTAFTO);
+            let result = await this.hostingerService.saveFile(file, "usuarios");
+            entidad.RTAFTO = result.path;
+        }
         entidad.USER = req.user.UCRCN;
         entidad.ID = req.user.ID;
         return await this.userService.editUser(entidad);
@@ -141,11 +155,30 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], UsuarioController.prototype, "editUser", null);
 __decorate([
+    (0, common_1.UseInterceptors)((0, platform_express_1.FilesInterceptor)('files', 20, {
+        storage: (0, multer_1.diskStorage)({
+            destination: './uploads',
+            filename: function (req, file, cb) {
+                const filename = `${Date.now()}-${file.originalname.replace(/\s/g, '')}`;
+                return cb(null, filename);
+            },
+        }),
+        limits: { fileSize: 100 * 1024 * 1024 },
+        fileFilter: (req, file, cb) => {
+            if (file.mimetype.match(/\/png|jpg|jpeg|webp|avif/)) {
+                cb(null, true);
+            }
+            else {
+                cb(new Error('Solo se permiten archivos de imagen'), false);
+            }
+        },
+    })),
     (0, common_1.Post)('edit-force'),
     __param(0, (0, common_1.Request)()),
     __param(1, (0, common_1.Body)()),
+    __param(2, (0, common_1.UploadedFiles)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, User]),
+    __metadata("design:paramtypes", [Object, User, Object]),
     __metadata("design:returntype", Promise)
 ], UsuarioController.prototype, "editUserForce", null);
 __decorate([
@@ -198,6 +231,7 @@ __decorate([
 ], UsuarioController.prototype, "reporteEstadisticos", null);
 exports.UsuarioController = UsuarioController = __decorate([
     (0, common_1.Controller)('admin/user'),
-    __metadata("design:paramtypes", [user_service_1.UserService])
+    __metadata("design:paramtypes", [user_service_1.UserService,
+        hostinger_service_1.HostingerService])
 ], UsuarioController);
 //# sourceMappingURL=usuario.controller.js.map

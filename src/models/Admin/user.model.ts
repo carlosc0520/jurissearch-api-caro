@@ -19,4 +19,5 @@ export class User {
     FEDCN: Date;
     CDESTDO: string;
     TOKEN: string;
+    RTAFTO?: string;
 }

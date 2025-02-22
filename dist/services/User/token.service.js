@@ -31,6 +31,17 @@ var __importStar = (this && this.__importStar) || function (mod) {
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var __rest = (this && this.__rest) || function (s, e) {
+    var t = {};
+    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
+        t[p] = s[p];
+    if (s != null && typeof Object.getOwnPropertySymbols === "function")
+        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
+            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
+                t[p[i]] = s[p[i]];
+        }
+    return t;
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TokenService = void 0;
 const common_1 = require("@nestjs/common");
@@ -85,7 +96,7 @@ let TokenService = class TokenService {
             this.activeSessions.delete(user.ID.toString());
         }
         const sessionId = uuid.v4();
-        const expiresIn = Date.now() + (60 * 60 * 2 * 1000);
+        const expiresIn = Date.now() + (5 * 60 * 60 * 1000);
         const payload = {
             EMAIL: user.EMAIL,
             ID: user.ID,
@@ -96,9 +107,23 @@ let TokenService = class TokenService {
             PERM: (user === null || user === void 0 ? void 0 : user.RESTRICIONES) ? user.RESTRICIONES.split(',') : [],
             sessionId: sessionId,
         };
-        this.activeSessions.set(user.ID.toString(), { sessionId: sessionId, expiresIn: expiresIn });
+        this.activeSessions.set(sessionId, { sessionId: sessionId, expiresIn: expiresIn });
         this.writeActiveSessionsToFile();
-        return jwt.sign(payload, this.secretKey, { expiresIn: '1h' });
+        return jwt.sign(payload, this.secretKey, { expiresIn: '3h' });
+    }
+    refreshToken(token) {
+        const payload = jwt.decode(token);
+        const session = this.activeSessions.get(payload.sessionId);
+        if (session) {
+            const expiresIn = Date.now() + (5 * 60 * 60 * 1000);
+            this.activeSessions.set(payload.sessionId, {
+                sessionId: payload.sessionId,
+                expiresIn: Date.now() + (5 * 60 * 60 * 1000)
+            });
+            this.writeActiveSessionsToFile();
+            const { exp } = payload, payloadWithoutExp = __rest(payload, ["exp"]);
+            return jwt.sign(payloadWithoutExp, this.secretKey, { expiresIn });
+        }
     }
     isSessionActive(session) {
         return session && session.expiresIn > Date.now();

@@ -1,8 +1,11 @@
-import { Request, Body, Controller, Get, Post, Query } from '@nestjs/common';
+import { Request, Body, Controller, Get, Post, Query, UseInterceptors, UploadedFiles, UnauthorizedException } from '@nestjs/common';
 import { UserService } from '../../services/User/user.service';
 import { Result } from '../../models/result.model';
 import { DataTable } from '../../models/DataTable.model.';
 import { ReporteModelEntrie } from 'src/models/Admin/reporte.model';
+import { HostingerService } from 'src/services/Aws/hostinger.service';
+import { FilesInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
 
 class User {
   ID: number;
@@ -29,13 +32,15 @@ class User {
   CDESTDO: string;
   TOKEN: string;
   DATOS?: string;
+  RTAFTO?: string;
 }
 
 @Controller('admin/user')
 export class UsuarioController {
   constructor(
-    private readonly userService: UserService
-  ) {}
+    private readonly userService: UserService,
+    private readonly hostingerService: HostingerService
+  ) { }
 
   @Get('validate-token')
   async validateToken(
@@ -72,7 +77,9 @@ export class UsuarioController {
 
   @Get('get')
   async getUser(@Request() req): Promise<User> {
-    return await this.userService.getUser(req.user.ID);
+    let result = await this.userService.getUser(req.user.ID);
+    result.RTAFTO = result.RTAFTO ? process.env.DOMINIO + result.RTAFTO : null;
+    return result;
   }
 
   @Post('delete')
@@ -99,8 +106,36 @@ export class UsuarioController {
     return await this.userService.editUser(entidad);
   }
 
+  @UseInterceptors(
+    FilesInterceptor('files', 20, {
+      storage: diskStorage({
+        destination: './uploads',
+        filename: function (req, file, cb) {
+          const filename = `${Date.now()}-${file.originalname.replace(/\s/g, '')}`;
+          return cb(null, filename);
+        },
+      }),
+      limits: { fileSize: 100 * 1024 * 1024 },
+      fileFilter: (req, file, cb) => {
+        if (file.mimetype.match(/\/png|jpg|jpeg|webp|avif/)) {
+          cb(null, true);
+        } else {
+          cb(new Error('Solo se permiten archivos de imagen'), false);
+        }
+      },
+    }),
+  )
   @Post('edit-force')
-  async editUserForce(@Request() req, @Body() entidad: User): Promise<Result> {
+  async editUserForce(@Request() req, @Body() entidad: User, @UploadedFiles() files): Promise<Result> {
+    entidad.RTAFTO = entidad.RTAFTO ? entidad.RTAFTO.replace(process.env.DOMINIO, '') : null;
+
+    if(files && files.length > 0) {
+      let file = files[0];	
+      if(entidad.RTAFTO) await this.hostingerService.deleteFile(entidad.RTAFTO);
+      let result = await this.hostingerService.saveFile(file, "usuarios");
+      entidad.RTAFTO = result.path;
+    } 
+  
     entidad.USER = req.user.UCRCN;
     entidad.ID = req.user.ID;
     return await this.userService.editUser(entidad);

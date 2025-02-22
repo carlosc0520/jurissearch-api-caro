@@ -900,7 +900,7 @@ let EntriesController = class EntriesController {
             let data = await this.entriesService.getEntriePrint(PATH);
             let fecha = new Date('2024-11-08');
             let modificar = false;
-            if (data.FEDCN > fecha || data.FLGDOC === '1') {
+            if (data.FCRCN > fecha || data.FLGDOC === '1') {
                 modificar = true;
             }
             const fileBuffer = await this.s3Service.downloadFile(PATH);
@@ -1651,7 +1651,7 @@ let EntriesController = class EntriesController {
                                                 new docx_1.Paragraph({
                                                     children: [
                                                         new docx_1.TextRun({
-                                                            text: `${setFechaLocale(data.FRESOLUTION)}`,
+                                                            text: `${data.FRESOLUTIONSTRING}`,
                                                             size: 22,
                                                             font: 'Calibri',
                                                             color: '000000',
@@ -2172,20 +2172,6 @@ exports.EntriesController = EntriesController = __decorate([
     __metadata("design:paramtypes", [entries_service_1.EntriesService,
         aws_service_1.S3Service])
 ], EntriesController);
-const setFechaLocale = (FRESOLUTION) => {
-    try {
-        let date = new Date(FRESOLUTION);
-        date = new Date(date.getTime() + date.getTimezoneOffset() * 60000);
-        return date.toLocaleDateString('es-PE', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-        });
-    }
-    catch (error) {
-        return '';
-    }
-};
 const decodeHtmlEntities = (text) => {
     if (text === null)
         return '';

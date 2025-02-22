@@ -34,6 +34,7 @@ class User {
     DATOS?: string;
     STATUS?: number;
     MESSAGE?: string;
+    RTAFTO?: string;
 }
 
 @Injectable()

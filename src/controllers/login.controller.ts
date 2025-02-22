@@ -52,6 +52,7 @@ class User {
   STATUS?: number;
   MESSAGE?: string;
   BANDERA?: boolean = false;
+  RTAFTO?: string;
 }
 
 @Controller('login')
@@ -91,6 +92,7 @@ export class LoginController {
 
     const token = await this.tokenService.generateToken(usuario, entidad.BANDERA);
     usuario.TOKEN = token;
+    usuario.RTAFTO = process.env.DOMINIO + usuario.RTAFTO;
     return usuario;
   }
 
@@ -128,6 +130,11 @@ export class LoginController {
     entidad.CESTDO = 'A';
     const preguntas = await this.preguntaService.list(entidad);
     return preguntas;
+  }
+
+  @Get('refreshToken')
+  async refreshToken(@Query('token') token: string): Promise<string> {
+    return await this.tokenService.refreshToken(token);
   }
 
   @Get('validateToken')

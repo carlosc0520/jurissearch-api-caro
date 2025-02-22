@@ -9,6 +9,7 @@ class EntriesModel {
         this.ISBINDING = false;
         this.AMBIT = '';
         this.FRESOLUTION = '';
+        this.FRESOLUTIONSTRING = '';
         this.OJURISDICCIONAL = '';
         this.JURISDICCION = '';
         this.MAGISTRATES = '';

@@ -37,6 +37,7 @@ import { BoletinService } from './Admin/boletin.service';
 import { FtpModule } from 'nestjs-ftp';
 import { ComplytoolsController } from 'src/controllers/acompliance/complytools.controller';
 import { HttpModule } from '@nestjs/axios';
+import { HostingerService } from './Aws/hostinger.service';
 
 @Module({
   imports: [
@@ -93,6 +94,7 @@ import { HttpModule } from '@nestjs/axios';
     EmailJurisService,
     AsistenciaService,
     HelpersService,
+    HostingerService
   ],
 })
 export class UserModule {}

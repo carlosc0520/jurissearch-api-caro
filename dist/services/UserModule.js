@@ -42,6 +42,7 @@ const boletin_service_1 = require("./Admin/boletin.service");
 const nestjs_ftp_1 = require("nestjs-ftp");
 const complytools_controller_1 = require("../controllers/acompliance/complytools.controller");
 const axios_1 = require("@nestjs/axios");
+const hostinger_service_1 = require("./Aws/hostinger.service");
 let UserModule = class UserModule {
 };
 exports.UserModule = UserModule;
@@ -96,6 +97,7 @@ exports.UserModule = UserModule = __decorate([
             emailJurisserivce_1.EmailJurisService,
             asistencia_service_1.AsistenciaService,
             helpers_service_1.HelpersService,
+            hostinger_service_1.HostingerService
         ],
     })
 ], UserModule);

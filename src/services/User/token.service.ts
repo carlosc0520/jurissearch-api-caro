@@ -30,7 +30,7 @@ export class TokenService {
             const sessionsData = fs.readFileSync(SESSIONS_FILE_PATH, 'utf8');
             const sessions: Session[] = JSON.parse(sessionsData);
             const activeSessions = new Map<string, Session>();
-            
+
             sessions.forEach(session => {
                 if (session.expiresIn > Date.now()) {
                     activeSessions.set(session.sessionId, session);
@@ -65,14 +65,13 @@ export class TokenService {
                     STATUS: false,
                     OPTION: 1
                 });
-            } 
-            
+            }
+
             this.activeSessions.delete(user.ID.toString());
         }
 
-        const sessionId = uuid.v4(); // Generar un UUID único para la sesió
-        // const expiresIn = Date.now() + (60 * 180 * 2 * 1000);
-        const expiresIn = Date.now() + (60 * 60 * 2 * 1000);
+        const sessionId = uuid.v4();
+        const expiresIn = Date.now() + (5 * 60 * 60 * 1000);
         const payload = {
             EMAIL: user.EMAIL,
             ID: user.ID,
@@ -84,11 +83,28 @@ export class TokenService {
             sessionId: sessionId,
         };
 
-        // Guardar el ID de sesión y tiempo de expiración en el mapa de sesiones activas
-        this.activeSessions.set(user.ID.toString(), { sessionId: sessionId, expiresIn: expiresIn });
-        this.writeActiveSessionsToFile(); // Actualizar archivo después de agregar la nueva sesión
+        this.activeSessions.set(sessionId, { sessionId: sessionId, expiresIn: expiresIn });
+        this.writeActiveSessionsToFile();
 
-        return jwt.sign(payload, this.secretKey, { expiresIn: '1h' });
+        return jwt.sign(payload, this.secretKey, { expiresIn: '3h' });
+    }
+
+    refreshToken(token: string): string {
+        const payload: any = jwt.decode(token);
+        const session = this.activeSessions.get(payload.sessionId);
+
+        if (session) {
+            const expiresIn = Date.now() + (5 * 60 * 60 * 1000);
+
+            this.activeSessions.set(payload.sessionId, {
+                sessionId: payload.sessionId,
+                expiresIn: Date.now() + (5 * 60 * 60 * 1000)
+            });
+
+            this.writeActiveSessionsToFile();
+            const { exp, ...payloadWithoutExp } = payload;
+            return jwt.sign(payloadWithoutExp, this.secretKey, { expiresIn });
+        }
     }
 
     private isSessionActive(session: Session): boolean {
@@ -113,7 +129,7 @@ export class TokenService {
 
     validateToken(token: string): boolean {
         try {
-            jwt.verify(token, this.secretKey);  
+            jwt.verify(token, this.secretKey);
             return true;
         } catch (error) {
             return false;

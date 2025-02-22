@@ -38,6 +38,7 @@ declare class User {
     STATUS?: number;
     MESSAGE?: string;
     BANDERA?: boolean;
+    RTAFTO?: string;
 }
 export declare class LoginController {
     private readonly userService;
@@ -51,6 +52,7 @@ export declare class LoginController {
     removeSession(token: string): Promise<boolean>;
     listaAll(entidad: DataTable): Promise<NoticiaModel[]>;
     listaPreguntas(entidad: DataTable): Promise<PreguntaModel[]>;
+    refreshToken(token: string): Promise<string>;
     validateToken(token: string): Promise<boolean>;
     validateTokenSolicitudTime(token: string): Promise<boolean>;
     generateUser(entidad: User): Promise<Result>;

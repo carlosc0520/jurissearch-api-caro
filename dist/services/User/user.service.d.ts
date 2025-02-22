@@ -30,6 +30,7 @@ declare class User {
     DATOS?: string;
     STATUS?: number;
     MESSAGE?: string;
+    RTAFTO?: string;
 }
 export declare class UserService {
     private connection;

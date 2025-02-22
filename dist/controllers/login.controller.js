@@ -60,6 +60,7 @@ let LoginController = class LoginController {
         }
         const token = await this.tokenService.generateToken(usuario, entidad.BANDERA);
         usuario.TOKEN = token;
+        usuario.RTAFTO = process.env.DOMINIO + usuario.RTAFTO;
         return usuario;
     }
     async removeSession(token) {
@@ -89,6 +90,9 @@ let LoginController = class LoginController {
         entidad.CESTDO = 'A';
         const preguntas = await this.preguntaService.list(entidad);
         return preguntas;
+    }
+    async refreshToken(token) {
+        return await this.tokenService.refreshToken(token);
     }
     async validateToken(token) {
         return this.tokenService.validateTokenSolicitud(token);
@@ -187,6 +191,13 @@ __decorate([
     __metadata("design:paramtypes", [DataTable_model_1.DataTable]),
     __metadata("design:returntype", Promise)
 ], LoginController.prototype, "listaPreguntas", null);
+__decorate([
+    (0, common_1.Get)('refreshToken'),
+    __param(0, (0, common_1.Query)('token')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], LoginController.prototype, "refreshToken", null);
 __decorate([
     (0, common_1.Get)('validateToken'),
     __param(0, (0, common_1.Query)('token')),
