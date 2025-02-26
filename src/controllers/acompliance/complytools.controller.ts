@@ -1341,6 +1341,7 @@ export class ComplytoolsController {
 
   @Post('send-email')
   async SendEmail(@Body() entidad: any, @Res() res): Promise<void> {
+    console.log(entidad, res)
     try {
       const workbook = new ExcelJS.Workbook();
       const worksheet = workbook.addWorksheet('Datos');
@@ -1430,7 +1431,7 @@ export class ComplytoolsController {
       await this.transporter.sendMail(mailOptions);
       res.status(200).send('Correo enviado exitosamente');
     } catch (error) {
-      // console.error(error);
+      console.log(error)
       res.status(500).send({
         status: false,
         message: error.message,
