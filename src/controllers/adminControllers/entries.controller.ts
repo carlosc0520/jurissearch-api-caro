@@ -1295,9 +1295,11 @@ export class EntriesController {
 
       let fecha = new Date('2024-11-08');
       let modificar = false;
+
       if (data.FCRCN > fecha || data.FLGDOC === '1') {
         modificar = true;
       }
+
 
       // Descargar archivo de S3
       const fileBuffer = await this.s3Service.downloadFile(PATH);

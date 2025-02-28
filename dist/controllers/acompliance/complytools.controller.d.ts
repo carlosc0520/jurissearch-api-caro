@@ -1,11 +1,15 @@
+/// <reference types="multer" />
 import { HttpService } from '@nestjs/axios';
+import { HostingerService } from 'src/services/Aws/hostinger.service';
+import { Response } from 'express';
 export declare class ComplytoolsController {
     private readonly httpService;
+    private readonly hostingerService;
     private transporter;
     private AMBIT;
     private CONFIG;
     private Proxys;
-    constructor(httpService: HttpService);
+    constructor(httpService: HttpService, hostingerService: HostingerService);
     Proxy1(entidad: any, res: any): Promise<void>;
     Proxy2(entidad: any, res: any): Promise<void>;
     Proxy2_2(entidad: any, res: any): Promise<void>;
@@ -20,4 +24,9 @@ export declare class ComplytoolsController {
     Genero(entidad: any, res: any): Promise<void>;
     Translate(entidad: any, res: any): Promise<void>;
     private ObtenerGenero;
+    uploadFiles(files: Express.Multer.File[], remotePath: string): Promise<string>;
+    downloadFiles(fileNames: string[], res: Response): Promise<void>;
+    deleteFiles(filePaths: string[]): Promise<{
+        message: string;
+    }>;
 }

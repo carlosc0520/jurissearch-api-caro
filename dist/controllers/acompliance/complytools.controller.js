@@ -43,9 +43,12 @@ const axios_1 = require("@nestjs/axios");
 const gender_detection_from_name_1 = require("gender-detection-from-name");
 const ExcelJS = __importStar(require("exceljs"));
 const nodemailer = __importStar(require("nodemailer"));
+const hostinger_service_1 = require("../../services/Aws/hostinger.service");
+const platform_express_1 = require("@nestjs/platform-express");
 let ComplytoolsController = class ComplytoolsController {
-    constructor(httpService) {
+    constructor(httpService, hostingerService) {
         this.httpService = httpService;
+        this.hostingerService = hostingerService;
         this.AMBIT = "PROD";
         this.CONFIG = {
             "DEV": {
@@ -1017,6 +1020,7 @@ let ComplytoolsController = class ComplytoolsController {
         })();
     }
     async SendEmail(entidad, res) {
+        console.log(entidad, res);
         try {
             const workbook = new ExcelJS.Workbook();
             const worksheet = workbook.addWorksheet('Datos');
@@ -1100,6 +1104,7 @@ let ComplytoolsController = class ComplytoolsController {
             res.status(200).send('Correo enviado exitosamente');
         }
         catch (error) {
+            console.log(error);
             res.status(500).send({
                 status: false,
                 message: error.message,
@@ -1158,6 +1163,26 @@ let ComplytoolsController = class ComplytoolsController {
         catch (error) {
             return '';
         }
+    }
+    async uploadFiles(files, remotePath) {
+        const result = await this.hostingerService.uploadFiles(files, remotePath);
+        return result;
+    }
+    async downloadFiles(fileNames, res) {
+        const result = await this.hostingerService.downloadFiles(fileNames);
+        if (result.fileName.endsWith('.zip')) {
+            res.setHeader('Content-Disposition', `attachment; filename=${result.fileName}`);
+            res.setHeader('Content-Type', 'application/zip');
+        }
+        else {
+            res.setHeader('Content-Disposition', `attachment; filename=${result.fileName}`);
+            res.setHeader('Content-Type', 'application/octet-stream');
+        }
+        res.send(Buffer.from(result.fileBuffer, 'base64'));
+    }
+    async deleteFiles(filePaths) {
+        const result = await this.hostingerService.deleteFiles(filePaths);
+        return result;
     }
 };
 exports.ComplytoolsController = ComplytoolsController;
@@ -1265,8 +1290,32 @@ __decorate([
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
 ], ComplytoolsController.prototype, "Translate", null);
+__decorate([
+    (0, common_1.Post)('upload'),
+    (0, common_1.UseInterceptors)((0, platform_express_1.FilesInterceptor)('files')),
+    __param(0, (0, common_1.UploadedFiles)()),
+    __param(1, (0, common_1.Body)('remotePath')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Array, String]),
+    __metadata("design:returntype", Promise)
+], ComplytoolsController.prototype, "uploadFiles", null);
+__decorate([
+    (0, common_1.Post)('download'),
+    __param(0, (0, common_1.Body)('fileNames')),
+    __param(1, (0, common_1.Res)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Array, Object]),
+    __metadata("design:returntype", Promise)
+], ComplytoolsController.prototype, "downloadFiles", null);
+__decorate([
+    (0, common_1.Delete)('delete'),
+    __param(0, (0, common_1.Body)('filePaths')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Array]),
+    __metadata("design:returntype", Promise)
+], ComplytoolsController.prototype, "deleteFiles", null);
 exports.ComplytoolsController = ComplytoolsController = __decorate([
     (0, common_1.Controller)('complytools'),
-    __metadata("design:paramtypes", [axios_1.HttpService])
+    __metadata("design:paramtypes", [axios_1.HttpService, hostinger_service_1.HostingerService])
 ], ComplytoolsController);
 //# sourceMappingURL=complytools.controller.js.map

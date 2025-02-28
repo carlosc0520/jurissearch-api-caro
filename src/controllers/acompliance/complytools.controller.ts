@@ -1,10 +1,13 @@
-import { Body, Controller, Get, Post, Query, Res } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Post, Query, Res, UploadedFiles, UseInterceptors } from '@nestjs/common';
 import * as puppeteer from 'puppeteer';
 import { translate } from 'bing-translate-api';
 import { HttpService } from '@nestjs/axios';
 import { getGender } from 'gender-detection-from-name';
 import * as ExcelJS from 'exceljs';
 import * as nodemailer from 'nodemailer';
+import { HostingerService } from 'src/services/Aws/hostinger.service';
+import { FilesInterceptor } from '@nestjs/platform-express';
+import { Response } from 'express';
 
 @Controller('complytools')
 export class ComplytoolsController {
@@ -24,7 +27,8 @@ export class ComplytoolsController {
   }
   private Proxys: { [key: string]: any };
 
-  constructor(private readonly httpService: HttpService) {
+  constructor(private readonly httpService: HttpService, private readonly hostingerService: HostingerService
+  ) {
     this.transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
@@ -64,7 +68,7 @@ export class ComplytoolsController {
       throw new Error('El proxy solicitado no existe.');
     }
 
-    const browserP = puppeteer.launch({...this.CONFIG[this.AMBIT]});
+    const browserP = puppeteer.launch({ ...this.CONFIG[this.AMBIT] });
 
     (async () => {
       let page = await (await browserP).newPage();
@@ -103,9 +107,9 @@ export class ComplytoolsController {
 
           let resolucion = element.querySelector('h5 a')
             ? element
-                .querySelector('h5 a')
-                .textContent.replace(/\n/g, '')
-                .trim()
+              .querySelector('h5 a')
+              .textContent.replace(/\n/g, '')
+              .trim()
             : '';
 
           let link = element.querySelector('a')
@@ -113,16 +117,16 @@ export class ComplytoolsController {
             : '';
           let date = element.querySelector('p b')
             ? element
-                .querySelector('p b')
-                .textContent.replace(/\n/g, '')
-                .trim()
-                .replace('Fecha: ', '')
+              .querySelector('p b')
+              .textContent.replace(/\n/g, '')
+              .trim()
+              .replace('Fecha: ', '')
             : '';
           let description = element.querySelectorAll('p')[1]
             ? element
-                .querySelectorAll('p')[1]
-                .textContent.replace(/\n/g, '')
-                .trim()
+              .querySelectorAll('p')[1]
+              .textContent.replace(/\n/g, '')
+              .trim()
             : '';
 
           data.push({
@@ -165,7 +169,7 @@ export class ComplytoolsController {
       return;
     }
 
-    const browserP = puppeteer.launch({...this.CONFIG[this.AMBIT]});
+    const browserP = puppeteer.launch({ ...this.CONFIG[this.AMBIT] });
 
     (async () => {
       const browser = await browserP;
@@ -285,7 +289,7 @@ export class ComplytoolsController {
       return;
     }
 
-    const browserP = puppeteer.launch({...this.CONFIG[this.AMBIT]});
+    const browserP = puppeteer.launch({ ...this.CONFIG[this.AMBIT] });
 
     (async () => {
       const browser = await browserP;
@@ -415,7 +419,7 @@ export class ComplytoolsController {
       });
     }
 
-    const browserP = puppeteer.launch({...this.CONFIG[this.AMBIT]});
+    const browserP = puppeteer.launch({ ...this.CONFIG[this.AMBIT] });
 
     (async () => {
       const browser = await browserP;
@@ -512,7 +516,7 @@ export class ComplytoolsController {
 
     const proxyUrl = entidad.completo;
 
-    const browserP = puppeteer.launch({...this.CONFIG[this.AMBIT]});
+    const browserP = puppeteer.launch({ ...this.CONFIG[this.AMBIT] });
 
     (async () => {
       const browser = await browserP;
@@ -651,7 +655,7 @@ export class ComplytoolsController {
       return;
     }
 
-    const browserP = puppeteer.launch({...this.CONFIG[this.AMBIT]});
+    const browserP = puppeteer.launch({ ...this.CONFIG[this.AMBIT] });
 
     (async () => {
       const browser = await browserP;
@@ -716,7 +720,7 @@ export class ComplytoolsController {
     let page;
 
     try {
-      browserP = await puppeteer.launch({...this.CONFIG[this.AMBIT]});
+      browserP = await puppeteer.launch({ ...this.CONFIG[this.AMBIT] });
 
       page = await browserP.newPage();
       await page.setUserAgent(
@@ -785,7 +789,7 @@ export class ComplytoolsController {
       });
       try {
         await page.waitForSelector('h5', { timeout: 10000 });
-      } catch (error) {}
+      } catch (error) { }
     } catch (error) {
       console.log(error)
       res.status(500).send({ error: 'Error durante la ejecución del proxy' });
@@ -799,7 +803,7 @@ export class ComplytoolsController {
     try {
       let hashIds = JSON.parse(entidad.entidad);
 
-      const browser = await puppeteer.launch({...this.CONFIG[this.AMBIT]});
+      const browser = await puppeteer.launch({ ...this.CONFIG[this.AMBIT] });
 
       const scrapePage = async (pageUrl: string) => {
         const page = await browser.newPage();
@@ -914,7 +918,7 @@ export class ComplytoolsController {
     let url1 = proxyUrl + 'inhabil_publi_mes.asp';
     let url2 = proxyUrl + 'Sancionadosmulta_publi_mes.asp';
 
-    const browserP = puppeteer.launch({...this.CONFIG[this.AMBIT]});
+    const browserP = puppeteer.launch({ ...this.CONFIG[this.AMBIT] });
 
     (async () => {
       const browser = await browserP;
@@ -1114,7 +1118,7 @@ export class ComplytoolsController {
 
     let url1 = proxyUrl;
 
-    const browserP = puppeteer.launch({...this.CONFIG[this.AMBIT]});
+    const browserP = puppeteer.launch({ ...this.CONFIG[this.AMBIT] });
 
     (async () => {
       const browser = await browserP;
@@ -1341,7 +1345,6 @@ export class ComplytoolsController {
 
   @Post('send-email')
   async SendEmail(@Body() entidad: any, @Res() res): Promise<void> {
-    console.log(entidad, res)
     try {
       const workbook = new ExcelJS.Workbook();
       const worksheet = workbook.addWorksheet('Datos');
@@ -1413,7 +1416,7 @@ export class ComplytoolsController {
 
       const buffer = await workbook.xlsx.writeBuffer();
 
-      let emails = ['ccarbajalmt0520@gmail.com', 'ccarbajal@ccfirma.com'];
+      let emails = ['rsaldarriaga@ccfirma.com ', 'ccarbajal@ccfirma.com'];
       const mailOptions = {
         from: '"Comply Tools" <complytools@gmail.com>',
         to: emails.join(', '),
@@ -1495,5 +1498,38 @@ export class ComplytoolsController {
     } catch (error) {
       return '';
     }
+  }
+
+
+  // SUBIDA
+  @Post('upload')
+  @UseInterceptors(FilesInterceptor('files'))
+  async uploadFiles(
+    @UploadedFiles() files: Express.Multer.File[],
+    @Body('remotePath') remotePath: string
+  ) {
+    const result = await this.hostingerService.uploadFiles(files, remotePath);
+    return result;
+  }
+
+  @Post('download')
+  async downloadFiles(@Body('fileNames') fileNames: string[], @Res() res: Response) {
+    const result = await this.hostingerService.downloadFiles(fileNames);
+
+    if (result.fileName.endsWith('.zip')) {
+      res.setHeader('Content-Disposition', `attachment; filename=${result.fileName}`);
+      res.setHeader('Content-Type', 'application/zip');
+    } else {
+      res.setHeader('Content-Disposition', `attachment; filename=${result.fileName}`);
+      res.setHeader('Content-Type', 'application/octet-stream');
+    }
+
+    res.send(Buffer.from(result.fileBuffer, 'base64'));
+  }
+
+  @Delete('delete')
+  async deleteFiles(@Body('filePaths') filePaths: string[]) {
+    const result = await this.hostingerService.deleteFiles(filePaths);
+    return result;
   }
 }
