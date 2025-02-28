@@ -1250,24 +1250,21 @@ export class EntriesController {
 
   private decodeHtmlEntities(text) {
     if (text === null) return '';
-    text = text.replace(/&[a-z]+;/g, '');
+
+    text = text.replace(/&[a-z]+;/g, ''); // Decodificar entidades HTML básicas
+  
     try {
-      if (text.includes('<ul>')) {
-        let t = text
-          .split('<li>')
-          .map((item) => {
-            item = item.replace(/<\/?[^>]+(>|$)/g, '');
-            return item;
-          })
-          .filter((item) => item.trim() !== '');
-
-        return t;
-      }
-
-      return text.replace(/<[^>]*>?/gm, '');
+      // Reemplazar etiquetas HTML que indican saltos de línea
+      text = text
+        .replace(/<br\s*\/?>/gi, '\n')   // Convertir <br> en saltos de línea
+        .replace(/<\/p>/gi, '\n')        // Convertir </p> en saltos de línea
+        .replace(/<\/?[^>]+(>|$)/g, ''); // Eliminar cualquier otra etiqueta HTML
+  
+      return text;
     } catch (error) {
       return text.replace(/<[^>]*>?/gm, '');
     }
+
   }
 
   @Post('delete')
@@ -2411,21 +2408,17 @@ export class EntriesController {
 
 const decodeHtmlEntities = (text) => {
   if (text === null) return '';
-  text = text.replace(/&[a-z]+;/g, '');
+
+  text = text.replace(/&[a-z]+;/g, ''); // Decodificar entidades HTML básicas
+
   try {
-    if (text.includes('<ul>')) {
-      let t = text
-        .split('<li>')
-        .map((item) => {
-          item = item.replace(/<\/?[^>]+(>|$)/g, '');
-          return item;
-        })
-        .filter((item) => item.trim() !== '');
+    // Reemplazar etiquetas HTML que indican saltos de línea
+    text = text
+      .replace(/<br\s*\/?>/gi, '\n')   // Convertir <br> en saltos de línea
+      .replace(/<\/p>/gi, '\n')        // Convertir </p> en saltos de línea
+      .replace(/<\/?[^>]+(>|$)/g, ''); // Eliminar cualquier otra etiqueta HTML
 
-      return t;
-    }
-
-    return text.replace(/<[^>]*>?/gm, '');
+    return text;
   } catch (error) {
     return text.replace(/<[^>]*>?/gm, '');
   }
@@ -2433,11 +2426,11 @@ const decodeHtmlEntities = (text) => {
 
 const renderContent = (content): any => {
   let decodedContent = decodeHtmlEntities(content);
-  let array = [];
+  let paragraphs = [];
 
   if (Array.isArray(decodedContent)) {
-    decodedContent.map((item) => {
-      array.push(
+    decodedContent.forEach((item) => {
+      paragraphs.push(
         new Paragraph({
           children: [
             new TextRun({
@@ -2449,24 +2442,25 @@ const renderContent = (content): any => {
           ],
           alignment: AlignmentType.JUSTIFIED,
           bullet: { level: 0 },
-        }),
+        })
       );
     });
 
-    return array;
+    return paragraphs;
   }
 
-  return [
+  // Dividir el contenido en líneas (párrafos) según los saltos de línea detectados
+  return decodedContent.split("\n").map((line) => 
     new Paragraph({
       children: [
         new TextRun({
-          text: decodedContent,
+          text: line,
           size: 22,
           font: 'Calibri',
           color: '000000',
         }),
       ],
       alignment: AlignmentType.JUSTIFIED,
-    }),
-  ];
+    })
+  );
 };

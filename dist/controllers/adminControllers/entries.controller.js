@@ -870,17 +870,11 @@ let EntriesController = class EntriesController {
             return '';
         text = text.replace(/&[a-z]+;/g, '');
         try {
-            if (text.includes('<ul>')) {
-                let t = text
-                    .split('<li>')
-                    .map((item) => {
-                    item = item.replace(/<\/?[^>]+(>|$)/g, '');
-                    return item;
-                })
-                    .filter((item) => item.trim() !== '');
-                return t;
-            }
-            return text.replace(/<[^>]*>?/gm, '');
+            text = text
+                .replace(/<br\s*\/?>/gi, '\n')
+                .replace(/<\/p>/gi, '\n')
+                .replace(/<\/?[^>]+(>|$)/g, '');
+            return text;
         }
         catch (error) {
             return text.replace(/<[^>]*>?/gm, '');
@@ -2177,17 +2171,11 @@ const decodeHtmlEntities = (text) => {
         return '';
     text = text.replace(/&[a-z]+;/g, '');
     try {
-        if (text.includes('<ul>')) {
-            let t = text
-                .split('<li>')
-                .map((item) => {
-                item = item.replace(/<\/?[^>]+(>|$)/g, '');
-                return item;
-            })
-                .filter((item) => item.trim() !== '');
-            return t;
-        }
-        return text.replace(/<[^>]*>?/gm, '');
+        text = text
+            .replace(/<br\s*\/?>/gi, '\n')
+            .replace(/<\/p>/gi, '\n')
+            .replace(/<\/?[^>]+(>|$)/g, '');
+        return text;
     }
     catch (error) {
         return text.replace(/<[^>]*>?/gm, '');
@@ -2195,10 +2183,10 @@ const decodeHtmlEntities = (text) => {
 };
 const renderContent = (content) => {
     let decodedContent = decodeHtmlEntities(content);
-    let array = [];
+    let paragraphs = [];
     if (Array.isArray(decodedContent)) {
-        decodedContent.map((item) => {
-            array.push(new docx_1.Paragraph({
+        decodedContent.forEach((item) => {
+            paragraphs.push(new docx_1.Paragraph({
                 children: [
                     new docx_1.TextRun({
                         text: item,
@@ -2211,20 +2199,18 @@ const renderContent = (content) => {
                 bullet: { level: 0 },
             }));
         });
-        return array;
+        return paragraphs;
     }
-    return [
-        new docx_1.Paragraph({
-            children: [
-                new docx_1.TextRun({
-                    text: decodedContent,
-                    size: 22,
-                    font: 'Calibri',
-                    color: '000000',
-                }),
-            ],
-            alignment: docx_1.AlignmentType.JUSTIFIED,
-        }),
-    ];
+    return decodedContent.split("\n").map((line) => new docx_1.Paragraph({
+        children: [
+            new docx_1.TextRun({
+                text: line,
+                size: 22,
+                font: 'Calibri',
+                color: '000000',
+            }),
+        ],
+        alignment: docx_1.AlignmentType.JUSTIFIED,
+    }));
 };
 //# sourceMappingURL=entries.controller.js.map

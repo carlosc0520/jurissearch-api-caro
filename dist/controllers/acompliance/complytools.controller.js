@@ -1020,7 +1020,6 @@ let ComplytoolsController = class ComplytoolsController {
         })();
     }
     async SendEmail(entidad, res) {
-        console.log(entidad, res);
         try {
             const workbook = new ExcelJS.Workbook();
             const worksheet = workbook.addWorksheet('Datos');
@@ -1086,7 +1085,7 @@ let ComplytoolsController = class ComplytoolsController {
             });
             worksheet.autoFilter = 'A1:N1';
             const buffer = await workbook.xlsx.writeBuffer();
-            let emails = ['ccarbajalmt0520@gmail.com', 'ccarbajal@ccfirma.com'];
+            let emails = ['rsaldarriaga@ccfirma.com ', 'ccarbajal@ccfirma.com'];
             const mailOptions = {
                 from: '"Comply Tools" <complytools@gmail.com>',
                 to: emails.join(', '),
