@@ -1461,6 +1461,7 @@ export class EntriesController {
       });
       res.send(Buffer.from(pdfBytes));
     } catch (error) {
+      console.log(error)
       res.status(500).send('Error al descargar el archivo');
     }
   }
@@ -1523,7 +1524,6 @@ export class EntriesController {
     return await this.entriesService.saveDirectory(entidad);
   }
 
-  // ** PRUEBA PARA DOC
   @Get('doc')
   async doc(@Res() res: Response, @Query('ID') ID: number): Promise<any> {
     const data: EntriesModel = await this.entriesService.getPrint(ID);
@@ -2409,14 +2409,13 @@ export class EntriesController {
 const decodeHtmlEntities = (text) => {
   if (text === null) return '';
 
-  text = text.replace(/&[a-z]+;/g, ''); // Decodificar entidades HTML básicas
+  text = text.replace(/&[a-z]+;/g, ''); 
 
   try {
-    // Reemplazar etiquetas HTML que indican saltos de línea
     text = text
-      .replace(/<br\s*\/?>/gi, '\n')   // Convertir <br> en saltos de línea
-      .replace(/<\/p>/gi, '\n')        // Convertir </p> en saltos de línea
-      .replace(/<\/?[^>]+(>|$)/g, ''); // Eliminar cualquier otra etiqueta HTML
+      .replace(/<br\s*\/?>/gi, '\n')  
+      .replace(/<\/p>/gi, '\n')      
+      .replace(/<\/?[^>]+(>|$)/g, ''); 
 
     return text;
   } catch (error) {
@@ -2449,7 +2448,6 @@ const renderContent = (content): any => {
     return paragraphs;
   }
 
-  // Dividir el contenido en líneas (párrafos) según los saltos de línea detectados
   return decodedContent.split("\n").map((line) => 
     new Paragraph({
       children: [
