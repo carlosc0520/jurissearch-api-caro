@@ -1094,9 +1094,12 @@ let EntriesController = class EntriesController {
                             children: [
                                 new docx_1.Paragraph({
                                     alignment: docx_1.AlignmentType.CENTER,
+                                    spacing: {
+                                        after: 1,
+                                    },
                                     children: [
                                         new docx_1.TextRun({
-                                            text: 'https://ccfirma.com/',
+                                            text: 'https://jurissearch.com/',
                                             color: 'FFFFFF',
                                             size: 10,
                                         }),
@@ -1108,8 +1111,8 @@ let EntriesController = class EntriesController {
                                         new docx_1.ImageRun({
                                             data: recursos_1.default.nuevoLogoJuris,
                                             transformation: {
-                                                width: 70,
-                                                height: 50,
+                                                width: 120,
+                                                height: 85,
                                             },
                                         }),
                                     ],

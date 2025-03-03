@@ -1461,7 +1461,6 @@ export class EntriesController {
       });
       res.send(Buffer.from(pdfBytes));
     } catch (error) {
-      console.log(error)
       res.status(500).send('Error al descargar el archivo');
     }
   }
@@ -1581,9 +1580,12 @@ export class EntriesController {
               children: [
                 new Paragraph({
                   alignment: AlignmentType.CENTER,
+                  spacing: {
+                    after: 1, 
+                  },
                   children: [
                     new TextRun({
-                      text: 'https://ccfirma.com/',
+                      text: 'https://jurissearch.com/',
                       color: 'FFFFFF',
                       size: 10,
                     }),
@@ -1595,8 +1597,8 @@ export class EntriesController {
                     new ImageRun({
                       data: recursos.nuevoLogoJuris,
                       transformation: {
-                        width: 70,
-                        height: 50,
+                        width: 120,
+                        height: 85,
                       },
                     }),
                   ],
