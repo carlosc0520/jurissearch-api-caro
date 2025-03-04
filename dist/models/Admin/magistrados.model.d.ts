@@ -7,4 +7,5 @@ export declare class MagistradosModel {
     FCRCN: Date;
     FEDCN: Date;
     CDESTDO: string;
+    CESTDO: string;
 }

@@ -791,7 +791,6 @@ export class ComplytoolsController {
         await page.waitForSelector('h5', { timeout: 10000 });
       } catch (error) { }
     } catch (error) {
-      console.log(error)
       res.status(500).send({ error: 'Error durante la ejecución del proxy' });
     } finally {
       await browserP.close();
@@ -1434,7 +1433,6 @@ export class ComplytoolsController {
       await this.transporter.sendMail(mailOptions);
       res.status(200).send('Correo enviado exitosamente');
     } catch (error) {
-      console.log(error)
       res.status(500).send({
         status: false,
         message: error.message,

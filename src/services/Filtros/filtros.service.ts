@@ -17,7 +17,7 @@ export class filtrosService {
         queryAsync += ` @p_cData = ${entidad ? `'${JSON.stringify({ ...entidad, TIPO })}'` : null},`;
         queryAsync += ` @p_cUser = ${null},`;
         queryAsync += ` @p_nTipo = ${4},`;
-        queryAsync += ` @p_nId = ${entidad.ID || 0}`; // ID de la
+        queryAsync += ` @p_nId = ${entidad.ID || 0}`; 
 
         try {
             const result = await this.connection.query(queryAsync);

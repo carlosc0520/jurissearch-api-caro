@@ -19,26 +19,14 @@ import * as fs from 'fs';
 import { DataTable } from 'src/models/DataTable.model.';
 import { Response } from 'express';
 import { BusquedaModel } from 'src/models/Admin/busqueda.model';
-import { degrees, PDFDocument, rgb, StandardFonts } from 'pdf-lib';
+import { degrees, PDFDocument, rgb } from 'pdf-lib';
 import * as path from 'path';
-import {
-  Document,
-  Packer,
-  Paragraph,
-  TextRun,
-  AlignmentType,
-  Table,
-  TableRow,
-  TableCell,
-  ImageRun,
-  Header,
-  Footer,
-  WidthType,
-} from 'docx';
 import recursos from './recursos';
 import JSZip from 'jszip';
 import pdfMake from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
+import PizZip from 'pizzip';
+import Docxtemplater from 'docxtemplater';
 
 @Controller('admin/entries')
 export class EntriesController {
@@ -109,7 +97,6 @@ export class EntriesController {
         file2.path,
       );
 
-      // entidad.ENTRIEFILERESUMEN = keysLocation[1];
       entidad.ENTRIEFILE = keysLocation[0];
       entidad.ENTRIEFILERESUMEN = '';
       entidad.UCRCN = req.user.UCRCN;
@@ -1252,14 +1239,14 @@ export class EntriesController {
     if (text === null) return '';
 
     text = text.replace(/&[a-z]+;/g, ''); // Decodificar entidades HTML básicas
-  
+
     try {
       // Reemplazar etiquetas HTML que indican saltos de línea
       text = text
         .replace(/<br\s*\/?>/gi, '\n')   // Convertir <br> en saltos de línea
         .replace(/<\/p>/gi, '\n')        // Convertir </p> en saltos de línea
         .replace(/<\/?[^>]+(>|$)/g, ''); // Eliminar cualquier otra etiqueta HTML
-  
+
       return text;
     } catch (error) {
       return text.replace(/<[^>]*>?/gm, '');
@@ -1540,870 +1527,56 @@ export class EntriesController {
       .map((item) => item.LABEL)
       .join(', ');
     data.MAGISTRATES = JSON.parse(data.MAGISTRADOS)
-      .map((item) => item.LABEL)
+      .map((item) => item?.LABEL?.trim())
       .join(', ');
     data.JURISDICCION = JSON.parse(data?.JURISDICCION || '[]')
-      .map((item) => item.LABEL)
+      .map((item) => item?.LABEL?.trim())
       .join(', ');
 
-    let marginsRows = {
-      top: 250,
-      right: 250,
-      bottom: 250,
-      left: 250,
-    };
-
-    const doc = new Document({
-      sections: [
-        {
-          properties: {},
-          footers: {
-            default: new Footer({
-              children: [
-                new Paragraph({
-                  alignment: AlignmentType.CENTER,
-                  children: [
-                    new ImageRun({
-                      data: recursos.toCCFirma,
-                      transformation: {
-                        width: 100,
-                        height: 50,
-                      },
-                    }),
-                  ],
-                }),
-              ],
-            }),
-          },
-          headers: {
-            default: new Header({
-              children: [
-                new Paragraph({
-                  alignment: AlignmentType.CENTER,
-                  spacing: {
-                    after: 1, 
-                  },
-                  children: [
-                    new TextRun({
-                      text: 'https://jurissearch.com/',
-                      color: 'FFFFFF',
-                      size: 10,
-                    }),
-                  ],
-                }),
-                new Paragraph({
-                  alignment: AlignmentType.CENTER,
-                  children: [
-                    new ImageRun({
-                      data: recursos.nuevoLogoJuris,
-                      transformation: {
-                        width: 120,
-                        height: 85,
-                      },
-                    }),
-                  ],
-                }),
-                new Paragraph({
-                  children: [
-                    new ImageRun({
-                      data: recursos.toIMG,
-                      transformation: {
-                        width: 800,
-                        height: 850,
-                      },
-                      floating: {
-                        horizontalPosition: {
-                          align: 'center',
-                        },
-                        verticalPosition: {
-                          align: 'center',
-                        },
-                        behindDocument: true,
-                      },
-                    }),
-                  ],
-                }),
-              ],
-            }),
-          },
-          children: [
-            new Paragraph({
-              children: [
-                new TextRun({
-                  text: `${data?.TITLE || ''}`,
-                  bold: true,
-                  size: 22,
-                  font: 'Calibri',
-                  color: '000000',
-                }),
-              ],
-              alignment: AlignmentType.LEFT,
-            }),
-            new Table({
-              rows: [
-                new TableRow({
-                  children: [
-                    new TableCell({
-                      children: [
-                        new Paragraph({
-                          children: [
-                            new TextRun({
-                              text: 'Tipo de Recurso:',
-                              bold: true,
-                              size: 22,
-                              font: 'Calibri',
-                              color: '000000',
-                            }),
-                          ],
-                          alignment: AlignmentType.LEFT,
-                          bullet: { level: 0 },
-                        }),
-                      ],
-                      shading: { fill: 'FFFFFF' },
-                      borders: new Object({
-                        top: { color: 'FFFFFF' },
-                        bottom: { color: 'FFFFFF' },
-                        left: { color: 'FFFFFF' },
-                        right: { color: 'FFFFFF' },
-                      }),
-                    }),
-                    new TableCell({
-                      children: [
-                        new Paragraph({
-                          children: [
-                            new TextRun({
-                              text: `${data.RECURSO}`,
-                              size: 22,
-                              font: 'Calibri',
-                              color: '000000',
-                            }),
-                          ],
-                          alignment: AlignmentType.LEFT,
-                          bullet: { level: 0 },
-                        }),
-                      ],
-                      shading: {
-                        fill: 'FFFFFF',
-                      },
-                      borders: new Object({
-                        top: { color: 'FFFFFF' },
-                        bottom: { color: 'FFFFFF' },
-                        left: { color: 'FFFFFF' },
-                        right: { color: 'FFFFFF' },
-                      }),
-                    }),
-                  ],
-                }),
-                new TableRow({
-                  children: [
-                    new TableCell({
-                      children: [
-                        new Paragraph({
-                          children: [
-                            new TextRun({
-                              text: 'Delitos:',
-                              bold: true,
-                              size: 22,
-                              font: 'Calibri',
-                              color: '000000',
-                            }),
-                          ],
-                          alignment: AlignmentType.LEFT,
-                          bullet: { level: 0 },
-                        }),
-                      ],
-                      shading: {
-                        fill: 'FFFFFF',
-                      },
-                      borders: new Object({
-                        top: { color: 'FFFFFF' },
-                        bottom: { color: 'FFFFFF' },
-                        left: { color: 'FFFFFF' },
-                        right: { color: 'FFFFFF' },
-                      }),
-                    }),
-                    new TableCell({
-                      children: [
-                        new Paragraph({
-                          children: [
-                            new TextRun({
-                              text: `${data.DELITO}`,
-                              size: 22,
-                              font: 'Calibri',
-                              color: '000000',
-                            }),
-                          ],
-                          alignment: AlignmentType.LEFT,
-                          bullet: { level: 0 },
-                        }),
-                      ],
-                      shading: {
-                        fill: 'FFFFFF',
-                      },
-                      borders: new Object({
-                        top: { color: 'FFFFFF' },
-                        bottom: { color: 'FFFFFF' },
-                        left: { color: 'FFFFFF' },
-                        right: { color: 'FFFFFF' },
-                      }),
-                    }),
-                  ],
-                }),
-                new TableRow({
-                  children: [
-                    new TableCell({
-                      children: [
-                        new Paragraph({
-                          children: [
-                            new TextRun({
-                              text: 'Vinculante:',
-                              bold: true,
-                              size: 22,
-                              font: 'Calibri',
-                              color: '000000',
-                            }),
-                          ],
-                          alignment: AlignmentType.LEFT,
-                          bullet: { level: 0 },
-                        }),
-                      ],
-                      shading: {
-                        fill: 'FFFFFF',
-                      },
-                      borders: new Object({
-                        top: { color: 'FFFFFF' },
-                        bottom: { color: 'FFFFFF' },
-                        left: { color: 'FFFFFF' },
-                        right: { color: 'FFFFFF' },
-                      }),
-                    }),
-                    new TableCell({
-                      children: [
-                        new Paragraph({
-                          children: [
-                            new TextRun({
-                              text: `${data.ISBINDING ? 'Sí' : 'No'}`,
-                              size: 22,
-                              font: 'Calibri',
-                              color: '000000',
-                            }),
-                          ],
-                          alignment: AlignmentType.LEFT,
-                          bullet: { level: 0 },
-                        }),
-                      ],
-                      shading: {
-                        fill: 'FFFFFF',
-                      },
-                      borders: new Object({
-                        top: { color: 'FFFFFF' },
-                        bottom: { color: 'FFFFFF' },
-                        left: { color: 'FFFFFF' },
-                        right: { color: 'FFFFFF' },
-                      }),
-                    }),
-                  ],
-                }),
-              ],
-              margins: {
-                top: 100,
-                right: 100,
-                bottom: 100,
-                left: 100,
-              },
-            }),
-            new Table({
-              width: {
-                size: 10000,
-                type: WidthType.DXA,
-              },
-              margins: {
-                top: 300,
-              },
-              rows: [
-                new TableRow({
-                  children: [
-                    new TableCell({
-                      width: {
-                        size: 10000,
-                        type: WidthType.DXA,
-                      },
-                      margins: marginsRows,
-                      children: [
-                        new Paragraph({
-                          children: [
-                            new TextRun({
-                              text: 'CONTENIDO',
-                              bold: true,
-                              size: 22,
-                              font: 'Calibri',
-                              color: '000000',
-                            }),
-                          ],
-                          alignment: AlignmentType.CENTER,
-                        }),
-                      ],
-                      columnSpan: 2,
-                    }),
-                  ],
-                }),
-                new TableRow({
-                  children: [
-                    new TableCell({
-                      width: {
-                        size: 4000,
-                        type: WidthType.DXA,
-                      },
-                      margins: marginsRows,
-                      children: [
-                        new Paragraph({
-                          children: [
-                            new TextRun({
-                              text: 'TEMA',
-                              bold: true,
-                              size: 22,
-                              font: 'Calibri',
-                              color: '000000',
-                            }),
-                          ],
-                          alignment: AlignmentType.LEFT,
-                        }),
-                      ],
-                    }),
-                    new TableCell({
-                      width: {
-                        size: 6000,
-                        type: WidthType.DXA,
-                      },
-                      margins: marginsRows,
-                      children: renderContent(data.TEMA),
-                    }),
-                  ],
-                }),
-                new TableRow({
-                  children: [
-                    new TableCell({
-                      width: {
-                        size: 4000,
-                        type: WidthType.DXA,
-                      },
-                      margins: marginsRows,
-                      children: [
-                        new Paragraph({
-                          children: [
-                            new TextRun({
-                              text: 'SUBTEMA',
-                              bold: true,
-                              size: 22,
-                              font: 'Calibri',
-                              color: '000000',
-                            }),
-                          ],
-                          alignment: AlignmentType.LEFT,
-                        }),
-                      ],
-                    }),
-                    new TableCell({
-                      width: {
-                        size: 6000,
-                        type: WidthType.DXA,
-                      },
-                      margins: marginsRows,
-                      children: renderContent(data.SUBTEMA),
-                    }),
-                  ],
-                }),
-                new TableRow({
-                  children: [
-                    new TableCell({
-                      width: {
-                        size: 4000,
-                        type: WidthType.DXA,
-                      },
-                      margins: marginsRows,
-                      children: [
-                        new Paragraph({
-                          children: [
-                            new TextRun({
-                              text: 'PALABRAS CLAVES',
-                              bold: true,
-                              size: 22,
-                              font: 'Calibri',
-                              color: '000000',
-                            }),
-                          ],
-                          alignment: AlignmentType.LEFT,
-                        }),
-                      ],
-                    }),
-                    new TableCell({
-                      width: {
-                        size: 6000,
-                        type: WidthType.DXA,
-                      },
-                      margins: marginsRows,
-                      children: [
-                        new Paragraph({
-                          children: [
-                            new TextRun({
-                              text: `${data?.KEYWORDS?.trim()}`,
-                              size: 22,
-                              font: 'Calibri',
-                              color: '000000',
-                            }),
-                          ],
-                          alignment: AlignmentType.LEFT,
-                        }),
-                      ],
-                    }),
-                  ],
-                }),
-                new TableRow({
-                  children: [
-                    new TableCell({
-                      width: {
-                        size: 4000,
-                        type: WidthType.DXA,
-                      },
-                      margins: marginsRows,
-                      children: [
-                        new Paragraph({
-                          children: [
-                            new TextRun({
-                              text: 'SÍNTESIS DE LOS FUNDAMENTOS JURÍDICOS RELEVANTES',
-                              bold: true,
-                              size: 22,
-                              font: 'Calibri',
-                              color: '000000',
-                            }),
-                          ],
-                          alignment: AlignmentType.LEFT,
-                        }),
-                      ],
-                    }),
-                    new TableCell({
-                      width: {
-                        size: 6000,
-                        type: WidthType.DXA,
-                      },
-                      margins: marginsRows,
-                      children: renderContent(data.SHORTSUMMARY),
-                    }),
-                  ],
-                }),
-                new TableRow({
-                  children: [
-                    new TableCell({
-                      width: {
-                        size: 4000,
-                        type: WidthType.DXA,
-                      },
-                      margins: marginsRows,
-                      children: [
-                        new Paragraph({
-                          children: [
-                            new TextRun({
-                              text: 'FUNDAMENTOS JURÍDICOS RELEVANTES',
-                              bold: true,
-                              size: 22,
-                              font: 'Calibri',
-                              color: '000000',
-                            }),
-                          ],
-                          alignment: AlignmentType.LEFT,
-                        }),
-                      ],
-                      shading: {
-                        fill: 'FFF2CC',
-                      },
-                    }),
-                    new TableCell({
-                      width: {
-                        size: 6000,
-                        type: WidthType.DXA,
-                      },
-                      margins: marginsRows,
-                      children: renderContent(data.RESUMEN),
-                      shading: {
-                        fill: 'FFF2CC',
-                      },
-                    }),
-                  ],
-                }),
-                new TableRow({
-                  children: [
-                    new TableCell({
-                      width: {
-                        size: 10000,
-                        type: WidthType.DXA,
-                      },
-                      margins: marginsRows,
-                      children: [
-                        new Paragraph({
-                          children: [
-                            new TextRun({
-                              text: 'IDENTIFICACIÓN',
-                              bold: true,
-                              size: 22,
-                              font: 'Calibri',
-                              color: '000000',
-                            }),
-                          ],
-                          alignment: AlignmentType.CENTER,
-                        }),
-                      ],
-                      columnSpan: 2,
-                    }),
-                  ],
-                }),
-                new TableRow({
-                  children: [
-                    new TableCell({
-                      width: {
-                        size: 4000,
-                        type: WidthType.DXA,
-                      },
-                      margins: marginsRows,
-                      children: [
-                        new Paragraph({
-                          children: [
-                            new TextRun({
-                              text: 'ÁMBITO',
-                              bold: true,
-                              size: 22,
-                              font: 'Calibri',
-                              color: '000000',
-                            }),
-                          ],
-                          alignment: AlignmentType.LEFT,
-                        }),
-                      ],
-                    }),
-                    new TableCell({
-                      width: {
-                        size: 6000,
-                        type: WidthType.DXA,
-                      },
-                      margins: marginsRows,
-                      children: [
-                        new Paragraph({
-                          children: [
-                            new TextRun({
-                              text: `${data.AMBIT}`,
-                              size: 22,
-                              font: 'Calibri',
-                              color: '000000',
-                            }),
-                          ],
-                          alignment: AlignmentType.LEFT,
-                        }),
-                      ],
-                    }),
-                  ],
-                }),
-                new TableRow({
-                  children: [
-                    new TableCell({
-                      width: {
-                        size: 4000,
-                        type: WidthType.DXA,
-                      },
-                      margins: marginsRows,
-                      children: [
-                        new Paragraph({
-                          children: [
-                            new TextRun({
-                              text: 'FECHA DE RESOLUCIÓN',
-                              bold: true,
-                              size: 22,
-                              font: 'Calibri',
-                              color: '000000',
-                            }),
-                          ],
-                          alignment: AlignmentType.LEFT,
-                        }),
-                      ],
-                    }),
-                    new TableCell({
-                      width: {
-                        size: 6000,
-                        type: WidthType.DXA,
-                      },
-                      margins: marginsRows,
-                      children: [
-                        new Paragraph({
-                          children: [
-                            new TextRun({
-                              text: `${data.FRESOLUTIONSTRING}`,
-                              size: 22,
-                              font: 'Calibri',
-                              color: '000000',
-                            }),
-                          ],
-                          alignment: AlignmentType.LEFT,
-                        }),
-                      ],
-                    }),
-                  ],
-                }),
-                new TableRow({
-                  children: [
-                    new TableCell({
-                      width: {
-                        size: 4000,
-                        type: WidthType.DXA,
-                      },
-                      margins: marginsRows,
-                      children: [
-                        new Paragraph({
-                          children: [
-                            new TextRun({
-                              text: 'JURISDICCIÓN',
-                              bold: true,
-                              size: 22,
-                              font: 'Calibri',
-                              color: '000000',
-                            }),
-                          ],
-                          alignment: AlignmentType.LEFT,
-                        }),
-                      ],
-                    }),
-                    new TableCell({
-                      width: {
-                        size: 6000,
-                        type: WidthType.DXA,
-                      },
-                      margins: marginsRows,
-                      children: [
-                        new Paragraph({
-                          children: [
-                            new TextRun({
-                              text: `${data.JURISDICCION || '-'}`,
-                              size: 22,
-                              font: 'Calibri',
-                              color: '000000',
-                            }),
-                          ],
-                          alignment: AlignmentType.LEFT,
-                        }),
-                      ],
-                    }),
-                  ],
-                }),
-                new TableRow({
-                  children: [
-                    new TableCell({
-                      width: {
-                        size: 4000,
-                        type: WidthType.DXA,
-                      },
-                      margins: marginsRows,
-                      children: [
-                        new Paragraph({
-                          children: [
-                            new TextRun({
-                              text: 'ÓRGANO JURISDICCIONAL',
-                              bold: true,
-                              size: 22,
-                              font: 'Calibri',
-                              color: '000000',
-                            }),
-                          ],
-                          alignment: AlignmentType.LEFT,
-                        }),
-                      ],
-                    }),
-                    new TableCell({
-                      width: {
-                        size: 6000,
-                        type: WidthType.DXA,
-                      },
-                      margins: marginsRows,
-                      children: [
-                        new Paragraph({
-                          children: [
-                            new TextRun({
-                              text: `${data.OJURISDICCIONAL}`,
-                              size: 22,
-                              font: 'Calibri',
-                              color: '000000',
-                            }),
-                          ],
-                          alignment: AlignmentType.LEFT,
-                        }),
-                      ],
-                    }),
-                  ],
-                }),
-                new TableRow({
-                  children: [
-                    new TableCell({
-                      width: {
-                        size: 4000,
-                        type: WidthType.DXA,
-                      },
-                      margins: marginsRows,
-                      children: [
-                        new Paragraph({
-                          children: [
-                            new TextRun({
-                              text: 'MAGISTRADOS',
-                              bold: true,
-                              size: 22,
-                              font: 'Calibri',
-                              color: '000000',
-                            }),
-                          ],
-                          alignment: AlignmentType.LEFT,
-                        }),
-                      ],
-                    }),
-                    new TableCell({
-                      width: {
-                        size: 6000,
-                        type: WidthType.DXA,
-                      },
-                      margins: marginsRows,
-                      children: [
-                        new Paragraph({
-                          children: [
-                            new TextRun({
-                              text: `${data.MAGISTRATES}`,
-                              size: 22,
-                              font: 'Calibri',
-                              color: '000000',
-                            }),
-                          ],
-                          alignment: AlignmentType.LEFT,
-                        }),
-                      ],
-                    }),
-                  ],
-                }),
-                new TableRow({
-                  children: [
-                    new TableCell({
-                      width: {
-                        size: 4000,
-                        type: WidthType.DXA,
-                      },
-                      margins: marginsRows,
-                      children: [
-                        new Paragraph({
-                          children: [
-                            new TextRun({
-                              text: 'VOTO DISIDENTE',
-                              bold: true,
-                              size: 22,
-                              font: 'Calibri',
-                              color: '000000',
-                            }),
-                            new TextRun({
-                              text: '\n',
-                            }),
-                            new TextRun({
-                              text: 'Voto que discrepa del fallo final adoptado. ',
-                              size: 18,
-                              font: 'Calibri',
-                              color: '000000',
-                              italics: true,
-                            }),
-                          ],
-                          alignment: AlignmentType.LEFT,
-                        }),
-                      ],
-                    }),
-                    new TableCell({
-                      width: {
-                        size: 6000,
-                        type: WidthType.DXA,
-                      },
-                      margins: marginsRows,
-                      children: [
-                        new Paragraph({
-                          children: [
-                            new TextRun({
-                              text: `${data?.VDESIDENTE || '-'}`,
-                              size: 22,
-                              font: 'Calibri',
-                              color: '000000',
-                            }),
-                          ],
-                          alignment: AlignmentType.LEFT,
-                        }),
-                      ],
-                    }),
-                  ],
-                }),
-                new TableRow({
-                  children: [
-                    new TableCell({
-                      width: {
-                        size: 4000,
-                        type: WidthType.DXA,
-                      },
-                      margins: marginsRows,
-                      children: [
-                        new Paragraph({
-                          children: [
-                            new TextRun({
-                              text: 'VOTO CONCURRENTE',
-                              bold: true,
-                              size: 22,
-                              font: 'Calibri',
-                              color: '000000',
-                            }),
-                            new TextRun({
-                              text: '\n',
-                            }),
-                            new TextRun({
-                              text: 'Voto que disiente de la argumentación jurídica, pero no del fallo final adoptado. ',
-                              size: 18,
-                              font: 'Calibri',
-                              color: '000000',
-                              italics: true,
-                            }),
-                          ],
-                          alignment: AlignmentType.LEFT,
-                        }),
-                      ],
-                    }),
-                    new TableCell({
-                      width: {
-                        size: 6000,
-                        type: WidthType.DXA,
-                      },
-                      margins: marginsRows,
-                      children: [
-                        new Paragraph({
-                          children: [
-                            new TextRun({
-                              text: `${data?.CVOTE || '-'}`,
-                              size: 22,
-                              font: 'Calibri',
-                              color: '000000',
-                            }),
-                          ],
-                          alignment: AlignmentType.LEFT,
-                        }),
-                      ],
-                    }),
-                  ],
-                }),
-              ],
-            }),
-          ],
-        },
-      ],
+    const templatePath = path.join(__dirname, '..', '..', 'files/files', 'template_resumen.docx');
+    const content = fs.readFileSync(templatePath, 'binary');
+    const zip = new PizZip(content);
+    const doc = new Docxtemplater(zip, {
+      paragraphLoop: true,
+      linebreaks: true,
+      delimiters: { start: '<<', end: '>>' },
     });
 
-    const buffer = await Packer.toBuffer(doc);
-    res.setHeader('Content-Disposition', 'attachment; filename=ejemplo.docx');
-    res.setHeader(
-      'Content-Type',
-      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-    );
+    let keywords = "";
+    if (data.KEYWORDS) {
+      keywords = data.KEYWORDS
+        .split(',')
+        .map(item => item.trim())
+        .map(item => item.charAt(0).toUpperCase() + item.slice(1).toLowerCase())
+        .join(', ');
+    }
+
+    doc.render({
+      title_temp: data?.TITLE || "",
+      recurso_temp: data?.RECURSO?.replace(/\s*, /g, '\n') || "",
+      delitos_temp: data?.DELITO?.replace(/\s*, /g, '\n') || "",
+      vinculante_temp: data?.ISBINDING || "" ? 'Sí' : 'No',
+      table_tema: renderText(data?.TEMA || ""),
+      tabla_subtema: renderText(data?.SUBTEMA || ""),
+      tabla_palabras: keywords,
+      tabla_sintesis: renderText(data?.SHORTSUMMARY || ""),
+      tabla_fundamentos: renderText(data?.RESUMEN || ""),
+      tabla_penal: data?.AMBIT || "",
+      tabla_fecha: data?.FRESOLUTIONSTRING || "",
+      tabla_jurisdiccional: data?.OJURISDICCIONAL || "",
+      tabla_magistrados: data?.MAGISTRATES?.replace(/\s*, /g, ', ') || "",
+      tabla_voto: data?.VDESIDENTE || "-",
+      tabla_votoc: data?.CVOTE || "-",
+      year_footer: new Date().getFullYear(),
+      link_text: "Haz clic aquí",
+      link_url: "https://ejemplo.com"
+    });
+
+    const buffer = doc.getZip().generate({ type: 'nodebuffer' });
+    res.set({
+      'Content-Type': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      'Content-Disposition': `attachment; filename="${data.TITLE}.docx"`,
+    });
     res.send(buffer);
   }
 }
@@ -2411,13 +1584,13 @@ export class EntriesController {
 const decodeHtmlEntities = (text) => {
   if (text === null) return '';
 
-  text = text.replace(/&[a-z]+;/g, ''); 
+  text = text.replace(/&[a-z]+;/g, '');
 
   try {
     text = text
-      .replace(/<br\s*\/?>/gi, '\n')  
-      .replace(/<\/p>/gi, '\n')      
-      .replace(/<\/?[^>]+(>|$)/g, ''); 
+      .replace(/<br\s*\/?>/gi, '\n')
+      .replace(/<\/p>/gi, '\n')
+      .replace(/<\/?[^>]+(>|$)/g, '');
 
     return text;
   } catch (error) {
@@ -2425,42 +1598,17 @@ const decodeHtmlEntities = (text) => {
   }
 };
 
-const renderContent = (content): any => {
-  let decodedContent = decodeHtmlEntities(content);
-  let paragraphs = [];
-
-  if (Array.isArray(decodedContent)) {
-    decodedContent.forEach((item) => {
-      paragraphs.push(
-        new Paragraph({
-          children: [
-            new TextRun({
-              text: item,
-              size: 22,
-              font: 'Calibri',
-              color: '000000',
-            }),
-          ],
-          alignment: AlignmentType.JUSTIFIED,
-          bullet: { level: 0 },
-        })
-      );
+const renderText = (text): any => {
+  let textSalt = decodeHtmlEntities(text);
+  text = "";
+  if (Array.isArray(textSalt)) {
+    textSalt.map((item) => {
+      text += item + "\n";
     });
-
-    return paragraphs;
+    return text;
   }
 
-  return decodedContent.split("\n").map((line) => 
-    new Paragraph({
-      children: [
-        new TextRun({
-          text: line,
-          size: 22,
-          font: 'Calibri',
-          color: '000000',
-        }),
-      ],
-      alignment: AlignmentType.JUSTIFIED,
-    })
-  );
-};
+  return textSalt;
+
+}
+

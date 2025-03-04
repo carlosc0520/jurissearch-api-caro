@@ -11,6 +11,7 @@ class MagistradosModel {
         this.FCRCN = new Date();
         this.FEDCN = new Date();
         this.CDESTDO = '';
+        this.CESTDO = '';
     }
 }
 exports.MagistradosModel = MagistradosModel;

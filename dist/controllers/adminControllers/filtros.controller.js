@@ -22,6 +22,7 @@ let FiltrosController = class FiltrosController {
         this.filtrosService = filtrosService;
     }
     async listFilters(entidad, TIPO) {
+        console.log(entidad);
         return await this.filtrosService.list(entidad, TIPO);
     }
     async addUser(req, entidad) {

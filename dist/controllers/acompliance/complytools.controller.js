@@ -640,7 +640,6 @@ let ComplytoolsController = class ComplytoolsController {
             catch (error) { }
         }
         catch (error) {
-            console.log(error);
             res.status(500).send({ error: 'Error durante la ejecución del proxy' });
         }
         finally {
@@ -1103,7 +1102,6 @@ let ComplytoolsController = class ComplytoolsController {
             res.status(200).send('Correo enviado exitosamente');
         }
         catch (error) {
-            console.log(error);
             res.status(500).send({
                 status: false,
                 message: error.message,
