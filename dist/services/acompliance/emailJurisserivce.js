@@ -137,7 +137,7 @@ let EmailJurisService = class EmailJurisService {
             </html>
             `;
             const mailOptions = {
-                from: process.env.EMAIL_ACOMPLIANCE1,
+                from: "JURIS SEARCH ✔✨",
                 to: model.CORREO,
                 subject: 'Bienvenido a JURISSEARCH',
                 html
