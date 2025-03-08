@@ -20,9 +20,9 @@ let filtrosService = class filtrosService {
     constructor(connection) {
         this.connection = connection;
     }
-    async list(entidad, TIPO) {
+    async list(entidad, TIPO, ESTADO) {
         let queryAsync = configMappers_1.default.ADMIN.FILTROS.CRUD;
-        queryAsync += ` @p_cData = ${entidad ? `'${JSON.stringify(Object.assign(Object.assign({}, entidad), { TIPO }))}'` : null},`;
+        queryAsync += ` @p_cData = ${entidad ? `'${JSON.stringify(Object.assign(Object.assign({}, entidad), { TIPO, ESTADO }))}'` : null},`;
         queryAsync += ` @p_cUser = ${null},`;
         queryAsync += ` @p_nTipo = ${4},`;
         queryAsync += ` @p_nId = ${entidad.ID || 0}`;

@@ -12,9 +12,9 @@ export class filtrosService {
     ) { }
 
 
-    async list(entidad: DataTable, TIPO: string): Promise<FiltrosModel[]> {
+    async list(entidad: DataTable, TIPO: string, ESTADO: string): Promise<FiltrosModel[]> {
         let queryAsync = procedures.ADMIN.FILTROS.CRUD;
-        queryAsync += ` @p_cData = ${entidad ? `'${JSON.stringify({ ...entidad, TIPO })}'` : null},`;
+        queryAsync += ` @p_cData = ${entidad ? `'${JSON.stringify({ ...entidad, TIPO, ESTADO })}'` : null},`;
         queryAsync += ` @p_cUser = ${null},`;
         queryAsync += ` @p_nTipo = ${4},`;
         queryAsync += ` @p_nId = ${entidad.ID || 0}`; 

@@ -30,9 +30,9 @@ export class MagistradosService {
         }
     }
 
-    async list(entidad: DataTable): Promise<MagistradosModel[]> {
+    async list(entidad: DataTable, ESTADO: string): Promise<MagistradosModel[]> {
         let queryAsync = procedures.ADMIN.MAGISTRADOS.CRUD;
-        queryAsync += ` @p_cData = ${entidad ? `'${JSON.stringify(entidad)}'` : null},`;
+        queryAsync += ` @p_cData = ${entidad ? `'${JSON.stringify({...entidad, ESTADO})}'` : null},`;
         queryAsync += ` @p_cUser = ${null},`;
         queryAsync += ` @p_nTipo = ${4},`;
         queryAsync += ` @p_nId = ${0}`;

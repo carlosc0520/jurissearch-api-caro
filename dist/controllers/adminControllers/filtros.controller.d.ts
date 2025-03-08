@@ -5,7 +5,7 @@ import { FiltrosModel } from '../../models/Admin/filtros.model';
 export declare class FiltrosController {
     private readonly filtrosService;
     constructor(filtrosService: filtrosService);
-    listFilters(entidad: DataTable, TIPO: string): Promise<FiltrosModel[]>;
+    listFilters(entidad: DataTable, TIPO: string, ESTADO: string): Promise<FiltrosModel[]>;
     addUser(req: any, entidad: FiltrosModel): Promise<Result>;
     deleteUser(req: any, ID: number): Promise<Result>;
     editUser(req: any, entidad: FiltrosModel): Promise<Result>;

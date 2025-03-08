@@ -14,6 +14,7 @@ export class EmailJurisService {
 
     private transporter: nodemailer.Transporter;
     private transporter2: nodemailer.Transporter;
+    private ENTORNO = process.env[process.env.ENVIROMENT];
 
     constructor(
         private tokenService: TokenService,
@@ -105,7 +106,7 @@ export class EmailJurisService {
                     <div class="container_juris">
                         <h1>Bienvenido a <span class="highlight-juris">JURIS </span><span class="highlight-search">SEARCH</span></h1>
                         <p>Estamos encantados de que uses nuestro sistema. A continuación, te adjuntamos un enlace para que puedas acceder al sistema de forma automática:</p>
-                        <p><a href="https://side.jurissearch.com/auth/autoUser/${token}">Acceder</a></p>
+                        <p><a href="https://jurissearch.com/auth/autoUser/${token}">Acceder</a></p>
                         <p>Si tienes alguna pregunta o necesitas asistencia, no dudes en ponerte en contacto con nosotros.</p>
                         <p>¡Gracias por usar <span class="highlight-juris">JURIS </span><span class="highlight-search">SEARCH</span>!</p>
                     </div>
@@ -338,7 +339,7 @@ export class EmailJurisService {
                     <div class="container_juris">
                         <h1>Recuperar contraseña</h1>
                         <p>Estás recibiendo este correo porque has solicitado recuperar tu contraseña. A continuación, te adjuntamos un enlace para que puedas cambiar tu contraseña:</p>
-                        <p><a href="http://web-juris-search-caro.s3-website-us-east-1.amazonaws.com/auth/recovery/${token}">Cambiar contraseña</a></p>
+                        <p><a href="${this.ENTORNO}/auth/recovery/${token}">Cambiar contraseña</a></p>
                         <p>Si no has solicitado recuperar tu contraseña, por favor ignora este mensaje.</p>
                         <p>¡Gracias por usar <span class="highlight-juris">JURIS </span><span class="highlight-search">SEARCH</span>!</p>
                     </div>
@@ -347,7 +348,7 @@ export class EmailJurisService {
             `;
     
             const mailOptions = {
-                from: process.env.EMAIL_JURIS1,
+                from: "JURIS SEARCH ✔✨",
                 to: model.EMAIL,
                 subject: 'Recuperar contraseña',
                 html

@@ -11,8 +11,8 @@ export class MagistradoController {
     ) { }
 
     @Get('list')
-    async listFilters(@Query() entidad: DataTable): Promise<MagistradosModel[]> {
-        return await this.magistradoService.list(entidad);
+    async listFilters(@Query() entidad: DataTable, @Query("ESTADO") ESTADO: string): Promise<MagistradosModel[]> {
+        return await this.magistradoService.list(entidad, ESTADO);
     }
 
     @Post('delete')

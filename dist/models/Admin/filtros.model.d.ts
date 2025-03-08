@@ -5,6 +5,7 @@ export declare class FiltrosModel {
     VALUE: string;
     NIVEL_2: string;
     UCRCN: string;
+    UEDCN: string;
     FCRCN: Date;
     FEDCN: Date;
     CDESTDO: string;

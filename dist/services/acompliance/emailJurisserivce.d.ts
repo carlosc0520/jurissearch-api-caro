@@ -9,6 +9,7 @@ export declare class EmailJurisService {
     private connection;
     private transporter;
     private transporter2;
+    private ENTORNO;
     constructor(tokenService: TokenService, connection: DataSource);
     sendEmail(model: SolicitudModel): Promise<Result>;
     sendEmailContacto(model: HelpModel): Promise<Result>;

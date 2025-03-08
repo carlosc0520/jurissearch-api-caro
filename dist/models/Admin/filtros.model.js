@@ -9,6 +9,7 @@ class FiltrosModel {
         this.VALUE = '';
         this.NIVEL_2 = '';
         this.UCRCN = '';
+        this.UEDCN = '';
         this.FCRCN = new Date();
         this.FEDCN = new Date();
         this.CDESTDO = '';

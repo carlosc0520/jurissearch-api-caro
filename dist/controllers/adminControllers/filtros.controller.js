@@ -21,8 +21,8 @@ let FiltrosController = class FiltrosController {
     constructor(filtrosService) {
         this.filtrosService = filtrosService;
     }
-    async listFilters(entidad, TIPO) {
-        return await this.filtrosService.list(entidad, TIPO);
+    async listFilters(entidad, TIPO, ESTADO) {
+        return await this.filtrosService.list(entidad, TIPO, ESTADO);
     }
     async addUser(req, entidad) {
         entidad.UCRCN = req.user.UCRCN;
@@ -41,8 +41,9 @@ __decorate([
     (0, common_1.Get)('list'),
     __param(0, (0, common_1.Query)()),
     __param(1, (0, common_1.Query)('TIPO')),
+    __param(2, (0, common_1.Query)("ESTADO")),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [DataTable_model_1.DataTable, String]),
+    __metadata("design:paramtypes", [DataTable_model_1.DataTable, String, String]),
     __metadata("design:returntype", Promise)
 ], FiltrosController.prototype, "listFilters", null);
 __decorate([

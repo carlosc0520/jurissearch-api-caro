@@ -11,8 +11,8 @@ export class FiltrosController {
     ) { }
 
     @Get('list')
-    async listFilters(@Query() entidad: DataTable, @Query('TIPO') TIPO: string): Promise<FiltrosModel[]> {
-        return await this.filtrosService.list(entidad, TIPO);
+    async listFilters(@Query() entidad: DataTable, @Query('TIPO') TIPO: string, @Query("ESTADO") ESTADO: string): Promise<FiltrosModel[]> {
+        return await this.filtrosService.list(entidad, TIPO, ESTADO);
     }
 
     @Post('add')

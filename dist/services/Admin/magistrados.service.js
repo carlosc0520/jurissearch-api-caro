@@ -38,9 +38,9 @@ let MagistradosService = class MagistradosService {
             return { MESSAGE, STATUS: false };
         }
     }
-    async list(entidad) {
+    async list(entidad, ESTADO) {
         let queryAsync = configMappers_1.default.ADMIN.MAGISTRADOS.CRUD;
-        queryAsync += ` @p_cData = ${entidad ? `'${JSON.stringify(entidad)}'` : null},`;
+        queryAsync += ` @p_cData = ${entidad ? `'${JSON.stringify(Object.assign(Object.assign({}, entidad), { ESTADO }))}'` : null},`;
         queryAsync += ` @p_cUser = ${null},`;
         queryAsync += ` @p_nTipo = ${4},`;
         queryAsync += ` @p_nId = ${0}`;

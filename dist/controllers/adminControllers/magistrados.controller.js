@@ -21,8 +21,8 @@ let MagistradoController = class MagistradoController {
     constructor(magistradoService) {
         this.magistradoService = magistradoService;
     }
-    async listFilters(entidad) {
-        return await this.magistradoService.list(entidad);
+    async listFilters(entidad, ESTADO) {
+        return await this.magistradoService.list(entidad, ESTADO);
     }
     async deleteUser(req, ID) {
         return await this.magistradoService.delete(ID, req.user.UCRCN);
@@ -40,8 +40,9 @@ exports.MagistradoController = MagistradoController;
 __decorate([
     (0, common_1.Get)('list'),
     __param(0, (0, common_1.Query)()),
+    __param(1, (0, common_1.Query)("ESTADO")),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [DataTable_model_1.DataTable]),
+    __metadata("design:paramtypes", [DataTable_model_1.DataTable, String]),
     __metadata("design:returntype", Promise)
 ], MagistradoController.prototype, "listFilters", null);
 __decorate([

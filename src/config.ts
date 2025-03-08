@@ -1,4 +1,3 @@
-// const entorno = "DEV" // PROD
 const entorno = "PROD" // PROD
 const DBS = {
   "DEV": {
