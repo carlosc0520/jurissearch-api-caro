@@ -10,8 +10,8 @@ export declare class EntriesModel {
     JURISDICCION: string;
     MAGISTRATES: string;
     MAGISTRADOS: string;
-    VDESIDENTE: number;
-    CVOTE: number;
+    VDESIDENTE: string;
+    CVOTE: string;
     ENTRIEFILE: string;
     NENTRIEFILE?: string;
     ENTRIEFILERESUMEN: string;

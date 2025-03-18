@@ -496,7 +496,7 @@ let EntriesController = class EntriesController {
             let totalPages = 0;
             let fontSize = 11;
             const pdfPromises = dataArray.map((data) => {
-                var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o;
+                var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q;
                 let ambit = ((_b = (_a = JSON.parse(data.AMBIT)) === null || _a === void 0 ? void 0 : _a[0]) === null || _b === void 0 ? void 0 : _b.LABEL) || '';
                 ambit = ambit ? ambit.replace(/\s*,/g, ',') : '';
                 let magistrados = ((_d = (_c = JSON.parse(data.MAGISTRADOS)) === null || _c === void 0 ? void 0 : _c[0]) === null || _d === void 0 ? void 0 : _d.LABEL) || '';
@@ -739,7 +739,7 @@ let EntriesController = class EntriesController {
                                             margin: [10, 15, 10, 15],
                                         },
                                         {
-                                            text: (data === null || data === void 0 ? void 0 : data.VDESIDENTE) || '-',
+                                            text: ((_p = data === null || data === void 0 ? void 0 : data.VDESIDENTE) === null || _p === void 0 ? void 0 : _p.replace(/,/g, ', ')) || "-",
                                             fontSize,
                                             margin: [10, 15, 10, 15],
                                         },
@@ -760,7 +760,7 @@ let EntriesController = class EntriesController {
                                             margin: [10, 15, 10, 15],
                                         },
                                         {
-                                            text: (data === null || data === void 0 ? void 0 : data.CVOTE) || '-',
+                                            text: ((_q = data === null || data === void 0 ? void 0 : data.CVOTE) === null || _q === void 0 ? void 0 : _q.replace(/,/g, ', ')) || '-',
                                             fontSize,
                                             margin: [10, 15, 10, 15],
                                         },
@@ -1042,7 +1042,7 @@ let EntriesController = class EntriesController {
         return await this.entriesService.saveDirectory(entidad);
     }
     async doc(res, ID) {
-        var _a, _b, _c;
+        var _a, _b, _c, _d, _e;
         const data = await this.entriesService.getPrint(ID);
         data.RECURSO = JSON.parse(data.RECURSO)
             .map((item) => item.LABEL)
@@ -1091,8 +1091,8 @@ let EntriesController = class EntriesController {
             tabla_fecha: (data === null || data === void 0 ? void 0 : data.FRESOLUTIONSTRING) || "",
             tabla_jurisdiccional: (data === null || data === void 0 ? void 0 : data.OJURISDICCIONAL) || "",
             tabla_magistrados: ((_c = data === null || data === void 0 ? void 0 : data.MAGISTRATES) === null || _c === void 0 ? void 0 : _c.replace(/\s*, /g, ', ')) || "",
-            tabla_voto: (data === null || data === void 0 ? void 0 : data.VDESIDENTE) || "-",
-            tabla_votoc: (data === null || data === void 0 ? void 0 : data.CVOTE) || "-",
+            tabla_voto: ((_d = data === null || data === void 0 ? void 0 : data.VDESIDENTE) === null || _d === void 0 ? void 0 : _d.replace(/,/g, ', ')) || "-",
+            tabla_votoc: ((_e = data === null || data === void 0 ? void 0 : data.CVOTE) === null || _e === void 0 ? void 0 : _e.replace(/,/g, ', ')) || '-',
             year_footer: new Date().getFullYear(),
             link_text: "Haz clic aquí",
             link_url: "https://ejemplo.com"

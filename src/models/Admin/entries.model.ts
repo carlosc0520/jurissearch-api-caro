@@ -10,8 +10,8 @@ export class EntriesModel {
     JURISDICCION: string = '';
     MAGISTRATES: string = '';
     MAGISTRADOS: string = '';
-    VDESIDENTE: number = 1;
-    CVOTE: number = 1;
+    VDESIDENTE: string = '';
+    CVOTE: string = '';
     ENTRIEFILE: string = '';
     NENTRIEFILE?: string = '';
     ENTRIEFILERESUMEN: string = '';

@@ -1099,7 +1099,7 @@ export class EntriesController {
                       margin: [10, 15, 10, 15],
                     },
                     {
-                      text: data?.VDESIDENTE || '-',
+                      text: data?.VDESIDENTE?.replace(/,/g, ', ') || "-",
                       fontSize,
                       margin: [10, 15, 10, 15],
                     },
@@ -1120,7 +1120,7 @@ export class EntriesController {
                       margin: [10, 15, 10, 15],
                     },
                     {
-                      text: data?.CVOTE || '-',
+                      text: data?.CVOTE?.replace(/,/g, ', ') || '-',
                       fontSize,
                       margin: [10, 15, 10, 15],
                     },
@@ -1565,8 +1565,8 @@ export class EntriesController {
       tabla_fecha: data?.FRESOLUTIONSTRING || "",
       tabla_jurisdiccional: data?.OJURISDICCIONAL || "",
       tabla_magistrados: data?.MAGISTRATES?.replace(/\s*, /g, ', ') || "",
-      tabla_voto: data?.VDESIDENTE || "-",
-      tabla_votoc: data?.CVOTE || "-",
+      tabla_voto:  data?.VDESIDENTE?.replace(/,/g, ', ')  || "-",
+      tabla_votoc: data?.CVOTE?.replace(/,/g, ', ') || '-',
       year_footer: new Date().getFullYear(),
       link_text: "Haz clic aquí",
       link_url: "https://ejemplo.com"

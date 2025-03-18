@@ -14,8 +14,8 @@ class EntriesModel {
         this.JURISDICCION = '';
         this.MAGISTRATES = '';
         this.MAGISTRADOS = '';
-        this.VDESIDENTE = 1;
-        this.CVOTE = 1;
+        this.VDESIDENTE = '';
+        this.CVOTE = '';
         this.ENTRIEFILE = '';
         this.NENTRIEFILE = '';
         this.ENTRIEFILERESUMEN = '';
