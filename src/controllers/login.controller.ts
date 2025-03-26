@@ -268,14 +268,11 @@ export class LoginController {
 
   @Get('download-file')
   async downloadFile(
-    @Query('PATH') PATH: string,
-    @Query('TITLE') TITLE: string,
+    @Query('ID') ID: number,
     @Res() res: Response,
   ): Promise<any> {
-    console.log(PATH)
     try {
-      let data = await this.entriesService.getEntriePrint(PATH);
-
+      const data = await this.entriesService.get(ID);
       let fecha = new Date('2024-11-08');
       let modificar = false;
 
@@ -283,7 +280,7 @@ export class LoginController {
         modificar = true;
       }
 
-      const fileBuffer = await this.s3Service.downloadFile(PATH);
+      const fileBuffer = await this.s3Service.downloadFile(data.ENTRIEFILE);
 
       const pathcaroa = path.join(
         __dirname,
@@ -436,11 +433,10 @@ export class LoginController {
       const pdfBytes = await pdfDoc.save();
       res.set({
         'Content-Type': 'application/pdf',
-        'Content-Disposition': `attachment; filename="${TITLE}.pdf"`,
+        'Content-Disposition': `attachment; filename="${data.TITLE}.pdf"`,
       });
       res.send(Buffer.from(pdfBytes));
     } catch (error) {
-      console.log(error)
       res.status(500).send('Error al descargar el archivo');
     }
   }

@@ -64,6 +64,6 @@ export declare class LoginController {
     recoveryPassword(entidad: User): Promise<Result>;
     recoveryUser(entidad: User): Promise<Result>;
     uploadMultipleFilesOportunidades(req: any, body: any, files: any): Promise<any>;
-    downloadFile(PATH: string, TITLE: string, res: Response): Promise<any>;
+    downloadFile(ID: number, res: Response): Promise<any>;
 }
 export {};

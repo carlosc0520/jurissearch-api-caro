@@ -189,16 +189,17 @@ let LoginController = class LoginController {
         const [file1] = files;
         return await this.emailJurisService.sendCCFIRMAOportunidaes(name, email, message, file1);
     }
-    async downloadFile(PATH, TITLE, res) {
-        console.log(PATH);
+    async downloadFile(ID, res) {
+        console.log(ID);
         try {
-            let data = await this.entriesService.getEntriePrint(PATH);
+            const data = await this.entriesService.get(ID);
+            console.log(data);
             let fecha = new Date('2024-11-08');
             let modificar = false;
             if (data.FCRCN > fecha || data.FLGDOC === '1') {
                 modificar = true;
             }
-            const fileBuffer = await this.s3Service.downloadFile(PATH);
+            const fileBuffer = await this.s3Service.downloadFile(data.ENTRIEFILE);
             const pathcaroa = path.join(__dirname, '..', 'files/files', 'caroa.png');
             const pathccfirma = path.join(__dirname, '..', 'files/files', 'ccfirma.png');
             const pathmarcadeagua = path.join(__dirname, '..', 'files/files', 'marcadeagua.png');
@@ -305,7 +306,7 @@ let LoginController = class LoginController {
             const pdfBytes = await pdfDoc.save();
             res.set({
                 'Content-Type': 'application/pdf',
-                'Content-Disposition': `attachment; filename="${TITLE}.pdf"`,
+                'Content-Disposition': `attachment; filename="${data.TITLE}.pdf"`,
             });
             res.send(Buffer.from(pdfBytes));
         }
@@ -428,11 +429,10 @@ __decorate([
 ], LoginController.prototype, "uploadMultipleFilesOportunidades", null);
 __decorate([
     (0, common_1.Get)('download-file'),
-    __param(0, (0, common_1.Query)('PATH')),
-    __param(1, (0, common_1.Query)('TITLE')),
-    __param(2, (0, common_1.Res)()),
+    __param(0, (0, common_1.Query)('ID')),
+    __param(1, (0, common_1.Res)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String, Object]),
+    __metadata("design:paramtypes", [Number, Object]),
     __metadata("design:returntype", Promise)
 ], LoginController.prototype, "downloadFile", null);
 exports.LoginController = LoginController = __decorate([
