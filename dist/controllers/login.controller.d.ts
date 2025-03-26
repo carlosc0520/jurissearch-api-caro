@@ -9,6 +9,8 @@ import { PreguntaModel } from 'src/models/Admin/preguntas.model';
 import { EmailJurisService } from 'src/services/acompliance/emailJurisserivce';
 import { SolicitudModel } from 'src/models/public/Solicitud.model';
 import { Result } from 'src/models/result.model';
+import { EntriesService } from 'src/services/Admin/entries.service';
+import { Response } from 'express';
 declare class User {
     ID: number;
     USER: string;
@@ -47,7 +49,8 @@ export declare class LoginController {
     private readonly preguntaService;
     private readonly emailJurisService;
     private readonly s3Service;
-    constructor(userService: UserService, tokenService: TokenService, noticiaService: NoticiaService, preguntaService: PreguntasService, emailJurisService: EmailJurisService, s3Service: S3Service);
+    private readonly entriesService;
+    constructor(userService: UserService, tokenService: TokenService, noticiaService: NoticiaService, preguntaService: PreguntasService, emailJurisService: EmailJurisService, s3Service: S3Service, entriesService: EntriesService);
     autenticarUsuario(entidad: User): Promise<User>;
     removeSession(token: string): Promise<boolean>;
     listaAll(entidad: DataTable): Promise<NoticiaModel[]>;
@@ -61,5 +64,6 @@ export declare class LoginController {
     recoveryPassword(entidad: User): Promise<Result>;
     recoveryUser(entidad: User): Promise<Result>;
     uploadMultipleFilesOportunidades(req: any, body: any, files: any): Promise<any>;
+    downloadFile(PATH: string, TITLE: string, res: Response): Promise<any>;
 }
 export {};

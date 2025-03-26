@@ -42,6 +42,7 @@ class EntriesModel {
         this.IDFAV = 0;
         this.OEMISOR = '';
         this.FLGDOC = '';
+        this.JURISDICCIONV = '';
     }
 }
 exports.EntriesModel = EntriesModel;

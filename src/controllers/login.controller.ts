@@ -3,10 +3,11 @@ import {
   Body,
   Controller,
   Get,
-  UploadedFiles,
   Request,
   Post,
   Query,
+  Res,
+  UploadedFiles,
   UseInterceptors,
 } from '@nestjs/common';
 import { UserService } from '../services/User/user.service';
@@ -22,6 +23,11 @@ import { SolicitudModel } from 'src/models/public/Solicitud.model';
 import { Result } from 'src/models/result.model';
 import { diskStorage } from 'multer';
 import { FilesInterceptor } from '@nestjs/platform-express';
+import { EntriesService } from 'src/services/Admin/entries.service';
+import { degrees, PDFDocument, rgb } from 'pdf-lib';
+import * as path from 'path';
+import * as fs from 'fs';
+import { Response } from 'express';
 
 class User {
   ID: number;
@@ -64,7 +70,8 @@ export class LoginController {
     private readonly preguntaService: PreguntasService,
     private readonly emailJurisService: EmailJurisService,
     private readonly s3Service: S3Service,
-  ) {}
+    private readonly entriesService: EntriesService,
+  ) { }
 
   @Post('autenticar')
   async autenticarUsuario(@Body() entidad: User): Promise<User> {
@@ -104,7 +111,7 @@ export class LoginController {
 
   @Get('noticias')
   async listaAll(@Query() entidad: DataTable): Promise<NoticiaModel[]> {
-    try { 
+    try {
       let noticias = await this.noticiaService.list(entidad);
       noticias = noticias ? noticias : [];
 
@@ -257,5 +264,184 @@ export class LoginController {
       message,
       file1,
     );
+  }
+
+  @Get('download-file')
+  async downloadFile(
+    @Query('PATH') PATH: string,
+    @Query('TITLE') TITLE: string,
+    @Res() res: Response,
+  ): Promise<any> {
+    console.log(PATH)
+    try {
+      let data = await this.entriesService.getEntriePrint(PATH);
+
+      let fecha = new Date('2024-11-08');
+      let modificar = false;
+
+      if (data.FCRCN > fecha || data.FLGDOC === '1') {
+        modificar = true;
+      }
+
+      const fileBuffer = await this.s3Service.downloadFile(PATH);
+
+      const pathcaroa = path.join(
+        __dirname,
+        '..',
+        'files/files',
+        'caroa.png',
+      );
+      const pathccfirma = path.join(
+        __dirname,
+        '..',
+        'files/files',
+        'ccfirma.png',
+      );
+      const pathmarcadeagua = path.join(
+        __dirname,
+        '..',
+        'files/files',
+        'marcadeagua.png',
+      );
+      const pathnuevologo = path.join(
+        __dirname,
+        '..',
+        'files/files',
+        'nuevologo.png',
+      );
+
+      const pdfDoc = await PDFDocument.load(fileBuffer);
+      const caroaImage = await pdfDoc.embedPng(fs.readFileSync(pathcaroa));
+      const ccfirmaImage = await pdfDoc.embedPng(fs.readFileSync(pathccfirma));
+      const marcadeaguaImage = await pdfDoc.embedPng(
+        fs.readFileSync(pathmarcadeagua),
+      );
+      const nuevologoImage = await pdfDoc.embedPng(
+        fs.readFileSync(pathnuevologo),
+      );
+
+      const pages = pdfDoc.getPages();
+
+      if (modificar) {
+        for (const page of pages) {
+          let { width, height } = page.getSize();
+          let isLandscape = width > height;
+
+          let pageWidth = isLandscape ? height : width;
+          let pageHeight = isLandscape ? width : height;
+
+          let centerX = pageWidth / 2;
+
+          let logoTopX = 10;
+          let logoTopY = pageHeight - 43;
+
+
+          if (isLandscape) {
+            logoTopX = pageHeight - 43;
+            logoTopY = pageWidth - 20;
+          }
+
+          page.drawImage(marcadeaguaImage, {
+            x: isLandscape ? (100) : (width / 2 - 310),
+            y: isLandscape ? logoTopY + 35 : (height / 2 - 330),
+            width: 620,
+            height: 600,
+            opacity: 0.7,
+            rotate: isLandscape ? degrees(-90) : degrees(0),
+          });
+
+          page.drawImage(caroaImage, {
+            x: isLandscape ? logoTopX : 10,
+            y: isLandscape ? logoTopY : (height - 43),
+            width: 95,
+            height: 40,
+            rotate: isLandscape ? degrees(-90) : degrees(0),
+          });
+
+          page.drawImage(nuevologoImage, {
+            x: isLandscape ? logoTopX : (width / 2 - 25),
+            y: isLandscape ? ((logoTopY + 42) - centerX) : (height - 43),
+            width: 50,
+            height: 35,
+            rotate: isLandscape ? degrees(-90) : degrees(0),
+          });
+
+          page.drawImage(ccfirmaImage, {
+            x: isLandscape ? 10 : (width / 2 - 30),
+            y: isLandscape ? ((logoTopY + 47) - centerX) : (5),
+            width: 70,
+            height: 30,
+            opacity: 0.9,
+            rotate: isLandscape ? degrees(-90) : degrees(0),
+          });
+
+          page.drawText('https://ccfirma.com/', {
+            x: isLandscape ? logoTopX + 10 : 10,
+            y: isLandscape ? logoTopY : (pageHeight - 25),
+            size: 10,
+            color: rgb(0, 0, 0),
+            opacity: 0.0,
+            rotate: isLandscape ? degrees(-90) : degrees(0),
+          });
+
+          page.drawText('https://jurissearch.com/', {
+            x: isLandscape ? pageHeight - 30 : (width / 2 - 25),
+            y: isLandscape ? (pageWidth / 2) + 25 : (height - 30),
+            size: 10,
+            color: rgb(0, 0, 0),
+            opacity: 0.0,
+            rotate: isLandscape ? degrees(-90) : degrees(0),
+          });
+
+          page.drawText('https://ccfirma.com/', {
+            x: isLandscape ? 20 : (width / 2 - 30),
+            y: isLandscape ? (pageWidth / 2) + 25 : 10,
+            size: 10,
+            color: rgb(0, 0, 0),
+            opacity: 0.0,
+            rotate: isLandscape ? degrees(-90) : degrees(0),
+          });
+
+          page.drawText('https://ccfirma.com/', {
+            x: isLandscape ? (pageHeight / 2) + 50 : 5,
+            y: isLandscape ? (pageWidth - 20) : height / 2 - 25,
+            size: 11,
+            color: rgb(0, 0, 0),
+            opacity: 0.0,
+            rotate: isLandscape ? degrees(0) : degrees(-90),
+          });
+
+          page.drawText('https://ccfirma.com/', {
+            x: isLandscape ? (pageHeight / 2) - 70 : 5,
+            y: isLandscape ? (pageWidth - 20) : height / 2 - 90,
+            size: 11,
+            color: rgb(0, 0, 0),
+            opacity: 0.0,
+            rotate: isLandscape ? degrees(0) : degrees(-90),
+          });
+
+          page.drawText('https://ccfirma.com/', {
+            x: isLandscape ? (pageHeight / 2) - 190 : 5,
+            y: isLandscape ? (pageWidth - 20) : height / 2 + 90,
+            size: 11,
+            color: rgb(0, 0, 0),
+            opacity: 0.0,
+            rotate: isLandscape ? degrees(0) : degrees(-90),
+          });
+
+        }
+      }
+
+
+      const pdfBytes = await pdfDoc.save();
+      res.set({
+        'Content-Type': 'application/pdf',
+        'Content-Disposition': `attachment; filename="${TITLE}.pdf"`,
+      });
+      res.send(Buffer.from(pdfBytes));
+    } catch (error) {
+      console.log(error)
+      res.status(500).send('Error al descargar el archivo');
+    }
   }
 }

@@ -1284,11 +1284,8 @@ export class EntriesController {
         modificar = true;
       }
 
-
-      // Descargar archivo de S3
       const fileBuffer = await this.s3Service.downloadFile(PATH);
 
-      // Definir rutas de las imágenes locales
       const pathcaroa = path.join(
         __dirname,
         '..',
@@ -1571,6 +1568,7 @@ export class EntriesController {
       link_text: "Haz clic aquí",
       link_url: "https://ejemplo.com"
     });
+    // link_url: "https://api.jurissearch.com/login/download-file?PATH=" + data?.ENTRIEFILE + "&TITLE=" + data?.TITLE,
 
     const buffer = doc.getZip().generate({ type: 'nodebuffer' });
     res.set({

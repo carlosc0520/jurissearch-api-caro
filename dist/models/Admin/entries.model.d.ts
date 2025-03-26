@@ -38,4 +38,5 @@ export declare class EntriesModel {
     IDFAV: number;
     OEMISOR: string;
     FLGDOC: string;
+    JURISDICCIONV: string;
 }
