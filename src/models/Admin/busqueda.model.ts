@@ -6,6 +6,8 @@ export class BusquedaModel {
     DELITO: string = '';
     RECURSO: string = '';
     OJURISDICCIONAL: string = '';
+    RESUMEN: string = '';
+    SHORTSUMMARY: string = '';
     MAGISTRATES: string = '';
     JVINCULANTE: string = '';
     MATERIA: string = '';
@@ -29,4 +31,5 @@ export class BusquedaModel {
     KEYWORDS: string = '';
     TEMA: string = '';
     SUBTEMA: string = '';
+    FRESOLUTIONSTRING: string = '';
 }
