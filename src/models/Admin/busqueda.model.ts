@@ -13,6 +13,8 @@ export class BusquedaModel {
     TPONRMA: string = '';
     NMRCN: string = '';
     AMBIT: string = '';
+    VDESIDENTE: string = '';
+    CVOTE: string = '';
     INIT: number;
     ROWS: number;
     DESC: string = null;
