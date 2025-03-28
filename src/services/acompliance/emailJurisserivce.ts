@@ -187,6 +187,7 @@ export class EmailJurisService {
         let origen: string = '';
         switch (model.IDENTIFICADOR) {
             case "1": origen = "Caro & Asociados"; break;
+            case "6": origen = "Caro & Asociados"; break;
             case "2": origen = "Juris Search"; break;
             case "3": origen = "AIC COMPLIANCE"; break;
             case "4": origen = "CEDPE"; break;
@@ -207,10 +208,10 @@ export class EmailJurisService {
                 return { MESSAGE: 'Ocurrió un error al intentar enviar la solicitud', STATUS: false };
             }
 
-
-
             let contenido = '';
-            if (model.IDENTIFICADOR == "1") {
+            if (model.IDENTIFICADOR == "1"
+                || model.IDENTIFICADOR == "6"
+            ) {
                 contenido += `<p>Nombre: ${model?.NOMBRES || ""}</p>`;
                 contenido += `<p>Apellido: ${model?.APELLIDOP || ""}</p>`;
                 contenido += `<p>Correo: ${model?.CORREO || ""}</p>`;
@@ -264,6 +265,10 @@ export class EmailJurisService {
                 base64Data = Buffer.from(data).toString('base64');
             }
 
+            if (model.IDENTIFICADOR == "6") {
+                return { MESSAGE: 'Solicitud enviada correctamente, gracias por contactarnos.', STATUS: true, FILE: null };
+            }
+
             return { MESSAGE: 'Solicitud enviada correctamente, gracias por contactarnos.', STATUS: true, FILE: base64Data };
 
         } catch (error) {
@@ -275,9 +280,9 @@ export class EmailJurisService {
 
     async recoveryPassword(model: User): Promise<Result> {
         try {
-            
+
             const token = await this.tokenService.generateTokenRecovery(model, 10);
-    
+
             const html = `
             <!DOCTYPE html>
             <html lang="es">
@@ -346,18 +351,18 @@ export class EmailJurisService {
                 </body>
             </html>
             `;
-    
+
             const mailOptions = {
                 from: "JURIS SEARCH ✔✨",
                 to: model.EMAIL,
                 subject: 'Recuperar contraseña',
                 html
             };
-    
+
             await this.transporter2.sendMail(mailOptions);
             return { MESSAGE: 'Correo enviado correctamente, revisa tu bandeja de entrada.', STATUS: true };
         } catch (error) {
-            return { MESSAGE: 'Error al enviar la solicitud', STATUS: false };        
+            return { MESSAGE: 'Error al enviar la solicitud', STATUS: false };
         }
     }
 

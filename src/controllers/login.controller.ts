@@ -183,6 +183,8 @@ export class LoginController {
     return result;
   }
 
+
+
   @Post('recovery')
   async recoveryPassword(@Body() entidad: User): Promise<Result> {
     const usuario: User = await this.userService.obtenerUsuario(entidad);
