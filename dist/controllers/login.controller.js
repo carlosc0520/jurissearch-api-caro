@@ -190,10 +190,8 @@ let LoginController = class LoginController {
         return await this.emailJurisService.sendCCFIRMAOportunidaes(name, email, message, file1);
     }
     async downloadFile(ID, res) {
-        console.log(ID);
         try {
             const data = await this.entriesService.get(ID);
-            console.log(data);
             let fecha = new Date('2024-11-08');
             let modificar = false;
             if (data.FCRCN > fecha || data.FLGDOC === '1') {
@@ -311,7 +309,6 @@ let LoginController = class LoginController {
             res.send(Buffer.from(pdfBytes));
         }
         catch (error) {
-            console.log(error);
             res.status(500).send('Error al descargar el archivo');
         }
     }

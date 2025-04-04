@@ -10,6 +10,8 @@ class BusquedaModel {
         this.DELITO = '';
         this.RECURSO = '';
         this.OJURISDICCIONAL = '';
+        this.RESUMEN = '';
+        this.SHORTSUMMARY = '';
         this.MAGISTRATES = '';
         this.JVINCULANTE = '';
         this.MATERIA = '';
@@ -17,6 +19,8 @@ class BusquedaModel {
         this.TPONRMA = '';
         this.NMRCN = '';
         this.AMBIT = '';
+        this.VDESIDENTE = '';
+        this.CVOTE = '';
         this.DESC = null;
         this.ID = 0;
         this.IDENTRIE = 0;
@@ -28,6 +32,7 @@ class BusquedaModel {
         this.KEYWORDS = '';
         this.TEMA = '';
         this.SUBTEMA = '';
+        this.FRESOLUTIONSTRING = '';
     }
 }
 exports.BusquedaModel = BusquedaModel;

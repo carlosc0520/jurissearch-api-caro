@@ -201,6 +201,9 @@ let EmailJurisService = class EmailJurisService {
             case "1":
                 origen = "Caro & Asociados";
                 break;
+            case "6":
+                origen = "Caro & Asociados";
+                break;
             case "2":
                 origen = "Juris Search";
                 break;
@@ -229,7 +232,8 @@ let EmailJurisService = class EmailJurisService {
                 return { MESSAGE: 'Ocurrió un error al intentar enviar la solicitud', STATUS: false };
             }
             let contenido = '';
-            if (model.IDENTIFICADOR == "1") {
+            if (model.IDENTIFICADOR == "1"
+                || model.IDENTIFICADOR == "6") {
                 contenido += `<p>Nombre: ${(model === null || model === void 0 ? void 0 : model.NOMBRES) || ""}</p>`;
                 contenido += `<p>Apellido: ${(model === null || model === void 0 ? void 0 : model.APELLIDOP) || ""}</p>`;
                 contenido += `<p>Correo: ${(model === null || model === void 0 ? void 0 : model.CORREO) || ""}</p>`;
@@ -273,6 +277,9 @@ let EmailJurisService = class EmailJurisService {
                 const filePath = './documentos/Guía Práctica para la formalización de tu negocio Caro & Asociados.pdf';
                 const data = fs.readFileSync(filePath);
                 base64Data = Buffer.from(data).toString('base64');
+            }
+            if (model.IDENTIFICADOR == "6") {
+                return { MESSAGE: 'Solicitud enviada correctamente, gracias por contactarnos.', STATUS: true, FILE: null };
             }
             return { MESSAGE: 'Solicitud enviada correctamente, gracias por contactarnos.', STATUS: true, FILE: base64Data };
         }

@@ -643,7 +643,7 @@ let EntriesController = class EntriesController {
                                     ],
                                     [
                                         {
-                                            text: 'SÍNTESIS DE LOS FUNDAMENTOS JURÍDICOS RELEVANTES',
+                                            text: 'SÍNTESIS',
                                             bold: true,
                                             fontSize,
                                             margin: [10, 15, 10, 15],
