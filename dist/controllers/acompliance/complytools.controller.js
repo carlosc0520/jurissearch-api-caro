@@ -1037,6 +1037,7 @@ let ComplytoolsController = class ComplytoolsController {
                 'L',
                 'M',
                 'N',
+                'O',
             ];
             worksheet.columns = [
                 { header: 'TIPO', key: 'tipo', width: 15 },
@@ -1047,6 +1048,7 @@ let ComplytoolsController = class ComplytoolsController {
                 { header: 'LINK', key: 'link', width: 30 },
                 { header: 'ALIAS', key: 'alias', width: 15 },
                 { header: 'IDENTIFICACION', key: 'identificacion', width: 20 },
+                { header: 'DOCUMENTO', key: 'documento', width: 20 },
                 { header: 'PASAPORTE', key: 'pasaporte', width: 20 },
                 { header: 'NACIONALIDAD', key: 'nacionalidad', width: 20 },
                 { header: 'GENERO', key: 'genero', width: 10 },
@@ -1064,6 +1066,7 @@ let ComplytoolsController = class ComplytoolsController {
                     link: item.infolink || '',
                     alias: item.infoalias || '',
                     identificacion: item.infotipodocumento || '',
+                    documento: item.infoidentifica || '',
                     pasaporte: item.infopasaporte || '',
                     nacionalidad: item.infonacionalidad || '',
                     genero: item.infogenero || '',
@@ -1082,9 +1085,9 @@ let ComplytoolsController = class ComplytoolsController {
                 };
                 cell.alignment = { horizontal: 'center' };
             });
-            worksheet.autoFilter = 'A1:N1';
+            worksheet.autoFilter = 'A1:O1';
             const buffer = await workbook.xlsx.writeBuffer();
-            let emails = ['rsaldarriaga@ccfirma.com ', 'ccarbajal@ccfirma.com'];
+            let emails = ['rsaldarriaga@ccfirma.com ', 'ccarbajal@ccfirma.com', 'kvega@ccfirma.com'];
             const mailOptions = {
                 from: '"Comply Tools" <complytools@gmail.com>',
                 to: emails.join(', '),

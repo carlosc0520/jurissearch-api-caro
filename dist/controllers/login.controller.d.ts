@@ -53,7 +53,6 @@ export declare class LoginController {
     constructor(userService: UserService, tokenService: TokenService, noticiaService: NoticiaService, preguntaService: PreguntasService, emailJurisService: EmailJurisService, s3Service: S3Service, entriesService: EntriesService);
     autenticarUsuario(entidad: User): Promise<User>;
     removeSession(token: string): Promise<boolean>;
-    listaAll(entidad: DataTable): Promise<NoticiaModel[]>;
     listaPreguntas(entidad: DataTable): Promise<PreguntaModel[]>;
     refreshToken(token: string): Promise<string>;
     validateToken(token: string): Promise<boolean>;
@@ -65,5 +64,7 @@ export declare class LoginController {
     recoveryUser(entidad: User): Promise<Result>;
     uploadMultipleFilesOportunidades(req: any, body: any, files: any): Promise<any>;
     downloadFile(ID: number, res: Response): Promise<any>;
+    listaCategorias(entidad: DataTable): Promise<NoticiaModel[]>;
+    listaAll(entidad: DataTable): Promise<NoticiaModel[]>;
 }
 export {};

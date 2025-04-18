@@ -109,29 +109,6 @@ export class LoginController {
     return true;
   }
 
-  @Get('noticias')
-  async listaAll(@Query() entidad: DataTable): Promise<NoticiaModel[]> {
-    try {
-      let noticias = await this.noticiaService.list(entidad);
-      noticias = noticias ? noticias : [];
-
-      const noticiasConImagenes = await Promise.all(
-        noticias.map(async (noticia) => {
-          try {
-            noticia.IMAGEN2 = await this.s3Service.getImage(noticia.IMAGEN);
-            return noticia;
-          } catch (error) {
-            return noticia;
-          }
-        }),
-      );
-
-      return noticiasConImagenes;
-    } catch (error) {
-      return [];
-    }
-  }
-
   @Get('preguntas')
   async listaPreguntas(@Query() entidad: DataTable): Promise<PreguntaModel[]> {
     entidad.CESTDO = 'A';
@@ -442,4 +419,20 @@ export class LoginController {
       res.status(500).send('Error al descargar el archivo');
     }
   }
+
+  @Get('list-categorias')
+  async listaCategorias(@Query() entidad: DataTable): Promise<NoticiaModel[]> {
+    return await this.noticiaService.listCategorias(entidad);
+  }
+
+  @Get('noticias')
+  async listaAll(@Query() entidad: DataTable): Promise<NoticiaModel[]> {
+    try {
+      let noticias = await this.noticiaService.listNoticias(entidad);
+      return noticias;
+    } catch (error) {
+      return [];
+    }
+  }
+
 }

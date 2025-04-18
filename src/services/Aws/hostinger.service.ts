@@ -59,9 +59,9 @@ export class HostingerService {
         try {
             await this.ftpClient.remove(fileName);
 
-            return { message: 'File deleted successfully from FTP' };
+            return { message: 'File deleted successfully from FTP', success: true };
         } catch (error) {
-
+            return { message: 'Error deleting file from FTP', success: false };
         }
     }
 

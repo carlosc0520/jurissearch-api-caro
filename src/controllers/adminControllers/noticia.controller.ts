@@ -5,22 +5,23 @@ import { S3Service } from 'src/services/Aws/aws.service';
 import * as fs from 'fs';
 import { Result } from '../../models/result.model';
 import { DataTable } from '../../models/DataTable.model.';
-import { NoticiaModel } from 'src/models/Admin/noticia.model';
+import { AutorModel, CategoriaModel, NoticiaModel } from 'src/models/Admin/noticia.model';
 import { NoticiaService } from 'src/services/mantenimiento/noticia.service';
 import { Response } from 'express';
+import { HostingerService } from 'src/services/Aws/hostinger.service';
 
 @Controller('admin/noticias')
 export class NoticiaController {
     constructor(
         private readonly noticiaService: NoticiaService,
-        private readonly s3Service: S3Service
+        private readonly s3Service: S3Service,
+        private readonly hostingerService: HostingerService
     ) { }
 
     @Get('list')
     async listaAll(@Query() entidad: DataTable): Promise<NoticiaModel[]> {
         return await this.noticiaService.list(entidad);
     }
-
 
     @Post("get-image")
     async downloadFile(@Body('KEY') KEY: string, @Res() res: Response): Promise<any> {
@@ -54,7 +55,7 @@ export class NoticiaController {
     @UseInterceptors(
         FilesInterceptor('files', 20, {
             storage: diskStorage({
-                destination: './uploads',
+                destination: './uploads/noticias',
                 filename: function (req, file, cb) {
                     const filename = `${Date.now()}-${file.originalname.replace(/\s/g, '')}`;
                     return cb(null, filename);
@@ -70,33 +71,17 @@ export class NoticiaController {
         }),
     )
     async addNoticia(@Request() req, @Body() entidad: NoticiaModel, @UploadedFiles() files): Promise<Result> {
-        entidad.UCRCN = req.user.UCRCN;
         try {
-
-            const table: DataTable = {
-                INIT: 0,
-                ROWS: 1,
-                DESC: entidad.TITULO,
-                CESTDO: null,
-                ID: 0
-            };
-            const obtener = await this.noticiaService.list(table);
-            if (obtener.length > 0) {
-                return {
-                    MESSAGE: `Ya existe una noticia con el titulo ${entidad.TITULO}`,
-                    STATUS: false
-                };
-            }
 
             const [file1] = files;
 
-            const keysLocation: string = await this.s3Service.uploadImage(
-                entidad,
-                file1.filename,
-                file1.path
-            );
+            if (!file1) return { MESSAGE: 'La imagen es requerida', STATUS: false };
+            if(file1){
+                const resultFile: any = await this.hostingerService.saveFile(file1, 'noticias');
+                if (!resultFile.success) return { MESSAGE: 'Error al subir la imagen', STATUS: false };
+                entidad.IMAGEN = resultFile.path;
+            }
 
-            entidad.IMAGEN = keysLocation;
             entidad.UCRCN = req.user.UCRCN;
             const result = await this.noticiaService.create(entidad);
             return result
@@ -106,7 +91,11 @@ export class NoticiaController {
         }
         finally {
             await files.forEach(file => {
-                fs.unlinkSync(file.path);
+                try {
+                    fs.unlinkSync(file.path);
+                } catch (error) {
+                    console.log('Error deleting file:', error);
+                }
             });
         }
     }
@@ -115,9 +104,9 @@ export class NoticiaController {
     @UseInterceptors(
         FilesInterceptor('files', 20, {
             storage: diskStorage({
-                destination: './uploads',
+                destination: './uploads/noticias',
                 filename: function (req, file, cb) {
-                    if (file){
+                    if (file) {
                         const filename = `${Date.now()}-${file.originalname.replace(/\s/g, '')}`;
                         return cb(null, filename);
                     }
@@ -134,30 +123,14 @@ export class NoticiaController {
     )
     async editNoticia(@Request() req, @Body() entidad: NoticiaModel, @UploadedFiles() files?: any[]): Promise<Result> {
         try {
-            const table: DataTable = {
-                INIT: 0,
-                ROWS: 1,
-                DESC: entidad.TITULO,
-                CESTDO: null,
-                ID: entidad.ID
-            };
-
-            const obtener = await this.noticiaService.list(table);
-            if (obtener.length > 0) {
-                return { MESSAGE: `Ya existe una noticia con el titulo ${entidad.TITULO}`, STATUS: false };
-            }
+            if (!entidad.ID) return { MESSAGE: 'El Identificador es requerido', STATUS: false };
 
             const [file1] = files;
-            
-            if (![undefined, null].includes(file1)) {
-                // const resDelete = await this.s3Service.deleteFile(entidad.IMAGEN);
-                const keysLocation: string = await this.s3Service.uploadImage(
-                    entidad,
-                    file1.filename,
-                    file1.path
-                );
-
-                entidad.IMAGEN = keysLocation;
+            if (file1) {
+                const deleteFile = await this.hostingerService.deleteFile(entidad.IMAGEN);
+                const resultFile: any = await this.hostingerService.saveFile(file1, 'noticias');
+                if (!resultFile.success) return { MESSAGE: 'Error al subir la imagen', STATUS: false };
+                entidad.IMAGEN = resultFile.path;
             }
 
             entidad.UCRCN = req.user.UCRCN;
@@ -169,8 +142,164 @@ export class NoticiaController {
         }
         finally {
             await files.forEach(file => {
-                fs.unlinkSync(file.path);
+                try{
+                    fs.unlinkSync(file.path);
+                }catch (error) {
+                    console.log('Error deleting file:', error);
+                }
             });
         }
+    }
+
+    // AUTORES
+    @Get('list-autores')
+    async listaAutores(@Query() entidad: DataTable): Promise<NoticiaModel[]> {
+        return await this.noticiaService.listAutores(entidad);
+    }
+
+    @Post('add-autores')
+    @UseInterceptors(
+        FilesInterceptor('files', 20, {
+            storage: diskStorage({
+                destination: './uploads/noticias/autores',
+                filename: function (req, file, cb) {
+                    const filename = `${Date.now()}-${file.originalname.replace(/\s/g, '')}`;
+                    return cb(null, filename);
+                }
+            }),
+            fileFilter: (req, file, cb) => {
+                if (file.mimetype.match(/\/(jpg|jpeg|png|gif)$/)) {
+                    cb(null, true);
+                } else {
+                    cb(new Error('Solo se permiten imagenes'), false);
+                }
+            }
+        }),
+    )
+    async addAutor(@Request() req, @Body() entidad: AutorModel, @UploadedFiles() files): Promise<Result> {
+        entidad.UCRCN = req.user.UCRCN;
+        try {
+            const [file1] = files;
+
+            if(file1){
+                const resultFile: any = await this.hostingerService.saveFile(file1, 'noticias/autores');
+                console.log(resultFile)
+                if (!resultFile.success) return { MESSAGE: 'Error al subir la imagen', STATUS: false };
+                entidad.RUTA = resultFile.path;
+            }
+
+            entidad.UCRCN = req.user.UCRCN;
+
+            const result = await this.noticiaService.createAutor(entidad);
+            return result
+        }
+        catch (error) {
+            return { MESSAGE: error.message, STATUS: false };
+        }
+        finally {
+            await files.forEach(file => {
+                try {
+                    fs.unlinkSync(file.path);
+                } catch (error) {
+                    console.log('Error deleting file:', error);
+                }
+            });
+        }
+    }
+
+    @Post('edit-autores')
+    @UseInterceptors(
+        FilesInterceptor('files', 20, {
+            storage: diskStorage({
+                destination: './uploads/noticias/autores',
+                filename: function (req, file, cb) {
+                    if (file) {
+                        const filename = `${Date.now()}-${file.originalname.replace(/\s/g, '')}`;
+                        return cb(null, filename);
+                    }
+                }
+            }),
+            fileFilter: (req, file, cb) => {
+                if (file.mimetype.match(/\/(jpg|jpeg|png|gif)$/)) {
+                    cb(null, true);
+                } else {
+                    cb(new Error('Solo se permiten imagenes'), false);
+                }
+            }
+        }),
+    )
+    async editAutor(@Request() req, @Body() entidad: AutorModel, @UploadedFiles() files?: any[]): Promise<Result> {
+        try {
+            if (!entidad.ID) return { MESSAGE: 'El Identificador es requerido', STATUS: false };
+
+            const [file1] = files;
+
+            if (![undefined, null].includes(file1)) {
+                const deleteFile = await this.hostingerService.deleteFile(entidad.RUTA);
+                const resultFile: any = await this.hostingerService.saveFile(file1, 'noticias/autores');
+                if (!resultFile.success) return { MESSAGE: 'Error al subir la imagen', STATUS: false };
+                entidad.RUTA = resultFile.path;
+            }
+
+            entidad.UCRCN = req.user.UCRCN;
+            const result = await this.noticiaService.editAutor(entidad);
+            return result
+        }
+        catch (error) {
+            return { MESSAGE: error.message, STATUS: false };
+        }
+        finally {
+            await files.forEach(file => {
+                try{
+                    fs.unlinkSync(file.path);
+                }catch (error) {
+                    console.log('Error deleting file:', error);
+                }
+            });
+        }
+    }
+
+    @Post('delete-autores')
+    async deleteAutor(@Request() req, @Body('ID') ID: number): Promise<Result> {
+        if (!ID) return { MESSAGE: 'El Identificador es requerido', STATUS: false };
+        return await this.noticiaService.deleteAutor(ID, req.user.UCRCN);
+    }
+
+    // CATEGORIAS
+    @Get('list-categorias')
+    async listaCategorias(@Query() entidad: DataTable): Promise<NoticiaModel[]> {
+        return await this.noticiaService.listCategorias(entidad);
+    }
+
+    @Post('add-categorias')
+    async addCategoria(@Request() req, @Body() entidad: CategoriaModel): Promise<Result> {
+        entidad.UCRCN = req.user.UCRCN;
+        try {
+            entidad.UCRCN = req.user.UCRCN;
+            const result = await this.noticiaService.createCategoria(entidad);
+            return result
+        }
+        catch (error) {
+            return { MESSAGE: error.message, STATUS: false };
+        }
+    }
+
+    @Post('edit-categorias')
+    async editCategoria(@Request() req, @Body() entidad: CategoriaModel): Promise<Result> {
+        try {
+            if (!entidad.ID) return { MESSAGE: 'El Identificador es requerido', STATUS: false };
+            entidad.UCRCN = req.user.UCRCN;
+            const result = await this.noticiaService.editCategoria(entidad);
+            return result
+        }
+        catch (error) {
+            return { MESSAGE: error.message, STATUS: false };
+        }
+    }
+
+    @Post('delete-categorias')
+    async deleteCategoria(@Request() req, @Body('ID') ID: number): Promise<Result> {
+        if (!ID) return { MESSAGE: 'El Identificador es requerido', STATUS: false };
+        return await this.noticiaService.deleteCategoria(ID, req.user.UCRCN);
     }
 }
