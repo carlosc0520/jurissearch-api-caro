@@ -58,6 +58,7 @@ export declare class LoginController {
     validateToken(token: string): Promise<boolean>;
     validateTokenSolicitudTime(token: string): Promise<boolean>;
     generateUser(entidad: User): Promise<Result>;
+    generateUserFind(entidad: User): Promise<Result>;
     sendEmail(entidad: SolicitudModel): Promise<Result>;
     ccfirmaSendEmail(entidad: SolicitudModel): Promise<Result>;
     recoveryPassword(entidad: User): Promise<Result>;

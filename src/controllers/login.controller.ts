@@ -148,6 +148,14 @@ export class LoginController {
     }
   }
 
+  @Post('generateUserFind')
+  async generateUserFind(@Body() entidad: User): Promise<Result> {
+    entidad.IDROLE = 2;
+    entidad.USER = entidad.EMAIL.split('@')[0];
+    entidad.PLAN = '1';
+    return await this.userService.createUser(entidad);
+  }
+
   @Post('solicitudUser')
   async sendEmail(@Body() entidad: SolicitudModel): Promise<Result> {
     const result = await this.emailJurisService.sendEmail(entidad);

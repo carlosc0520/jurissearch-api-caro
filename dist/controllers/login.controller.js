@@ -121,6 +121,12 @@ let LoginController = class LoginController {
             return { MESSAGE: 'Token invalido', STATUS: false };
         }
     }
+    async generateUserFind(entidad) {
+        entidad.IDROLE = 2;
+        entidad.USER = entidad.EMAIL.split('@')[0];
+        entidad.PLAN = '1';
+        return await this.userService.createUser(entidad);
+    }
     async sendEmail(entidad) {
         const result = await this.emailJurisService.sendEmail(entidad);
         return result;
@@ -356,6 +362,13 @@ __decorate([
     __metadata("design:paramtypes", [User]),
     __metadata("design:returntype", Promise)
 ], LoginController.prototype, "generateUser", null);
+__decorate([
+    (0, common_1.Post)('generateUserFind'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [User]),
+    __metadata("design:returntype", Promise)
+], LoginController.prototype, "generateUserFind", null);
 __decorate([
     (0, common_1.Post)('solicitudUser'),
     __param(0, (0, common_1.Body)()),
