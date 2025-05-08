@@ -7,6 +7,7 @@ class DataTable {
         this.IDCATEGORIA = 0;
         this.NIVEL = 0;
         this.DIAS = 0;
+        this.IDUSR = 0;
     }
 }
 exports.DataTable = DataTable;

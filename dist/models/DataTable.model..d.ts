@@ -9,4 +9,5 @@ export declare class DataTable {
     URL?: string;
     TABLA?: string;
     DIAS?: number;
+    IDUSR?: number;
 }

@@ -51,5 +51,10 @@ export declare class UserService {
     listDirectory(IDUSUARIO: number, DSCRPCN: string, TYPE: string): Promise<any>;
     listDirectoryAll(IDUSUARIO: number): Promise<any>;
     reporteEstadisticos(entidad: ReporteModelEntrie): Promise<any>;
+    listContactos(entidad: DataTable): Promise<any[]>;
+    createContactos(entidad: any): Promise<Result>;
+    editContactos(entidad: any): Promise<Result>;
+    deleteContactos(id: number, UCRCN: string): Promise<Result>;
+    listNotificaciones(entidad: DataTable): Promise<any[]>;
 }
 export {};

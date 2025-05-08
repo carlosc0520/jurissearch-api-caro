@@ -1,4 +1,4 @@
-import { Request, Body, Controller, Get, Post, Query, UseInterceptors, UploadedFiles, UnauthorizedException } from '@nestjs/common';
+import { Request, Body, Controller, Get, Post, Query, UseInterceptors, UploadedFiles, UnauthorizedException, BadRequestException } from '@nestjs/common';
 import { UserService } from '../../services/User/user.service';
 import { Result } from '../../models/result.model';
 import { DataTable } from '../../models/DataTable.model.';
@@ -71,8 +71,17 @@ export class UsuarioController {
   async listUsers(
     @Query() entidad: DataTable,
     @Query('IDROLE') IDROLE: string,
+    @Request() req,
   ): Promise<User[]> {
-    return await this.userService.list(entidad, IDROLE);
+    entidad.IDUSR = req.user.ID;
+    let data = await this.userService.list(entidad, IDROLE);
+    if (IDROLE == '10') {
+      data = data.map((item) => {
+        item.RTAFTO = item.RTAFTO ? process.env.DOMINIO + item.RTAFTO : null;
+        return item;
+      });
+    }
+    return data;
   }
 
   @Get('get')
@@ -129,13 +138,18 @@ export class UsuarioController {
   async editUserForce(@Request() req, @Body() entidad: User, @UploadedFiles() files): Promise<Result> {
     entidad.RTAFTO = entidad.RTAFTO ? entidad.RTAFTO.replace(process.env.DOMINIO, '') : null;
 
-    if(files && files.length > 0) {
-      let file = files[0];	
-      if(entidad.RTAFTO) await this.hostingerService.deleteFile(entidad.RTAFTO);
+    if (files && files.length > 0) {
+      let file = files[0];
+      if (entidad.RTAFTO) await this.hostingerService.deleteFile(entidad.RTAFTO);
       let result = await this.hostingerService.saveFile(file, "usuarios");
       entidad.RTAFTO = result.path;
-    } 
-  
+    }
+
+
+    if (entidad.RTAFTO && entidad.RTAFTO.includes(process.env.DOMINIO)) {
+      entidad.RTAFTO = entidad.RTAFTO.replace(process.env.DOMINIO, '');
+    }
+
     entidad.USER = req.user.UCRCN;
     entidad.ID = req.user.ID;
     return await this.userService.editUser(entidad);
@@ -189,4 +203,83 @@ export class UsuarioController {
   ): Promise<any> {
     return await this.userService.reporteEstadisticos(entidad);
   }
+
+  // * CONTACTO
+  @Get('get-contacts')
+  async getContacts(
+    @Query() entidad: DataTable,
+    @Request() req,
+  ): Promise<any> {
+    if (!req.user.ID) {
+      throw new UnauthorizedException('No tienes permiso para acceder a esta ruta');
+    }
+    entidad.IDUSR = req.user.ID;
+    let data = await this.userService.listContactos(entidad);
+    data = data.map((item) => {
+      item['RTAFTO'] = item['RTAFTO'] ? process.env.DOMINIO + item['RTAFTO'] : null;
+      return item;
+    });
+
+    return data;
+  }
+
+  @Post('add-contact')
+  async addContact(
+    @Request() req,
+    @Body() entidad: any,
+  ): Promise<Result> {
+    if (!req.user.ID) {
+      throw new UnauthorizedException('No tienes permiso para acceder a esta ruta');
+    }
+    entidad.IDEMISOR = req.user.ID;
+    entidad.USER = req.user.UCRCN;
+    return await this.userService.createContactos(entidad);
+  }
+
+  @Post('edit-contact')
+  async editContact(
+    @Request() req,
+    @Body() entidad: any,
+  ): Promise<Result> {
+    if (!req.user.ID) {
+      throw new UnauthorizedException('No tienes permiso para acceder a esta ruta');
+    }
+
+    if (!entidad.ID) {
+      throw new BadRequestException('ID no valido');
+    }
+
+    entidad.USER = req.user.UCRCN;
+    return await this.userService.editContactos(entidad);
+  }
+
+  @Post('delete-contact')
+  async deleteContact(
+    @Request() req,
+    @Body('ID') ID: number,
+  ): Promise<Result> {
+    if (!req.user.ID) {
+      throw new UnauthorizedException('No tienes permiso para acceder a esta ruta');
+    }
+
+    if (!ID) {
+      throw new BadRequestException('ID no valido');
+    }
+
+    return await this.userService.deleteContactos(ID, req.user.UCRCN);
+  }
+
+  @Get('get-notifications')
+  async getNotifications(
+    @Request() req,
+    @Query() entidad: DataTable,
+  ): Promise<any> {
+    if (!req.user.ID) {
+      throw new UnauthorizedException('No tienes permiso para acceder a esta ruta');
+    }
+    entidad.IDUSR = req.user.ID;
+    return await this.userService.listNotificaciones(entidad);
+  }
+
+
 }

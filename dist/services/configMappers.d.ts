@@ -7,6 +7,9 @@ declare const procedures: {
             CRUD: string;
             CRUD2: string;
         };
+        CONTACTOS: {
+            CRUD: string;
+        };
         FILTROS: {
             CRUD: string;
         };

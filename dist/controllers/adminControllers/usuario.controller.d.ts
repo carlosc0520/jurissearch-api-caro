@@ -43,7 +43,7 @@ export declare class UsuarioController {
         };
     }>;
     addUser(req: any, entidad: User): Promise<Result>;
-    listUsers(entidad: DataTable, IDROLE: string): Promise<User[]>;
+    listUsers(entidad: DataTable, IDROLE: string, req: any): Promise<User[]>;
     getUser(req: any): Promise<User>;
     deleteUser(req: any, ID: number): Promise<Result>;
     deleteFavoriteDirectory(req: any, IDDIRECTORIO: number, IDENTRIE: number): Promise<Result>;
@@ -55,5 +55,10 @@ export declare class UsuarioController {
     listDirectoryAll(req: any): Promise<any>;
     addFavoriteUser(req: any, IDENTRIE: number): Promise<any>;
     reporteEstadisticos(req: any, entidad: ReporteModelEntrie): Promise<any>;
+    getContacts(entidad: DataTable, req: any): Promise<any>;
+    addContact(req: any, entidad: any): Promise<Result>;
+    editContact(req: any, entidad: any): Promise<Result>;
+    deleteContact(req: any, ID: number): Promise<Result>;
+    getNotifications(req: any, entidad: DataTable): Promise<any>;
 }
 export {};

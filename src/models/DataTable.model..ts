@@ -9,4 +9,5 @@ export class DataTable {
     URL?: string;
     TABLA?: string;
     DIAS?: number = 0;
+    IDUSR?: number = 0;
 }

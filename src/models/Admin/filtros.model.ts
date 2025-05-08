@@ -4,6 +4,7 @@ export class FiltrosModel {
     LABEL: string = '';
     VALUE: string = '';
     NIVEL_2: string = '';
+    DESCPINF: string = '';
     UCRCN: string = '';
     UEDCN: string = '';
     FCRCN: Date = new Date();

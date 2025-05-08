@@ -44,8 +44,16 @@ let UsuarioController = class UsuarioController {
         entidad.PASSWORD = entidad.APATERNO;
         return await this.userService.createUser(entidad);
     }
-    async listUsers(entidad, IDROLE) {
-        return await this.userService.list(entidad, IDROLE);
+    async listUsers(entidad, IDROLE, req) {
+        entidad.IDUSR = req.user.ID;
+        let data = await this.userService.list(entidad, IDROLE);
+        if (IDROLE == '10') {
+            data = data.map((item) => {
+                item.RTAFTO = item.RTAFTO ? process.env.DOMINIO + item.RTAFTO : null;
+                return item;
+            });
+        }
+        return data;
     }
     async getUser(req) {
         let result = await this.userService.getUser(req.user.ID);
@@ -70,6 +78,9 @@ let UsuarioController = class UsuarioController {
                 await this.hostingerService.deleteFile(entidad.RTAFTO);
             let result = await this.hostingerService.saveFile(file, "usuarios");
             entidad.RTAFTO = result.path;
+        }
+        if (entidad.RTAFTO && entidad.RTAFTO.includes(process.env.DOMINIO)) {
+            entidad.RTAFTO = entidad.RTAFTO.replace(process.env.DOMINIO, '');
         }
         entidad.USER = req.user.UCRCN;
         entidad.ID = req.user.ID;
@@ -97,6 +108,52 @@ let UsuarioController = class UsuarioController {
     async reporteEstadisticos(req, entidad) {
         return await this.userService.reporteEstadisticos(entidad);
     }
+    async getContacts(entidad, req) {
+        if (!req.user.ID) {
+            throw new common_1.UnauthorizedException('No tienes permiso para acceder a esta ruta');
+        }
+        entidad.IDUSR = req.user.ID;
+        let data = await this.userService.listContactos(entidad);
+        data = data.map((item) => {
+            item['RTAFTO'] = item['RTAFTO'] ? process.env.DOMINIO + item['RTAFTO'] : null;
+            return item;
+        });
+        return data;
+    }
+    async addContact(req, entidad) {
+        if (!req.user.ID) {
+            throw new common_1.UnauthorizedException('No tienes permiso para acceder a esta ruta');
+        }
+        entidad.IDEMISOR = req.user.ID;
+        entidad.USER = req.user.UCRCN;
+        return await this.userService.createContactos(entidad);
+    }
+    async editContact(req, entidad) {
+        if (!req.user.ID) {
+            throw new common_1.UnauthorizedException('No tienes permiso para acceder a esta ruta');
+        }
+        if (!entidad.ID) {
+            throw new common_1.BadRequestException('ID no valido');
+        }
+        entidad.USER = req.user.UCRCN;
+        return await this.userService.editContactos(entidad);
+    }
+    async deleteContact(req, ID) {
+        if (!req.user.ID) {
+            throw new common_1.UnauthorizedException('No tienes permiso para acceder a esta ruta');
+        }
+        if (!ID) {
+            throw new common_1.BadRequestException('ID no valido');
+        }
+        return await this.userService.deleteContactos(ID, req.user.UCRCN);
+    }
+    async getNotifications(req, entidad) {
+        if (!req.user.ID) {
+            throw new common_1.UnauthorizedException('No tienes permiso para acceder a esta ruta');
+        }
+        entidad.IDUSR = req.user.ID;
+        return await this.userService.listNotificaciones(entidad);
+    }
 };
 exports.UsuarioController = UsuarioController;
 __decorate([
@@ -118,8 +175,9 @@ __decorate([
     (0, common_1.Get)('list'),
     __param(0, (0, common_1.Query)()),
     __param(1, (0, common_1.Query)('IDROLE')),
+    __param(2, (0, common_1.Request)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [DataTable_model_1.DataTable, String]),
+    __metadata("design:paramtypes", [DataTable_model_1.DataTable, String, Object]),
     __metadata("design:returntype", Promise)
 ], UsuarioController.prototype, "listUsers", null);
 __decorate([
@@ -229,6 +287,46 @@ __decorate([
     __metadata("design:paramtypes", [Object, reporte_model_1.ReporteModelEntrie]),
     __metadata("design:returntype", Promise)
 ], UsuarioController.prototype, "reporteEstadisticos", null);
+__decorate([
+    (0, common_1.Get)('get-contacts'),
+    __param(0, (0, common_1.Query)()),
+    __param(1, (0, common_1.Request)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [DataTable_model_1.DataTable, Object]),
+    __metadata("design:returntype", Promise)
+], UsuarioController.prototype, "getContacts", null);
+__decorate([
+    (0, common_1.Post)('add-contact'),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], UsuarioController.prototype, "addContact", null);
+__decorate([
+    (0, common_1.Post)('edit-contact'),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], UsuarioController.prototype, "editContact", null);
+__decorate([
+    (0, common_1.Post)('delete-contact'),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Body)('ID')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Number]),
+    __metadata("design:returntype", Promise)
+], UsuarioController.prototype, "deleteContact", null);
+__decorate([
+    (0, common_1.Get)('get-notifications'),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Query)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, DataTable_model_1.DataTable]),
+    __metadata("design:returntype", Promise)
+], UsuarioController.prototype, "getNotifications", null);
 exports.UsuarioController = UsuarioController = __decorate([
     (0, common_1.Controller)('admin/user'),
     __metadata("design:paramtypes", [user_service_1.UserService,

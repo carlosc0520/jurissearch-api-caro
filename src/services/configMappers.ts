@@ -7,6 +7,9 @@ const procedures = {
             "CRUD": "EXEC JURIS.USP_CRUD_USR01",
             "CRUD2": "EXEC JURIS.USP_CRUD_DIRECTORY",
         },
+        "CONTACTOS": {
+            "CRUD": "EXEC JURIS.USP_CRUD_CONTACTO",
+        },
         "FILTROS": {
             "CRUD": "EXEC JURIS.USP_CRUD_FILTROS",
         },
