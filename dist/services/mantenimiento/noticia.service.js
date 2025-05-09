@@ -21,7 +21,7 @@ let NoticiaService = class NoticiaService {
         this.connection = connection;
     }
     async create(entidad) {
-        var _a, _b, _c;
+        var _a, _b, _c, _d;
         let queryAsync = configMappers_1.default.ADMIN.NOTICIA.CRUD;
         queryAsync += ` @p_cData = ${entidad ? `'${JSON.stringify(entidad)}'` : null},`;
         queryAsync += ` @p_cUser = ${entidad.UCRCN},`;
@@ -29,12 +29,13 @@ let NoticiaService = class NoticiaService {
         queryAsync += ` @p_nId = ${0}`;
         try {
             const result = await this.connection.query(queryAsync);
-            const isSuccess = ((_a = result === null || result === void 0 ? void 0 : result[0]) === null || _a === void 0 ? void 0 : _a.RESULT) > 0;
+            const ID = (_a = result === null || result === void 0 ? void 0 : result[0]) === null || _a === void 0 ? void 0 : _a.RESULT;
+            const isSuccess = ((_b = result === null || result === void 0 ? void 0 : result[0]) === null || _b === void 0 ? void 0 : _b.RESULT) > 0;
             const MESSAGE = isSuccess ? "Noticia agregada correctamente" : "Ocurrió un error al intentar agregar la noticia";
-            return { MESSAGE, STATUS: isSuccess };
+            return { MESSAGE, STATUS: isSuccess, ID };
         }
         catch (error) {
-            const MESSAGE = ((_c = (_b = error.originalError) === null || _b === void 0 ? void 0 : _b.info) === null || _c === void 0 ? void 0 : _c.message) || "Ocurrió un error al intentar agregar la noticia";
+            const MESSAGE = ((_d = (_c = error.originalError) === null || _c === void 0 ? void 0 : _c.info) === null || _d === void 0 ? void 0 : _d.message) || "Ocurrió un error al intentar agregar la noticia";
             return { MESSAGE, STATUS: false };
         }
     }
@@ -87,8 +88,9 @@ let NoticiaService = class NoticiaService {
     async edit(entidad) {
         var _a, _b, _c;
         let queryAsync = configMappers_1.default.ADMIN.NOTICIA.CRUD;
-        queryAsync += ` @p_cData = ${entidad ? `'${JSON.stringify(entidad)}'` : null},`;
-        queryAsync += ` @p_cUser = ${entidad === null || entidad === void 0 ? void 0 : entidad.UCRCN},`;
+        let jsonData = JSON.stringify(entidad).replace(/'/g, "''");
+        queryAsync += ` @p_cData = ${entidad ? `'${jsonData}'` : null},`;
+        queryAsync += ` @p_cUser = '${entidad === null || entidad === void 0 ? void 0 : entidad.UCRCN}',`;
         queryAsync += ` @p_nTipo = ${1},`;
         queryAsync += ` @p_nId = ${entidad === null || entidad === void 0 ? void 0 : entidad.ID}`;
         try {
@@ -223,6 +225,56 @@ let NoticiaService = class NoticiaService {
     async deleteCategoria(id, UCRCN) {
         var _a, _b, _c;
         let queryAsync = configMappers_1.default.ADMIN.NOTICIA.CRUD3;
+        queryAsync += ` @p_cData = ${null},`;
+        queryAsync += ` @p_cUser = ${UCRCN},`;
+        queryAsync += ` @p_nTipo = ${2},`;
+        queryAsync += ` @p_nId = ${id}`;
+        try {
+            const result = await this.connection.query(queryAsync);
+            const isSuccess = ((_a = result === null || result === void 0 ? void 0 : result[0]) === null || _a === void 0 ? void 0 : _a.RESULT) > 0;
+            const MESSAGE = isSuccess ? "Registro eliminado correctamente" : "Ocurrió un error al intentar eliminar el registro";
+            return { MESSAGE, STATUS: isSuccess };
+        }
+        catch (error) {
+            const MESSAGE = ((_c = (_b = error.originalError) === null || _b === void 0 ? void 0 : _b.info) === null || _c === void 0 ? void 0 : _c.message) || "Ocurrió un error al intentar eliminar el registro";
+            return { MESSAGE, STATUS: false };
+        }
+    }
+    async listRecursos(entidad) {
+        let queryAsync = configMappers_1.default.ADMIN.NOTICIA.CRUD4;
+        queryAsync += ` @p_cData = ${entidad ? `'${JSON.stringify(entidad)}'` : null},`;
+        queryAsync += ` @p_cUser = ${null},`;
+        queryAsync += ` @p_nTipo = ${4},`;
+        queryAsync += ` @p_nId = ${0}`;
+        try {
+            const result = await this.connection.query(queryAsync);
+            return result;
+        }
+        catch (error) {
+            return error;
+        }
+    }
+    async createRecurso(entidad) {
+        var _a, _b, _c;
+        let queryAsync = configMappers_1.default.ADMIN.NOTICIA.CRUD4;
+        queryAsync += ` @p_cData = ${entidad ? `'${JSON.stringify(entidad)}'` : null},`;
+        queryAsync += ` @p_cUser = ${entidad.UCRCN},`;
+        queryAsync += ` @p_nTipo = ${1},`;
+        queryAsync += ` @p_nId = ${0}`;
+        try {
+            const result = await this.connection.query(queryAsync);
+            const isSuccess = ((_a = result === null || result === void 0 ? void 0 : result[0]) === null || _a === void 0 ? void 0 : _a.RESULT) > 0;
+            const MESSAGE = isSuccess ? "Recurso agregado correctamente" : "Ocurrió un error al intentar agregar el recurso";
+            return { MESSAGE, STATUS: isSuccess };
+        }
+        catch (error) {
+            const MESSAGE = ((_c = (_b = error.originalError) === null || _b === void 0 ? void 0 : _b.info) === null || _c === void 0 ? void 0 : _c.message) || "Ocurrió un error al intentar agregar el recurso";
+            return { MESSAGE, STATUS: false };
+        }
+    }
+    async deleteRecurso(id, UCRCN) {
+        var _a, _b, _c;
+        let queryAsync = configMappers_1.default.ADMIN.NOTICIA.CRUD4;
         queryAsync += ` @p_cData = ${null},`;
         queryAsync += ` @p_cUser = ${UCRCN},`;
         queryAsync += ` @p_nTipo = ${2},`;

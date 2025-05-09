@@ -14,6 +14,7 @@ class NoticiaModel {
         this.IDAUTORES = '';
         this.AUTORES = '';
         this.IDCATEGORIAS = '';
+        this.ENLACE = '';
         this.CATEGORIAS = '';
         this.CDESTDO = '';
     }

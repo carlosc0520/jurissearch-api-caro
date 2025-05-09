@@ -16,4 +16,13 @@ export declare class EmailService {
         STATUS: boolean;
         ERROR: any;
     }>;
+    emailNewNoticias(usuarios: any, TITULO: any, ID: any, ENLACE: any, PATH: any): Promise<{
+        MESSAGE: string;
+        STATUS: boolean;
+        ERROR?: undefined;
+    } | {
+        MESSAGE: string;
+        STATUS: boolean;
+        ERROR: any;
+    }>;
 }

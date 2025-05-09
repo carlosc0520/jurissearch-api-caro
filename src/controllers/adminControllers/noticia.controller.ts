@@ -9,11 +9,15 @@ import { AutorModel, CategoriaModel, NoticiaModel } from 'src/models/Admin/notic
 import { NoticiaService } from 'src/services/mantenimiento/noticia.service';
 import { Response } from 'express';
 import { HostingerService } from 'src/services/Aws/hostinger.service';
+import { UserService } from 'src/services/User/user.service';
+import { EmailService } from 'src/services/acompliance/email.service';
 
 @Controller('admin/noticias')
 export class NoticiaController {
     constructor(
         private readonly noticiaService: NoticiaService,
+        private readonly usuarioService: UserService,
+        private readonly emailService: EmailService,
         private readonly s3Service: S3Service,
         private readonly hostingerService: HostingerService
     ) { }
@@ -76,7 +80,7 @@ export class NoticiaController {
             const [file1] = files;
 
             if (!file1) return { MESSAGE: 'La imagen es requerida', STATUS: false };
-            if(file1){
+            if (file1) {
                 const resultFile: any = await this.hostingerService.saveFile(file1, 'noticias');
                 if (!resultFile.success) return { MESSAGE: 'Error al subir la imagen', STATUS: false };
                 entidad.IMAGEN = resultFile.path;
@@ -84,6 +88,19 @@ export class NoticiaController {
 
             entidad.UCRCN = req.user.UCRCN;
             const result = await this.noticiaService.create(entidad);
+
+            if (result.STATUS) {
+                let usuarios = await this.usuarioService.obtenerEmails({});
+                let titleNoticia = entidad.TITULO.replace(/[^a-zA-Z0-9]/g, '-');
+                await this.emailService.emailNewNoticias(usuarios,
+                    titleNoticia,
+                    result.ID,
+                    entidad.ENLACE,
+                    process.env.DOMINIO + entidad.IMAGEN,
+                );
+            }
+
+
             return result
         }
         catch (error) {
@@ -92,9 +109,10 @@ export class NoticiaController {
         finally {
             await files.forEach(file => {
                 try {
-                    fs.unlinkSync(file.path);
+                    if (file.path) {
+                        fs.unlinkSync(file.path);
+                    }
                 } catch (error) {
-                    console.log('Error deleting file:', error);
                 }
             });
         }
@@ -142,9 +160,9 @@ export class NoticiaController {
         }
         finally {
             await files.forEach(file => {
-                try{
+                try {
                     fs.unlinkSync(file.path);
-                }catch (error) {
+                } catch (error) {
                     console.log('Error deleting file:', error);
                 }
             });
@@ -181,9 +199,8 @@ export class NoticiaController {
         try {
             const [file1] = files;
 
-            if(file1){
+            if (file1) {
                 const resultFile: any = await this.hostingerService.saveFile(file1, 'noticias/autores');
-                console.log(resultFile)
                 if (!resultFile.success) return { MESSAGE: 'Error al subir la imagen', STATUS: false };
                 entidad.RUTA = resultFile.path;
             }
@@ -250,9 +267,9 @@ export class NoticiaController {
         }
         finally {
             await files.forEach(file => {
-                try{
+                try {
                     fs.unlinkSync(file.path);
-                }catch (error) {
+                } catch (error) {
                     console.log('Error deleting file:', error);
                 }
             });
@@ -301,5 +318,77 @@ export class NoticiaController {
     async deleteCategoria(@Request() req, @Body('ID') ID: number): Promise<Result> {
         if (!ID) return { MESSAGE: 'El Identificador es requerido', STATUS: false };
         return await this.noticiaService.deleteCategoria(ID, req.user.UCRCN);
+    }
+
+    // * recurso
+    @Get('list-recursos')
+    async listaRecursos(@Query() entidad: DataTable): Promise<any[]> {
+        let data = await this.noticiaService.listRecursos(entidad);
+        data = data.map((item) => {
+            return {
+                ...item,
+                ENLACE: item.ENLACE ? process.env.DOMINIO + item.ENLACE : null,
+            }
+        });
+
+        return data;
+    }
+
+
+    @Post('add-recursos')
+    @UseInterceptors(
+        FilesInterceptor('files', 20, {
+            storage: diskStorage({
+                destination: './uploads/recursos',
+                filename: function (req, file, cb) {
+                    const filename = `${Date.now()}-${file.originalname.replace(/\s/g, '')}`;
+                    return cb(null, filename);
+                }
+            }),
+            fileFilter: (req, file, cb) => {
+                cb(null, true);
+            }
+        }),
+    )
+    async addRecurso(@Request() req, @Body() entidad: any, @UploadedFiles() files): Promise<Result> {
+        try {
+
+            const [file1] = files;
+
+            if (!file1) return { MESSAGE: 'El recurso es requerido es requerida', STATUS: false };
+            if (file1) {
+                const resultFile: any = await this.hostingerService.saveFile(file1, 'recursos');
+                if (!resultFile.success) return { MESSAGE: 'Error al subir el recurso', STATUS: false };
+                entidad.ENLACE = resultFile.path;
+                entidad.NOMBRE = file1.originalname;
+            }
+
+            entidad.UCRCN = req.user.UCRCN;
+            const result = await this.noticiaService.createRecurso(entidad);
+            return result
+        }
+        catch (error) {
+            return { MESSAGE: error.message, STATUS: false };
+        }
+        finally {
+            await files.forEach(file => {
+                try {
+                    fs.unlinkSync(file.path);
+                } catch (error) {
+                    console.log('Error deleting file:', error);
+                }
+            });
+        }
+    }
+
+
+    @Post('delete-recursos')
+    async deleteRecurso(@Request() req, @Body('ID') ID: number, @Body('ENLACE') ENLACE: string): Promise<Result> {
+        ENLACE = ENLACE.replace(process.env.DOMINIO, '');
+        const deleteFile = await this.hostingerService.deleteFile(ENLACE);
+        if (!deleteFile) {
+            return { MESSAGE: 'Error al eliminar el recurso', STATUS: false };
+        }
+        return await this.noticiaService.deleteRecurso(ID, req.user.UCRCN);
     }
 }

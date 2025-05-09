@@ -56,5 +56,6 @@ export declare class UserService {
     editContactos(entidad: any): Promise<Result>;
     deleteContactos(id: number, UCRCN: string): Promise<Result>;
     listNotificaciones(entidad: DataTable): Promise<any[]>;
+    obtenerEmails(entidad: any): Promise<User[]>;
 }
 export {};

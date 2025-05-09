@@ -29,6 +29,7 @@ const procedures = {
             "CRUD": "EXEC JURIS.USP_CRUD_NOTICIAS",
             "CRUD2": "EXEC JURIS.USP_CRUD_AUTORES",
             "CRUD3": "EXEC JURIS.USP_CRUD_CATEGORIA",
+            "CRUD4": "EXEC JURIS.USP_CRUD_RECURSOS",
         },
         "PREGUNTAS": {
             "CRUD": "EXEC JURIS.USP_CRUD_PREGUNTAS"

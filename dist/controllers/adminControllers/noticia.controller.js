@@ -45,9 +45,13 @@ const DataTable_model_1 = require("../../models/DataTable.model.");
 const noticia_model_1 = require("../../models/Admin/noticia.model");
 const noticia_service_1 = require("../../services/mantenimiento/noticia.service");
 const hostinger_service_1 = require("../../services/Aws/hostinger.service");
+const user_service_1 = require("../../services/User/user.service");
+const email_service_1 = require("../../services/acompliance/email.service");
 let NoticiaController = class NoticiaController {
-    constructor(noticiaService, s3Service, hostingerService) {
+    constructor(noticiaService, usuarioService, emailService, s3Service, hostingerService) {
         this.noticiaService = noticiaService;
+        this.usuarioService = usuarioService;
+        this.emailService = emailService;
         this.s3Service = s3Service;
         this.hostingerService = hostingerService;
     }
@@ -80,6 +84,11 @@ let NoticiaController = class NoticiaController {
             }
             entidad.UCRCN = req.user.UCRCN;
             const result = await this.noticiaService.create(entidad);
+            if (result.STATUS) {
+                let usuarios = await this.usuarioService.obtenerEmails({});
+                let titleNoticia = entidad.TITULO.replace(/[^a-zA-Z0-9]/g, '-');
+                await this.emailService.emailNewNoticias(usuarios, titleNoticia, result.ID, entidad.ENLACE, process.env.DOMINIO + entidad.IMAGEN);
+            }
             return result;
         }
         catch (error) {
@@ -88,10 +97,11 @@ let NoticiaController = class NoticiaController {
         finally {
             await files.forEach(file => {
                 try {
-                    fs.unlinkSync(file.path);
+                    if (file.path) {
+                        fs.unlinkSync(file.path);
+                    }
                 }
                 catch (error) {
-                    console.log('Error deleting file:', error);
                 }
             });
         }
@@ -135,7 +145,6 @@ let NoticiaController = class NoticiaController {
             const [file1] = files;
             if (file1) {
                 const resultFile = await this.hostingerService.saveFile(file1, 'noticias/autores');
-                console.log(resultFile);
                 if (!resultFile.success)
                     return { MESSAGE: 'Error al subir la imagen', STATUS: false };
                 entidad.RUTA = resultFile.path;
@@ -223,6 +232,51 @@ let NoticiaController = class NoticiaController {
         if (!ID)
             return { MESSAGE: 'El Identificador es requerido', STATUS: false };
         return await this.noticiaService.deleteCategoria(ID, req.user.UCRCN);
+    }
+    async listaRecursos(entidad) {
+        let data = await this.noticiaService.listRecursos(entidad);
+        data = data.map((item) => {
+            return Object.assign(Object.assign({}, item), { ENLACE: item.ENLACE ? process.env.DOMINIO + item.ENLACE : null });
+        });
+        return data;
+    }
+    async addRecurso(req, entidad, files) {
+        try {
+            const [file1] = files;
+            if (!file1)
+                return { MESSAGE: 'El recurso es requerido es requerida', STATUS: false };
+            if (file1) {
+                const resultFile = await this.hostingerService.saveFile(file1, 'recursos');
+                if (!resultFile.success)
+                    return { MESSAGE: 'Error al subir el recurso', STATUS: false };
+                entidad.ENLACE = resultFile.path;
+                entidad.NOMBRE = file1.originalname;
+            }
+            entidad.UCRCN = req.user.UCRCN;
+            const result = await this.noticiaService.createRecurso(entidad);
+            return result;
+        }
+        catch (error) {
+            return { MESSAGE: error.message, STATUS: false };
+        }
+        finally {
+            await files.forEach(file => {
+                try {
+                    fs.unlinkSync(file.path);
+                }
+                catch (error) {
+                    console.log('Error deleting file:', error);
+                }
+            });
+        }
+    }
+    async deleteRecurso(req, ID, ENLACE) {
+        ENLACE = ENLACE.replace(process.env.DOMINIO, '');
+        const deleteFile = await this.hostingerService.deleteFile(ENLACE);
+        if (!deleteFile) {
+            return { MESSAGE: 'Error al eliminar el recurso', STATUS: false };
+        }
+        return await this.noticiaService.deleteRecurso(ID, req.user.UCRCN);
     }
 };
 exports.NoticiaController = NoticiaController;
@@ -403,9 +457,48 @@ __decorate([
     __metadata("design:paramtypes", [Object, Number]),
     __metadata("design:returntype", Promise)
 ], NoticiaController.prototype, "deleteCategoria", null);
+__decorate([
+    (0, common_1.Get)('list-recursos'),
+    __param(0, (0, common_1.Query)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [DataTable_model_1.DataTable]),
+    __metadata("design:returntype", Promise)
+], NoticiaController.prototype, "listaRecursos", null);
+__decorate([
+    (0, common_1.Post)('add-recursos'),
+    (0, common_1.UseInterceptors)((0, platform_express_1.FilesInterceptor)('files', 20, {
+        storage: (0, multer_1.diskStorage)({
+            destination: './uploads/recursos',
+            filename: function (req, file, cb) {
+                const filename = `${Date.now()}-${file.originalname.replace(/\s/g, '')}`;
+                return cb(null, filename);
+            }
+        }),
+        fileFilter: (req, file, cb) => {
+            cb(null, true);
+        }
+    })),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Body)()),
+    __param(2, (0, common_1.UploadedFiles)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object, Object]),
+    __metadata("design:returntype", Promise)
+], NoticiaController.prototype, "addRecurso", null);
+__decorate([
+    (0, common_1.Post)('delete-recursos'),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Body)('ID')),
+    __param(2, (0, common_1.Body)('ENLACE')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Number, String]),
+    __metadata("design:returntype", Promise)
+], NoticiaController.prototype, "deleteRecurso", null);
 exports.NoticiaController = NoticiaController = __decorate([
     (0, common_1.Controller)('admin/noticias'),
     __metadata("design:paramtypes", [noticia_service_1.NoticiaService,
+        user_service_1.UserService,
+        email_service_1.EmailService,
         aws_service_1.S3Service,
         hostinger_service_1.HostingerService])
 ], NoticiaController);

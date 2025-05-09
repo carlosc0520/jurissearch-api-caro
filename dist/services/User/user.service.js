@@ -366,6 +366,22 @@ let UserService = class UserService {
             return error;
         }
     }
+    async obtenerEmails(entidad) {
+        try {
+            let queryAsync = configMappers_1.default.ADMIN.USUARIO.CRUD;
+            queryAsync += ` @p_cData = ${entidad ? `'${JSON.stringify(entidad)}'` : null},`;
+            queryAsync += ` @p_cUser = ${(entidad === null || entidad === void 0 ? void 0 : entidad.USER) ? `'${entidad.USER}'` : null},`;
+            queryAsync += ` @p_nTipo = ${21},`;
+            queryAsync += ` @p_nId = ${0}`;
+            const usuario = await this.connection.query(queryAsync)
+                .then((result) => result ? result : [])
+                .catch((error) => error);
+            return usuario;
+        }
+        catch (error) {
+            return error;
+        }
+    }
 };
 exports.UserService = UserService;
 exports.UserService = UserService = __decorate([

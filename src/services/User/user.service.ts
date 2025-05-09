@@ -402,6 +402,23 @@ export class UserService {
         }
     }
 
+    async obtenerEmails(entidad: any): Promise<User[]> {
+        try {
+            let queryAsync = procedures.ADMIN.USUARIO.CRUD;
+            queryAsync += ` @p_cData = ${entidad ? `'${JSON.stringify(entidad)}'` : null},`;
+            queryAsync += ` @p_cUser = ${entidad?.USER ? `'${entidad.USER}'` : null},`;
+            queryAsync += ` @p_nTipo = ${21},`;
+            queryAsync += ` @p_nId = ${0}`
+
+            const usuario: any = await this.connection.query(queryAsync)
+                .then((result) => result ? result : [])
+                .catch((error) => error);
+            return usuario;
+        }
+        catch (error) {
+            return error;
+        }
+    }
     
 }
 

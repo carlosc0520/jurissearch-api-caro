@@ -140,4 +140,57 @@ export class EmailService {
       return { MESSAGE: 'Error al enviar los correos', STATUS: false, ERROR: error.message };
     }
   }
+
+  async emailNewNoticias(usuarios, TITULO, ID, ENLACE, PATH) {
+    const validarEmail = (email) => {
+      const regex = /^[\w.%+-]+@gmail\.com$/;
+      return regex.test(email);
+    };
+  
+    try {
+      const html = `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #f9f9f9; border: 1px solid #ddd; border-radius: 8px; overflow: hidden;">
+        <div style="background: -webkit-gradient(linear,left top,right top,from(#e71fb3),to(#1864ff)); color: #ffffff; padding: 16px; text-align: center;">
+          <h1 style="margin: 0; font-size: 24px;">¡Novedades en JurisSearch!</h1>
+        </div>
+    
+        <div style="padding: 20px; text-align: center;">
+          <a href="${ENLACE}" style="text-decoration: none; color: #000;">
+            <img src="${PATH}" alt="Boletín" style="width: 100%; max-width: 560px; height: auto; border-radius: 8px; margin-bottom: 16px;" />
+          </a>
+          <p style="font-size: 16px; color: #333; line-height: 1.6;">
+            Explora el último boletín para descubrir las novedades y actualizaciones legales más importantes. 
+            Haz clic en la imagen para obtener más información.
+          </p>
+          <a href="https://jurissearch.com/noticias/${TITULO}/newsletter/${ID}"
+           style="display: inline-block; background: -webkit-gradient(linear,left top,right top,from(#e71fb3),to(#1864ff)); color: #ffffff; text-decoration: none; padding: 10px 20px; border-radius: 5px; font-size: 16px; font-weight: bold;">
+            Leer el boletín
+          </a>
+        </div>
+    
+        <div style="background-color: #f1f1f1; padding: 16px; text-align: center; font-size: 14px; color: #666;">
+          <p style="margin: 0;">¿Tienes preguntas? Visítanos en <a href="https://jurissearch.com" style="color: #0056b3; text-decoration: none;">jurissearch.com</a></p>
+        </div>
+      </div>
+    `;
+    
+      const promesas = usuarios
+        .filter((usuario) => validarEmail(usuario.EMAIL))
+        .map((usuario) => {
+          const mailOptions = {
+            from: 'JURISSEARCH INFORMATIVO',
+            to: usuario.EMAIL,
+            subject: `NEWSLETTER - ${TITULO}`,
+            html,
+          };
+          return this.transporter3.sendMail(mailOptions);
+        });
+  
+      await Promise.allSettled(promesas);
+  
+      return { MESSAGE: 'Correos enviados correctamente', STATUS: true };
+    } catch (error) {
+      return { MESSAGE: 'Error al enviar los correos', STATUS: false, ERROR: error.message };
+    }
+  }
 }

@@ -29,6 +29,7 @@ declare const procedures: {
             CRUD: string;
             CRUD2: string;
             CRUD3: string;
+            CRUD4: string;
         };
         PREGUNTAS: {
             CRUD: string;

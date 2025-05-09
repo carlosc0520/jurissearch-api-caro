@@ -21,9 +21,10 @@ export class NoticiaService {
 
         try {
             const result = await this.connection.query(queryAsync);
+            const ID = result?.[0]?.RESULT;
             const isSuccess = result?.[0]?.RESULT > 0;
             const MESSAGE = isSuccess ? "Noticia agregada correctamente" : "Ocurrió un error al intentar agregar la noticia";
-            return { MESSAGE, STATUS: isSuccess };
+            return { MESSAGE, STATUS: isSuccess, ID };
         } catch (error) {
             const MESSAGE = error.originalError?.info?.message || "Ocurrió un error al intentar agregar la noticia";
             return { MESSAGE, STATUS: false };
@@ -80,11 +81,13 @@ export class NoticiaService {
 
     async edit(entidad: NoticiaModel): Promise<Result> {
         let queryAsync = procedures.ADMIN.NOTICIA.CRUD;
-        queryAsync += ` @p_cData = ${entidad ? `'${JSON.stringify(entidad)}'` : null},`;
-        queryAsync += ` @p_cUser = ${entidad?.UCRCN},`;
+        let jsonData = JSON.stringify(entidad).replace(/'/g, "''");  // solo escapamos comillas simples para SQL
+        
+        queryAsync += ` @p_cData = ${entidad ? `'${jsonData}'` : null},`;
+        queryAsync += ` @p_cUser = '${entidad?.UCRCN}',`;  // agrega COMILLAS AQUÍ porque es string
         queryAsync += ` @p_nTipo = ${1},`;
         queryAsync += ` @p_nId = ${entidad?.ID}`;
-
+                
         try {
             const result = await this.connection.query(queryAsync);
             const isSuccess = result?.[0]?.RESULT > 0;
@@ -236,4 +239,55 @@ export class NoticiaService {
         }
     }
 
+    // * RECURSOS
+    async listRecursos(entidad: DataTable): Promise<any[]> {
+        let queryAsync = procedures.ADMIN.NOTICIA.CRUD4;
+        queryAsync += ` @p_cData = ${entidad ? `'${JSON.stringify(entidad)}'` : null},`;
+        queryAsync += ` @p_cUser = ${null},`;
+        queryAsync += ` @p_nTipo = ${4},`;
+        queryAsync += ` @p_nId = ${0}`;
+
+        try {
+            const result = await this.connection.query(queryAsync);
+            return result;
+        } catch (error) {
+            return error;
+        }
+    }
+
+    async createRecurso(entidad: NoticiaModel): Promise<Result> {
+        let queryAsync = procedures.ADMIN.NOTICIA.CRUD4;
+        queryAsync += ` @p_cData = ${entidad ? `'${JSON.stringify(entidad)}'` : null},`;
+        queryAsync += ` @p_cUser = ${entidad.UCRCN},`;
+        queryAsync += ` @p_nTipo = ${1},`;
+        queryAsync += ` @p_nId = ${0}`;
+
+        try {
+            const result = await this.connection.query(queryAsync);
+            const isSuccess = result?.[0]?.RESULT > 0;
+            const MESSAGE = isSuccess ? "Recurso agregado correctamente" : "Ocurrió un error al intentar agregar el recurso";
+            return { MESSAGE, STATUS: isSuccess };
+        } catch (error) {
+            const MESSAGE = error.originalError?.info?.message || "Ocurrió un error al intentar agregar el recurso";
+            return { MESSAGE, STATUS: false };
+        }
+    }
+
+    async deleteRecurso(id: number, UCRCN: string): Promise<Result> {
+        let queryAsync = procedures.ADMIN.NOTICIA.CRUD4;
+        queryAsync += ` @p_cData = ${null},`;
+        queryAsync += ` @p_cUser = ${UCRCN},`;
+        queryAsync += ` @p_nTipo = ${2},`;
+        queryAsync += ` @p_nId = ${id}`;
+
+        try {
+            const result = await this.connection.query(queryAsync);
+            const isSuccess = result?.[0]?.RESULT > 0;
+            const MESSAGE = isSuccess ? "Registro eliminado correctamente" : "Ocurrió un error al intentar eliminar el registro";
+            return { MESSAGE, STATUS: isSuccess };
+        } catch (error) {
+            const MESSAGE = error.originalError?.info?.message || "Ocurrió un error al intentar eliminar el registro";
+            return { MESSAGE, STATUS: false };
+        }
+    }
 }

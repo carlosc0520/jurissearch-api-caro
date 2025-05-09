@@ -18,4 +18,7 @@ export declare class NoticiaService {
     createCategoria(entidad: CategoriaModel): Promise<Result>;
     editCategoria(entidad: CategoriaModel): Promise<Result>;
     deleteCategoria(id: number, UCRCN: string): Promise<Result>;
+    listRecursos(entidad: DataTable): Promise<any[]>;
+    createRecurso(entidad: NoticiaModel): Promise<Result>;
+    deleteRecurso(id: number, UCRCN: string): Promise<Result>;
 }

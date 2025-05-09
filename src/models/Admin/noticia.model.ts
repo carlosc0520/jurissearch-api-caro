@@ -10,6 +10,7 @@ export class NoticiaModel {
     IDAUTORES: string = '';
     AUTORES: string = '';
     IDCATEGORIAS: string = '';
+    ENLACE: string = '';
     CATEGORIAS: string = '';
     CDESTDO: string = '';
 }
