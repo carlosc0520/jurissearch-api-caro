@@ -8,6 +8,8 @@ class DataTable {
         this.NIVEL = 0;
         this.DIAS = 0;
         this.IDUSR = 0;
+        this.ESTADO = null;
+        this.IDFAV = null;
     }
 }
 exports.DataTable = DataTable;

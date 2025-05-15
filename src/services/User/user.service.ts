@@ -199,6 +199,7 @@ export class UserService {
         }
     }
 
+    // * FAVORITES
     async addFavoriteUser(USER: string, IDUSER: number, IDENTRIE: number): Promise<Result> {
         let queryAsync = procedures.ADMIN.USUARIO.CRUD;
         let data = {
@@ -221,6 +222,29 @@ export class UserService {
         }
     }
 
+    async deleteFavoriteUser(USER: string, IDUSER: number, IDFAV: number): Promise<Result> {
+        let queryAsync = procedures.ADMIN.USUARIO.CRUD;
+        let data = {
+            IDUSER,
+            IDFAV
+        }
+
+        queryAsync += ` @p_cData = ${data ? `'${JSON.stringify(data)}'` : null},`;
+        queryAsync += ` @p_cUser = '${USER}',`;
+        queryAsync += ` @p_nTipo = ${7},`;
+        queryAsync += ` @p_nId = ${IDFAV}`;
+
+        try {
+            const result = await this.connection.query(queryAsync);
+            const isSuccess = result?.[0]?.RESULT > 0;
+            const MESSAGE = isSuccess ? "Entrada eliminada de favoritos correctamente" : "Ocurrió un error al intentar eliminar la entrada de favoritos";
+            return { MESSAGE, STATUS: isSuccess };
+        } catch (error) {
+            const MESSAGE = error.originalError?.info?.message || "Ocurrió un error al intentar eliminar la entrada de favoritos";
+            return { MESSAGE, STATUS: false };
+        }
+    }
+
     async getUser(ID: number): Promise<User> {
         let queryAsync = procedures.ADMIN.USUARIO.CRUD;
         queryAsync += ` @p_cData = ${null},`;
@@ -236,6 +260,7 @@ export class UserService {
         }
     }
 
+    // DIRECTORIOS
     async createDirectory(entidad: any): Promise<Result> {
         let queryAsync = procedures.ADMIN.USUARIO.CRUD2;
         queryAsync += ` @p_cData = ${entidad ? `'${JSON.stringify(entidad)}'` : null},`;
@@ -253,6 +278,43 @@ export class UserService {
             return { MESSAGE, STATUS: false };
         }
     }
+
+    async updateDirectory(entidad: any): Promise<Result> {
+        let queryAsync = procedures.ADMIN.USUARIO.CRUD2;
+        queryAsync += ` @p_cData = ${entidad ? `'${JSON.stringify(entidad)}'` : null},`;
+        queryAsync += ` @p_cUser = ${entidad?.USER ? `'${entidad.USER}'` : null},`;
+        queryAsync += ` @p_nTipo = ${1},`;
+        queryAsync += ` @p_nId = ${entidad?.ID}`;
+
+        try {
+            const result = await this.connection.query(queryAsync);
+            const isSuccess = result?.[0]?.RESULT > 0;
+            const MESSAGE = isSuccess ? "Directorio editado correctamente" : "Ocurrió un error al intentar editar el directorio";
+            return { MESSAGE, STATUS: isSuccess };
+        } catch (error) {
+            const MESSAGE = error.originalError?.info?.message || "Ocurrió un error al intentar editar el directorio";
+            return { MESSAGE, STATUS: false };
+        }
+    }
+
+    async deleteDirectory(DIRECTORIOS: string, USER: any): Promise<Result> {
+        let queryAsync = procedures.ADMIN.USUARIO.CRUD2;
+        queryAsync += ` @p_cData = ${DIRECTORIOS ? `'${JSON.stringify({DIRECTORIOS, IDUSER: USER.ID})}'` : null},`;
+        queryAsync += ` @p_cUser = ${USER.UCRCN ? `'${USER.UCRCN}'` : null},`;
+        queryAsync += ` @p_nTipo = ${2},`;
+        queryAsync += ` @p_nId = ${0}`;
+
+        try {
+            const result = await this.connection.query(queryAsync);
+            const isSuccess = result?.[0]?.RESULT > 0;
+            const MESSAGE = isSuccess ? "Directorios eliminados correctamente" : "Ocurrió un error al intentar eliminar los directorios";
+            return { MESSAGE, STATUS: isSuccess };
+        } catch (error) {
+            const MESSAGE = error.originalError?.info?.message || "Ocurrió un error al intentar eliminar los directorios";
+            return { MESSAGE, STATUS: false };
+        }
+    }
+
 
     async sharedDirectory(entidad: any): Promise<Result> {
         let queryAsync = procedures.ADMIN.USUARIO.CRUD2;
@@ -419,6 +481,41 @@ export class UserService {
             return error;
         }
     }
+
+    async compartir(entidad: any): Promise<Result> {
+        let queryAsync = procedures.ADMIN.USUARIO.CRUD3;
+        queryAsync += ` @p_cData = ${entidad ? `'${JSON.stringify(entidad)}'` : null},`;
+        queryAsync += ` @p_cUser = ${entidad?.USER ? `'${entidad.USER}'` : null},`;
+        queryAsync += ` @p_nTipo = ${1},`;
+        queryAsync += ` @p_nId = ${0}`
+
+        
+        try {
+            const result = await this.connection.query(queryAsync);
+            const isSuccess = result?.[0]?.RESULT > 0;
+            const MESSAGE = isSuccess ? "Documentos compartidos correctamente" : "Ocurrió un error al intentar compartir los documentos";
+            return { MESSAGE, STATUS: isSuccess };
+        } catch (error) {
+            const MESSAGE = error.originalError?.info?.message || "Ocurrió un error al intentar compartir los documentos";
+            return { MESSAGE, STATUS: false };
+        }
+    }
+
+    async listUsersShared(entidad: any): Promise<any[]> {
+        let queryAsync = procedures.ADMIN.USUARIO.CRUD3;
+        queryAsync += ` @p_cData = ${entidad ? `'${JSON.stringify(entidad)}'` : null},`;
+        queryAsync += ` @p_cUser = ${null},`;
+        queryAsync += ` @p_nTipo = ${4},`;
+        queryAsync += ` @p_nId = ${0}`;
+
+        try {
+            const result = await this.connection.query(queryAsync);
+            return result;
+        } catch (error) {
+            return error;
+        }
+    }
+
     
 }
 

@@ -1504,6 +1504,7 @@ export class EntriesController {
     @Body() entidad: BusquedaModel,
   ): Promise<Result> {
     entidad.ID = req.user.ID;
+    entidad.UEDCN = req.user.UCRCN;
     return await this.entriesService.saveDirectory(entidad);
   }
 

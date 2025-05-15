@@ -57,7 +57,9 @@ let UsuarioController = class UsuarioController {
     }
     async getUser(req) {
         let result = await this.userService.getUser(req.user.ID);
-        result.RTAFTO = result.RTAFTO ? process.env.DOMINIO + result.RTAFTO : null;
+        if (result['RTAFTO']) {
+            result.RTAFTO = result.RTAFTO ? process.env.DOMINIO + result.RTAFTO : null;
+        }
         return result;
     }
     async deleteUser(req, ID) {
@@ -88,8 +90,15 @@ let UsuarioController = class UsuarioController {
     }
     async createDirectory(req, entidad) {
         entidad.USER = req.user.UCRCN;
-        entidad.ID = req.user.ID;
+        entidad.IDUSUARIO = req.user.ID;
         return await this.userService.createDirectory(entidad);
+    }
+    async editDirectory(req, entidad) {
+        entidad.USER = req.user.UCRCN;
+        return await this.userService.updateDirectory(entidad);
+    }
+    async deleteDirectory(req, DIRECTORIOS) {
+        return await this.userService.deleteDirectory(DIRECTORIOS, req.user);
     }
     async sharedDirectory(req, entidad) {
         entidad.USER = req.user.UCRCN;
@@ -105,6 +114,9 @@ let UsuarioController = class UsuarioController {
     async addFavoriteUser(req, IDENTRIE) {
         return await this.userService.addFavoriteUser(req.user.UCRCN, req.user.ID, IDENTRIE);
     }
+    async deleteFavoriteUser(req, entidad) {
+        return await this.userService.deleteFavoriteUser(req.user.UCRCN, req.user.ID, entidad.IDFAV);
+    }
     async reporteEstadisticos(req, entidad) {
         return await this.userService.reporteEstadisticos(entidad);
     }
@@ -115,7 +127,9 @@ let UsuarioController = class UsuarioController {
         entidad.IDUSR = req.user.ID;
         let data = await this.userService.listContactos(entidad);
         data = data.map((item) => {
-            item['RTAFTO'] = item['RTAFTO'] ? process.env.DOMINIO + item['RTAFTO'] : null;
+            if (item['RTAFTO']) {
+                item['RTAFTO'] = item['RTAFTO'] ? process.env.DOMINIO + item['RTAFTO'] : null;
+            }
             return item;
         });
         return data;
@@ -153,6 +167,20 @@ let UsuarioController = class UsuarioController {
         }
         entidad.IDUSR = req.user.ID;
         return await this.userService.listNotificaciones(entidad);
+    }
+    async compartir(req, entidad) {
+        if (!req.user.ID) {
+            throw new common_1.UnauthorizedException('No tienes permiso para acceder a esta ruta');
+        }
+        entidad.USER = req.user.UCRCN;
+        return await this.userService.compartir(entidad);
+    }
+    async getContactsSelecteds(req, entidad) {
+        if (!req.user.ID) {
+            throw new common_1.UnauthorizedException('No tienes permiso para acceder a esta ruta');
+        }
+        entidad.IDUSR = req.user.ID;
+        return await this.userService.listUsersShared(entidad);
     }
 };
 exports.UsuarioController = UsuarioController;
@@ -248,6 +276,22 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], UsuarioController.prototype, "createDirectory", null);
 __decorate([
+    (0, common_1.Post)('edit-directory'),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], UsuarioController.prototype, "editDirectory", null);
+__decorate([
+    (0, common_1.Post)('delete-directory'),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Body)('DIRECTORIOS')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, String]),
+    __metadata("design:returntype", Promise)
+], UsuarioController.prototype, "deleteDirectory", null);
+__decorate([
     (0, common_1.Post)('shared-directory'),
     __param(0, (0, common_1.Request)()),
     __param(1, (0, common_1.Body)()),
@@ -279,6 +323,14 @@ __decorate([
     __metadata("design:paramtypes", [Object, Number]),
     __metadata("design:returntype", Promise)
 ], UsuarioController.prototype, "addFavoriteUser", null);
+__decorate([
+    (0, common_1.Post)('delete-favorite'),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], UsuarioController.prototype, "deleteFavoriteUser", null);
 __decorate([
     (0, common_1.Get)('reporte-estadisticos'),
     __param(0, (0, common_1.Request)()),
@@ -327,6 +379,22 @@ __decorate([
     __metadata("design:paramtypes", [Object, DataTable_model_1.DataTable]),
     __metadata("design:returntype", Promise)
 ], UsuarioController.prototype, "getNotifications", null);
+__decorate([
+    (0, common_1.Post)('compartir-entradas'),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], UsuarioController.prototype, "compartir", null);
+__decorate([
+    (0, common_1.Get)('get-contacts-selecteds'),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Query)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], UsuarioController.prototype, "getContactsSelecteds", null);
 exports.UsuarioController = UsuarioController = __decorate([
     (0, common_1.Controller)('admin/user'),
     __metadata("design:paramtypes", [user_service_1.UserService,

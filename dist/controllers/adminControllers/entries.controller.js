@@ -1039,6 +1039,7 @@ let EntriesController = class EntriesController {
     }
     async saveDirectory(req, entidad) {
         entidad.ID = req.user.ID;
+        entidad.UEDCN = req.user.UCRCN;
         return await this.entriesService.saveDirectory(entidad);
     }
     async doc(res, ID) {

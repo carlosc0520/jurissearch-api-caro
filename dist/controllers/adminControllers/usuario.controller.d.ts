@@ -50,15 +50,20 @@ export declare class UsuarioController {
     editUser(req: any, entidad: User): Promise<Result>;
     editUserForce(req: any, entidad: User, files: any): Promise<Result>;
     createDirectory(req: any, entidad: any): Promise<Result>;
+    editDirectory(req: any, entidad: any): Promise<Result>;
+    deleteDirectory(req: any, DIRECTORIOS: string): Promise<Result>;
     sharedDirectory(req: any, entidad: any): Promise<Result>;
     listDirectory(req: any, DSCRPCN: string, TYPE: string): Promise<any>;
     listDirectoryAll(req: any): Promise<any>;
     addFavoriteUser(req: any, IDENTRIE: number): Promise<any>;
+    deleteFavoriteUser(req: any, entidad: any): Promise<any>;
     reporteEstadisticos(req: any, entidad: ReporteModelEntrie): Promise<any>;
     getContacts(entidad: DataTable, req: any): Promise<any>;
     addContact(req: any, entidad: any): Promise<Result>;
     editContact(req: any, entidad: any): Promise<Result>;
     deleteContact(req: any, ID: number): Promise<Result>;
     getNotifications(req: any, entidad: DataTable): Promise<any>;
+    compartir(req: any, entidad: any): Promise<Result>;
+    getContactsSelecteds(req: any, entidad: any): Promise<any>;
 }
 export {};

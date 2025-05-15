@@ -192,6 +192,28 @@ let UserService = class UserService {
             return { MESSAGE, STATUS: false };
         }
     }
+    async deleteFavoriteUser(USER, IDUSER, IDFAV) {
+        var _a, _b, _c;
+        let queryAsync = configMappers_1.default.ADMIN.USUARIO.CRUD;
+        let data = {
+            IDUSER,
+            IDFAV
+        };
+        queryAsync += ` @p_cData = ${data ? `'${JSON.stringify(data)}'` : null},`;
+        queryAsync += ` @p_cUser = '${USER}',`;
+        queryAsync += ` @p_nTipo = ${7},`;
+        queryAsync += ` @p_nId = ${IDFAV}`;
+        try {
+            const result = await this.connection.query(queryAsync);
+            const isSuccess = ((_a = result === null || result === void 0 ? void 0 : result[0]) === null || _a === void 0 ? void 0 : _a.RESULT) > 0;
+            const MESSAGE = isSuccess ? "Entrada eliminada de favoritos correctamente" : "Ocurrió un error al intentar eliminar la entrada de favoritos";
+            return { MESSAGE, STATUS: isSuccess };
+        }
+        catch (error) {
+            const MESSAGE = ((_c = (_b = error.originalError) === null || _b === void 0 ? void 0 : _b.info) === null || _c === void 0 ? void 0 : _c.message) || "Ocurrió un error al intentar eliminar la entrada de favoritos";
+            return { MESSAGE, STATUS: false };
+        }
+    }
     async getUser(ID) {
         let queryAsync = configMappers_1.default.ADMIN.USUARIO.CRUD;
         queryAsync += ` @p_cData = ${null},`;
@@ -221,6 +243,42 @@ let UserService = class UserService {
         }
         catch (error) {
             const MESSAGE = ((_c = (_b = error.originalError) === null || _b === void 0 ? void 0 : _b.info) === null || _c === void 0 ? void 0 : _c.message) || "Ocurrió un error al intentar crear el directorio";
+            return { MESSAGE, STATUS: false };
+        }
+    }
+    async updateDirectory(entidad) {
+        var _a, _b, _c;
+        let queryAsync = configMappers_1.default.ADMIN.USUARIO.CRUD2;
+        queryAsync += ` @p_cData = ${entidad ? `'${JSON.stringify(entidad)}'` : null},`;
+        queryAsync += ` @p_cUser = ${(entidad === null || entidad === void 0 ? void 0 : entidad.USER) ? `'${entidad.USER}'` : null},`;
+        queryAsync += ` @p_nTipo = ${1},`;
+        queryAsync += ` @p_nId = ${entidad === null || entidad === void 0 ? void 0 : entidad.ID}`;
+        try {
+            const result = await this.connection.query(queryAsync);
+            const isSuccess = ((_a = result === null || result === void 0 ? void 0 : result[0]) === null || _a === void 0 ? void 0 : _a.RESULT) > 0;
+            const MESSAGE = isSuccess ? "Directorio editado correctamente" : "Ocurrió un error al intentar editar el directorio";
+            return { MESSAGE, STATUS: isSuccess };
+        }
+        catch (error) {
+            const MESSAGE = ((_c = (_b = error.originalError) === null || _b === void 0 ? void 0 : _b.info) === null || _c === void 0 ? void 0 : _c.message) || "Ocurrió un error al intentar editar el directorio";
+            return { MESSAGE, STATUS: false };
+        }
+    }
+    async deleteDirectory(DIRECTORIOS, USER) {
+        var _a, _b, _c;
+        let queryAsync = configMappers_1.default.ADMIN.USUARIO.CRUD2;
+        queryAsync += ` @p_cData = ${DIRECTORIOS ? `'${JSON.stringify({ DIRECTORIOS, IDUSER: USER.ID })}'` : null},`;
+        queryAsync += ` @p_cUser = ${USER.UCRCN ? `'${USER.UCRCN}'` : null},`;
+        queryAsync += ` @p_nTipo = ${2},`;
+        queryAsync += ` @p_nId = ${0}`;
+        try {
+            const result = await this.connection.query(queryAsync);
+            const isSuccess = ((_a = result === null || result === void 0 ? void 0 : result[0]) === null || _a === void 0 ? void 0 : _a.RESULT) > 0;
+            const MESSAGE = isSuccess ? "Directorios eliminados correctamente" : "Ocurrió un error al intentar eliminar los directorios";
+            return { MESSAGE, STATUS: isSuccess };
+        }
+        catch (error) {
+            const MESSAGE = ((_c = (_b = error.originalError) === null || _b === void 0 ? void 0 : _b.info) === null || _c === void 0 ? void 0 : _c.message) || "Ocurrió un error al intentar eliminar los directorios";
             return { MESSAGE, STATUS: false };
         }
     }
@@ -377,6 +435,38 @@ let UserService = class UserService {
                 .then((result) => result ? result : [])
                 .catch((error) => error);
             return usuario;
+        }
+        catch (error) {
+            return error;
+        }
+    }
+    async compartir(entidad) {
+        var _a, _b, _c;
+        let queryAsync = configMappers_1.default.ADMIN.USUARIO.CRUD3;
+        queryAsync += ` @p_cData = ${entidad ? `'${JSON.stringify(entidad)}'` : null},`;
+        queryAsync += ` @p_cUser = ${(entidad === null || entidad === void 0 ? void 0 : entidad.USER) ? `'${entidad.USER}'` : null},`;
+        queryAsync += ` @p_nTipo = ${1},`;
+        queryAsync += ` @p_nId = ${0}`;
+        try {
+            const result = await this.connection.query(queryAsync);
+            const isSuccess = ((_a = result === null || result === void 0 ? void 0 : result[0]) === null || _a === void 0 ? void 0 : _a.RESULT) > 0;
+            const MESSAGE = isSuccess ? "Documentos compartidos correctamente" : "Ocurrió un error al intentar compartir los documentos";
+            return { MESSAGE, STATUS: isSuccess };
+        }
+        catch (error) {
+            const MESSAGE = ((_c = (_b = error.originalError) === null || _b === void 0 ? void 0 : _b.info) === null || _c === void 0 ? void 0 : _c.message) || "Ocurrió un error al intentar compartir los documentos";
+            return { MESSAGE, STATUS: false };
+        }
+    }
+    async listUsersShared(entidad) {
+        let queryAsync = configMappers_1.default.ADMIN.USUARIO.CRUD3;
+        queryAsync += ` @p_cData = ${entidad ? `'${JSON.stringify(entidad)}'` : null},`;
+        queryAsync += ` @p_cUser = ${null},`;
+        queryAsync += ` @p_nTipo = ${4},`;
+        queryAsync += ` @p_nId = ${0}`;
+        try {
+            const result = await this.connection.query(queryAsync);
+            return result;
         }
         catch (error) {
             return error;

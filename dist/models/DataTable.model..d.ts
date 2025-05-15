@@ -10,4 +10,6 @@ export declare class DataTable {
     TABLA?: string;
     DIAS?: number;
     IDUSR?: number;
+    ESTADO?: Boolean;
+    IDFAV?: number;
 }

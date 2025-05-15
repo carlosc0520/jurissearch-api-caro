@@ -137,7 +137,11 @@ let NoticiaController = class NoticiaController {
         }
     }
     async listaAutores(entidad) {
-        return await this.noticiaService.listAutores(entidad);
+        let data = await this.noticiaService.listAutores(entidad);
+        data = data.map((item) => {
+            return Object.assign(Object.assign({}, item), { RUTA: item['RUTA'] ? process.env.DOMINIO + item['RUTA'] : null });
+        });
+        return data;
     }
     async addAutor(req, entidad, files) {
         entidad.UCRCN = req.user.UCRCN;

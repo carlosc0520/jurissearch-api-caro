@@ -33,6 +33,7 @@ class BusquedaModel {
         this.TEMA = '';
         this.SUBTEMA = '';
         this.FRESOLUTIONSTRING = '';
+        this.SHARED = '';
     }
 }
 exports.BusquedaModel = BusquedaModel;

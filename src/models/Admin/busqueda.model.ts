@@ -32,4 +32,5 @@ export class BusquedaModel {
     TEMA: string = '';
     SUBTEMA: string = '';
     FRESOLUTIONSTRING: string = '';
+    SHARED?: string = '';
 }

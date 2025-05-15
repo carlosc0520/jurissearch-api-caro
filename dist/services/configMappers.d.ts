@@ -6,6 +6,7 @@ declare const procedures: {
         USUARIO: {
             CRUD: string;
             CRUD2: string;
+            CRUD3: string;
         };
         CONTACTOS: {
             CRUD: string;

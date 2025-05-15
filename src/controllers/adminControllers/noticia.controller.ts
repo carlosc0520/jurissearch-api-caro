@@ -172,7 +172,15 @@ export class NoticiaController {
     // AUTORES
     @Get('list-autores')
     async listaAutores(@Query() entidad: DataTable): Promise<NoticiaModel[]> {
-        return await this.noticiaService.listAutores(entidad);
+        let data = await this.noticiaService.listAutores(entidad);
+        data = data.map((item) => {
+            return {
+                ...item,
+                RUTA: item['RUTA'] ? process.env.DOMINIO + item['RUTA'] : null,
+            }
+        });
+        
+        return data;
     }
 
     @Post('add-autores')

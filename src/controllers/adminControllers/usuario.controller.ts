@@ -87,7 +87,9 @@ export class UsuarioController {
   @Get('get')
   async getUser(@Request() req): Promise<User> {
     let result = await this.userService.getUser(req.user.ID);
-    result.RTAFTO = result.RTAFTO ? process.env.DOMINIO + result.RTAFTO : null;
+    if(result['RTAFTO']){
+      result.RTAFTO = result.RTAFTO ? process.env.DOMINIO + result.RTAFTO : null;
+    }
     return result;
   }
 
@@ -155,11 +157,24 @@ export class UsuarioController {
     return await this.userService.editUser(entidad);
   }
 
+  // DIRECTORIOS
   @Post('add-directory')
   async createDirectory(@Request() req, @Body() entidad: any): Promise<Result> {
     entidad.USER = req.user.UCRCN;
-    entidad.ID = req.user.ID;
+    entidad.IDUSUARIO = req.user.ID;
     return await this.userService.createDirectory(entidad);
+  }
+
+  @Post('edit-directory')
+  async editDirectory(@Request() req, @Body() entidad: any): Promise<Result> {
+    entidad.USER = req.user.UCRCN;
+    return await this.userService.updateDirectory(entidad);
+  }
+
+  @Post('delete-directory')
+  async deleteDirectory(@Request() req, @Body('DIRECTORIOS') DIRECTORIOS: string): Promise<Result> {
+   
+    return await this.userService.deleteDirectory(DIRECTORIOS, req.user);
   }
 
   @Post('shared-directory')
@@ -186,13 +201,26 @@ export class UsuarioController {
   // **** FAVORITOS ****
   @Get('add-favorite')
   async addFavoriteUser(
-    @Request() req,
+    @Request() req, 
     @Query('IDENTRIE') IDENTRIE: number,
   ): Promise<any> {
     return await this.userService.addFavoriteUser(
       req.user.UCRCN,
       req.user.ID,
       IDENTRIE,
+    );
+  }
+
+  @Post('delete-favorite')
+  async deleteFavoriteUser(
+    @Request() req,
+    @Body() entidad: any,
+
+  ): Promise<any> {
+    return await this.userService.deleteFavoriteUser(
+      req.user.UCRCN,
+      req.user.ID,
+      entidad.IDFAV,
     );
   }
 
@@ -216,7 +244,9 @@ export class UsuarioController {
     entidad.IDUSR = req.user.ID;
     let data = await this.userService.listContactos(entidad);
     data = data.map((item) => {
-      item['RTAFTO'] = item['RTAFTO'] ? process.env.DOMINIO + item['RTAFTO'] : null;
+      if (item['RTAFTO']) {
+        item['RTAFTO'] = item['RTAFTO'] ? process.env.DOMINIO + item['RTAFTO'] : null;
+      }
       return item;
     });
 
@@ -281,5 +311,29 @@ export class UsuarioController {
     return await this.userService.listNotificaciones(entidad);
   }
 
+  // * COMPARTIR ... 
+  @Post('compartir-entradas')
+  async compartir(
+    @Request() req,
+    @Body() entidad: any,
+  ): Promise<Result> {
+    if (!req.user.ID) {
+      throw new UnauthorizedException('No tienes permiso para acceder a esta ruta');
+    }
+    entidad.USER = req.user.UCRCN;
+    return await this.userService.compartir(entidad);
+  }
+
+  @Get('get-contacts-selecteds')
+  async getContactsSelecteds(
+    @Request() req,
+    @Query() entidad: any,
+  ): Promise<any> {
+    if (!req.user.ID) {
+      throw new UnauthorizedException('No tienes permiso para acceder a esta ruta');
+    }
+    entidad.IDUSR = req.user.ID;
+    return await this.userService.listUsersShared(entidad);
+  }
 
 }

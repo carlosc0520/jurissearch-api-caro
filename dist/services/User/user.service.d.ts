@@ -45,8 +45,11 @@ export declare class UserService {
     list(entidad: DataTable, IDROLE: string): Promise<User[]>;
     listUserEmail(): Promise<User[]>;
     addFavoriteUser(USER: string, IDUSER: number, IDENTRIE: number): Promise<Result>;
+    deleteFavoriteUser(USER: string, IDUSER: number, IDFAV: number): Promise<Result>;
     getUser(ID: number): Promise<User>;
     createDirectory(entidad: any): Promise<Result>;
+    updateDirectory(entidad: any): Promise<Result>;
+    deleteDirectory(DIRECTORIOS: string, USER: any): Promise<Result>;
     sharedDirectory(entidad: any): Promise<Result>;
     listDirectory(IDUSUARIO: number, DSCRPCN: string, TYPE: string): Promise<any>;
     listDirectoryAll(IDUSUARIO: number): Promise<any>;
@@ -57,5 +60,7 @@ export declare class UserService {
     deleteContactos(id: number, UCRCN: string): Promise<Result>;
     listNotificaciones(entidad: DataTable): Promise<any[]>;
     obtenerEmails(entidad: any): Promise<User[]>;
+    compartir(entidad: any): Promise<Result>;
+    listUsersShared(entidad: any): Promise<any[]>;
 }
 export {};
