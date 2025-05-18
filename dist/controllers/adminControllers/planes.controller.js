@@ -24,6 +24,10 @@ let PlanesController = class PlanesController {
     async listaAll(entidad) {
         return await this.planService.list(entidad);
     }
+    async listPlanUser(req, entidad) {
+        entidad.IDUSR = req.user.ID;
+        return await this.planService.listPlanUser(entidad);
+    }
     async deleteUser(req, ID) {
         return await this.planService.delete(ID, req.user.UCRCN);
     }
@@ -56,6 +60,14 @@ __decorate([
     __metadata("design:paramtypes", [DataTable_model_1.DataTable]),
     __metadata("design:returntype", Promise)
 ], PlanesController.prototype, "listaAll", null);
+__decorate([
+    (0, common_1.Get)('listPlanUser'),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Query)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, DataTable_model_1.DataTable]),
+    __metadata("design:returntype", Promise)
+], PlanesController.prototype, "listPlanUser", null);
 __decorate([
     (0, common_1.Post)('delete'),
     __param(0, (0, common_1.Request)()),

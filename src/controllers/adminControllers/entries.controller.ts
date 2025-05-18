@@ -915,7 +915,7 @@ export class EntriesController {
             {
               columns: [
                 {
-                  ul: [`Tipo de Recurso:`, `Delitos:`, `Vinculante:`],
+                  ul: [`Caso Emblemático`, `Tipo de Recurso:`, `Delitos:`, `Vinculante:`],
                   margin: [margin[0], 0, 0, 0],
                   fontSize,
                   lineHeight: 1.5,
@@ -924,8 +924,9 @@ export class EntriesController {
                 },
                 {
                   ul: [
-                    `${data.RECURSO}`,
-                    `${data.DELITO}`,
+                    `${data?.CASO || ''}`,
+                    `${data?.RECURSO || ''}`,
+                    `${data?.DELITO || ''}`,
                     `${data.ISBINDING ? 'Sí' : 'No'}`,
                   ],
                   margin: [0, 5, margin[0] + 20, 0],

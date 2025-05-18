@@ -9,4 +9,5 @@ export class PlanesModel {
     FCRCN: Date = new Date();
     FEDCN: Date = new Date();
     CDESTDO: string = '';
+    ACTUAL?: number = null;
 }

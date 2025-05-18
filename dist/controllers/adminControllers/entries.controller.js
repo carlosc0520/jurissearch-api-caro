@@ -572,7 +572,7 @@ let EntriesController = class EntriesController {
                         {
                             columns: [
                                 {
-                                    ul: [`Tipo de Recurso:`, `Delitos:`, `Vinculante:`],
+                                    ul: [`Caso Emblemático`, `Tipo de Recurso:`, `Delitos:`, `Vinculante:`],
                                     margin: [margin[0], 0, 0, 0],
                                     fontSize,
                                     lineHeight: 1.5,
@@ -581,8 +581,9 @@ let EntriesController = class EntriesController {
                                 },
                                 {
                                     ul: [
-                                        `${data.RECURSO}`,
-                                        `${data.DELITO}`,
+                                        `${(data === null || data === void 0 ? void 0 : data.CASO) || ''}`,
+                                        `${(data === null || data === void 0 ? void 0 : data.RECURSO) || ''}`,
+                                        `${(data === null || data === void 0 ? void 0 : data.DELITO) || ''}`,
                                         `${data.ISBINDING ? 'Sí' : 'No'}`,
                                     ],
                                     margin: [0, 5, margin[0] + 20, 0],

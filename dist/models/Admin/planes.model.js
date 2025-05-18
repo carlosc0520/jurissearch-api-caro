@@ -13,6 +13,7 @@ class PlanesModel {
         this.FCRCN = new Date();
         this.FEDCN = new Date();
         this.CDESTDO = '';
+        this.ACTUAL = null;
     }
 }
 exports.PlanesModel = PlanesModel;

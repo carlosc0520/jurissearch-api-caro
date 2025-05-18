@@ -6,6 +6,7 @@ export declare class PlanesController {
     private readonly planService;
     constructor(planService: PlanesService);
     listaAll(entidad: DataTable): Promise<PlanesModel[]>;
+    listPlanUser(req: any, entidad: DataTable): Promise<PlanesModel[]>;
     deleteUser(req: any, ID: number): Promise<Result>;
     add(req: any, entidad: PlanesModel): Promise<Result>;
     edit(req: any, entidad: PlanesModel): Promise<Result>;

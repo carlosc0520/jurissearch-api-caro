@@ -7,6 +7,7 @@ export declare class PlanesService {
     constructor(connection: DataSource);
     create(entidad: PlanesModel): Promise<Result>;
     list(entidad: DataTable): Promise<PlanesModel[]>;
+    listPlanUser(entidad: DataTable): Promise<PlanesModel[]>;
     delete(id: number, UCRCN: string): Promise<Result>;
     edit(entidad: PlanesModel): Promise<Result>;
 }

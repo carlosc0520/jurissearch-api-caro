@@ -45,6 +45,21 @@ export class PlanesService {
         }
     }
 
+    async listPlanUser(entidad: DataTable): Promise<PlanesModel[]> {
+        let queryAsync = procedures.ADMIN.PLANES.CRUD;
+        queryAsync += ` @p_cData = ${entidad ? `'${JSON.stringify(entidad)}'` : null},`;
+        queryAsync += ` @p_cUser = ${null},`;
+        queryAsync += ` @p_nTipo = ${5},`;
+        queryAsync += ` @p_nId = ${0}`;
+
+        try {
+            const result = await this.connection.query(queryAsync);
+            return result;
+        } catch (error) {
+            return error;
+        }
+    }
+
     async delete(id: number, UCRCN: string): Promise<Result> {
         let queryAsync = procedures.ADMIN.PLANES.CRUD;
         queryAsync += ` @p_cData = ${null},`;

@@ -9,4 +9,5 @@ export declare class PlanesModel {
     FCRCN: Date;
     FEDCN: Date;
     CDESTDO: string;
+    ACTUAL?: number;
 }

@@ -52,6 +52,20 @@ let PlanesService = class PlanesService {
             return error;
         }
     }
+    async listPlanUser(entidad) {
+        let queryAsync = configMappers_1.default.ADMIN.PLANES.CRUD;
+        queryAsync += ` @p_cData = ${entidad ? `'${JSON.stringify(entidad)}'` : null},`;
+        queryAsync += ` @p_cUser = ${null},`;
+        queryAsync += ` @p_nTipo = ${5},`;
+        queryAsync += ` @p_nId = ${0}`;
+        try {
+            const result = await this.connection.query(queryAsync);
+            return result;
+        }
+        catch (error) {
+            return error;
+        }
+    }
     async delete(id, UCRCN) {
         var _a, _b, _c;
         let queryAsync = configMappers_1.default.ADMIN.PLANES.CRUD;

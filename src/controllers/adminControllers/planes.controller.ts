@@ -15,6 +15,12 @@ export class PlanesController {
         return await this.planService.list(entidad);
     }
 
+    @Get('listPlanUser')
+    async listPlanUser(@Request() req, @Query() entidad: DataTable): Promise<PlanesModel[]> {
+        entidad.IDUSR = req.user.ID;
+        return await this.planService.listPlanUser(entidad);
+    }
+
     @Post('delete')
     async deleteUser(@Request() req, @Body('ID') ID: number): Promise<Result> {
         return await this.planService.delete(ID, req.user.UCRCN);
