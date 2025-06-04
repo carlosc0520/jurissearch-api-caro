@@ -43,6 +43,7 @@ class EntriesModel {
         this.OEMISOR = '';
         this.FLGDOC = '';
         this.JURISDICCIONV = '';
+        this.SITUACION = '';
     }
 }
 exports.EntriesModel = EntriesModel;

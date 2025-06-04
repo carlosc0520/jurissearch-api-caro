@@ -39,4 +39,5 @@ export class EntriesModel {
     OEMISOR: string = '';
     FLGDOC: string = '';
     JURISDICCIONV: string = '';
+    SITUACION: string = '';
 }
