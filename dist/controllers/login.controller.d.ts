@@ -41,6 +41,7 @@ declare class User {
     MESSAGE?: string;
     BANDERA?: boolean;
     RTAFTO?: string;
+    IDPLN?: number;
 }
 export declare class LoginController {
     private readonly userService;

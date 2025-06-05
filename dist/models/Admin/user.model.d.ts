@@ -20,4 +20,5 @@ export declare class User {
     CDESTDO: string;
     TOKEN: string;
     RTAFTO?: string;
+    IDPLN?: number;
 }

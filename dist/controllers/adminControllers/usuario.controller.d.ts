@@ -40,6 +40,7 @@ export declare class UsuarioController {
             IDR: number;
             ROLE: string;
             PERM: string[];
+            IDPLN?: number;
         };
     }>;
     addUser(req: any, entidad: User): Promise<Result>;

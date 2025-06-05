@@ -101,6 +101,7 @@ let TokenService = class TokenService {
             EMAIL: user.EMAIL,
             ID: user.ID,
             role: user.IDROLE,
+            IDPLN: user.IDPLN || 0,
             NAME: user.NOMBRES,
             APELLIDO: user.APELLIDO,
             UCRCN: user.EMAIL.split('@')[0] || '',

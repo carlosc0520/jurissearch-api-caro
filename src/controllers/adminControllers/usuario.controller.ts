@@ -47,13 +47,14 @@ export class UsuarioController {
     @Request() req,
   ): Promise<{
     STATUS: boolean;
-    DATA: { IDR: number; ROLE: string; PERM: string[] };
+    DATA: { IDR: number; ROLE: string; PERM: string[], IDPLN?: number }
   }> {
     const IDR = req.user.role;
     return {
       STATUS: true,
       DATA: {
         IDR,
+        IDPLN: req.user.IDPLN || 0,
         ROLE: IDR === 0 ? 'ADMINISTRADOR' : IDR === 1 ? 'DIGITADOR' : 'USUARIO',
         PERM: req?.user?.PERM || [],
       },

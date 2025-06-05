@@ -34,6 +34,7 @@ let UsuarioController = class UsuarioController {
             STATUS: true,
             DATA: {
                 IDR,
+                IDPLN: req.user.IDPLN || 0,
                 ROLE: IDR === 0 ? 'ADMINISTRADOR' : IDR === 1 ? 'DIGITADOR' : 'USUARIO',
                 PERM: ((_a = req === null || req === void 0 ? void 0 : req.user) === null || _a === void 0 ? void 0 : _a.PERM) || [],
             },

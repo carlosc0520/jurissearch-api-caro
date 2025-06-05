@@ -14,6 +14,7 @@ class PlanesModel {
         this.FEDCN = new Date();
         this.CDESTDO = '';
         this.ACTUAL = null;
+        this.PRINCIPAL = null;
     }
 }
 exports.PlanesModel = PlanesModel;

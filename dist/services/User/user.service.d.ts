@@ -31,6 +31,7 @@ declare class User {
     STATUS?: number;
     MESSAGE?: string;
     RTAFTO?: string;
+    IDPLN?: number;
 }
 export declare class UserService {
     private connection;

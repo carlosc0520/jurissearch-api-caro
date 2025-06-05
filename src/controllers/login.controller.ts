@@ -59,6 +59,7 @@ class User {
   MESSAGE?: string;
   BANDERA?: boolean = false;
   RTAFTO?: string;
+  IDPLN?: number;
 }
 
 @Controller('login')
