@@ -50,7 +50,7 @@ let AuthMiddleware = class AuthMiddleware {
         try {
             const decoded = await jwt.verify(token, this.secretKey);
             this.activeSessions = this.tokenService.readActiveSessionsFromFile();
-            const session = this.activeSessions.get(decoded.sessionId.toString());
+            const session = this.activeSessions.get(decoded['sessionId'].toString());
             if (!this.isSessionActive(session)) {
                 return res
                     .status(401)
@@ -66,7 +66,7 @@ let AuthMiddleware = class AuthMiddleware {
             if (error instanceof common_1.UnauthorizedException) {
                 return res.status(401).json({ message: error.message });
             }
-            return res.status(500).json({ message: 'Error en la autenticación' });
+            return res.status(500).json({ message: 'Su código de sesión ha expirado o ha sido alterado' });
         }
     }
     isSessionActive(session) {

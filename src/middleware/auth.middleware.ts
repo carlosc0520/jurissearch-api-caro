@@ -21,7 +21,6 @@ export class AuthMiddleware implements NestMiddleware {
 
   async use(req: Request, res: Response, next: NextFunction) {
     let token = req.headers.authorization;
-
     if (!token) {
       return res.status(401).json({ message: 'Token no proporcionado' });
     }
@@ -31,7 +30,7 @@ export class AuthMiddleware implements NestMiddleware {
     try {
       const decoded = await jwt.verify(token, this.secretKey);
       this.activeSessions = this.tokenService.readActiveSessionsFromFile();
-      const session = this.activeSessions.get(decoded.sessionId.toString());
+      const session = this.activeSessions.get(decoded['sessionId'].toString());
 
       if (!this.isSessionActive(session)) {
         return res
@@ -51,7 +50,7 @@ export class AuthMiddleware implements NestMiddleware {
         return res.status(401).json({ message: error.message });
       }
 
-      return res.status(500).json({ message: 'Error en la autenticación' });
+      return res.status(500).json({ message: 'Su código de sesión ha expirado o ha sido alterado' });	
     }
   }
 

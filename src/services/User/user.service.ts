@@ -44,7 +44,7 @@ export class UserService {
         private connection: DataSource
     ) { }
 
-    async loguearUsuario(entidad: User): Promise<User> {
+    async loguearUsuario(entidad: any): Promise<User> {
         try {
             // VALIDAR SI EXISTE USUARIO
             let queryAsync = procedures.JURIS.loguearUsuario;
@@ -79,7 +79,7 @@ export class UserService {
         }
     }
 
-    async createUser(entidad: User): Promise<Result> {
+    async createUser(entidad: any): Promise<Result> {
         let queryAsync = procedures.ADMIN.USUARIO.CRUD;
         queryAsync += ` @p_cData = ${entidad ? `'${JSON.stringify(entidad)}'` : null},`;
         queryAsync += ` @p_cUser = ${entidad?.USER ? `'${entidad.USER}'` : null},`;

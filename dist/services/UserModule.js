@@ -43,6 +43,9 @@ const nestjs_ftp_1 = require("nestjs-ftp");
 const complytools_controller_1 = require("../controllers/acompliance/complytools.controller");
 const axios_1 = require("@nestjs/axios");
 const hostinger_service_1 = require("./Aws/hostinger.service");
+const google_strategy_1 = require("./Google/google.strategy");
+const auth_controller_1 = require("../controllers/Google/auth.controller");
+const google_strategy_register_1 = require("./Google/google.strategy.register");
 let UserModule = class UserModule {
 };
 exports.UserModule = UserModule;
@@ -78,7 +81,8 @@ exports.UserModule = UserModule = __decorate([
             asistencia_controller_1.AsistenciaController,
             helpers_controller_1.HelpersController,
             boletin_controller_1.BoletinController,
-            complytools_controller_1.ComplytoolsController
+            complytools_controller_1.ComplytoolsController,
+            auth_controller_1.AuthController
         ],
         providers: [
             user_service_1.UserService,
@@ -97,7 +101,9 @@ exports.UserModule = UserModule = __decorate([
             emailJurisserivce_1.EmailJurisService,
             asistencia_service_1.AsistenciaService,
             helpers_service_1.HelpersService,
-            hostinger_service_1.HostingerService
+            hostinger_service_1.HostingerService,
+            google_strategy_1.GoogleStrategy,
+            google_strategy_register_1.GoogleRegisterStrategy
         ],
     })
 ], UserModule);

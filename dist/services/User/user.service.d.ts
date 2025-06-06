@@ -36,9 +36,9 @@ declare class User {
 export declare class UserService {
     private connection;
     constructor(connection: DataSource);
-    loguearUsuario(entidad: User): Promise<User>;
+    loguearUsuario(entidad: any): Promise<User>;
     obtenerUsuario(entidad: User): Promise<User>;
-    createUser(entidad: User): Promise<Result>;
+    createUser(entidad: any): Promise<Result>;
     updatePassword(entidad: User): Promise<Result>;
     editUser(entidad: User): Promise<Result>;
     deleteUser(id: number, UCRCN: string): Promise<Result>;

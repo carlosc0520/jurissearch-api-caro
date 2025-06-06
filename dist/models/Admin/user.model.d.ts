@@ -21,4 +21,8 @@ export declare class User {
     TOKEN: string;
     RTAFTO?: string;
     IDPLN?: number;
+    PLAN?: string;
+    PROFESION?: string;
+    CARGO?: string;
+    DIRECCION?: string;
 }

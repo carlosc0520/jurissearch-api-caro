@@ -38,6 +38,10 @@ import { FtpModule } from 'nestjs-ftp';
 import { ComplytoolsController } from 'src/controllers/acompliance/complytools.controller';
 import { HttpModule } from '@nestjs/axios';
 import { HostingerService } from './Aws/hostinger.service';
+// import { AuthService } from './Google/auth.service';
+import { GoogleStrategy } from './Google/google.strategy';
+import { AuthController } from 'src/controllers/Google/auth.controller';
+import { GoogleRegisterStrategy } from './Google/google.strategy.register';
 
 @Module({
   imports: [
@@ -73,7 +77,8 @@ import { HostingerService } from './Aws/hostinger.service';
     AsistenciaController,
     HelpersController,
     BoletinController,
-    ComplytoolsController
+    ComplytoolsController,
+    AuthController
   ],
   providers: [
     UserService,
@@ -94,7 +99,12 @@ import { HostingerService } from './Aws/hostinger.service';
     EmailJurisService,
     AsistenciaService,
     HelpersService,
-    HostingerService
+    HostingerService,
+
+    // GOOGLE
+    // AuthService,
+    GoogleStrategy,
+    GoogleRegisterStrategy
   ],
 })
 export class UserModule {}

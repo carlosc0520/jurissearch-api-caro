@@ -150,6 +150,81 @@ let EmailJurisService = class EmailJurisService {
             return { MESSAGE: 'Error al enviar la solicitud', STATUS: false };
         }
     }
+    async sendEmailUser(user) {
+        try {
+            const html = `
+            <!DOCTYPE html>
+            <html lang="es">
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>Bienvenido a JURISSEARCH</title>
+                <style>
+                    body {
+                        font-family: Arial, sans-serif;
+                        background-color: #f4f4f4;
+                        margin: 0;
+                        padding: 0;
+                    }
+                    .container_juris {
+                        max-width: 600px;
+                        margin: 50px auto;
+                        background-color: #ffffff;
+                        padding: 20px;
+                        border-radius: 10px;
+                        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+                    }
+                    .container_juris h1 {
+                        color: #333333;
+                    }
+                    
+                    .container_juris .highlight-juris {
+                        color: #e81eb2ff;
+                        font-weight: bold;
+                    }
+                    .container_juris .highlight-search {
+                        color: #1764ffff;
+                        font-weight: bold;
+                    }
+
+                    .container_juris p {
+                        color: #666666;
+                        line-height: 1.6;
+                    }
+                    .container_juris .logo {
+                        margin-top: 20px;
+                        text-align: center;
+                    }
+                    .container_juris .logo img {
+                        max-width: 100px;
+                    }
+                        
+                </style>
+            </head>
+                <body>
+                    <div class="container_juris">
+                        <h1>Bienvenido a <span class="highlight-juris">JURIS </span><span class="highlight-search">SEARCH</span></h1>
+                        <p>Estamos encantados de que uses nuestro sistema. A continuación, te adjuntamos tus datos de acceso:</p>
+                        <p>Usuario: <strong>${user.EMAIL}</strong></p>
+                        <p>Contraseña: <strong>${user.PASSWORD}</strong></p>
+                        <p>¡Gracias por usar <span class="highlight-juris">JURIS </span><span class="highlight-search">SEARCH</span>!</p>
+                    </div>
+                </body>
+            </html>
+            `;
+            const mailOptions = {
+                from: "JURIS SEARCH ✔✨",
+                to: user.EMAIL,
+                subject: 'Bienvenido a JURISSEARCH',
+                html
+            };
+            await this.transporter2.sendMail(mailOptions);
+            return { MESSAGE: 'Correo enviado correctamente, revisa tu correo y activa tu cuenta.', STATUS: true };
+        }
+        catch (error) {
+            return { MESSAGE: 'Error al enviar la solicitud', STATUS: false };
+        }
+    }
     async sendEmailContacto(model) {
         try {
             const html = `

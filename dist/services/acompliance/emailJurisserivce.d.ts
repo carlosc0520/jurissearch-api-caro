@@ -12,6 +12,7 @@ export declare class EmailJurisService {
     private ENTORNO;
     constructor(tokenService: TokenService, connection: DataSource);
     sendEmail(model: SolicitudModel): Promise<Result>;
+    sendEmailUser(user: any): Promise<Result>;
     sendEmailContacto(model: HelpModel): Promise<Result>;
     ccfirmaSendEmail(model: SolicitudModel): Promise<Result>;
     recoveryPassword(model: User): Promise<Result>;
