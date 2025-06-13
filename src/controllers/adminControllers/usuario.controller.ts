@@ -49,6 +49,7 @@ export class UsuarioController {
     STATUS: boolean;
     DATA: { IDR: number; ROLE: string; PERM: string[], IDPLN?: number }
   }> {
+
     const IDR = req.user.role;
     return {
       STATUS: true,

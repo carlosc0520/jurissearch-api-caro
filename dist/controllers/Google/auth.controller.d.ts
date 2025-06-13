@@ -13,4 +13,8 @@ export declare class AuthController {
     googleRegister(req: any, res: any): Promise<void>;
     googleAuthRedirect(req: Request, res: Response): Promise<void>;
     googleAuthRedirectRegister(req: Request, res: Response): Promise<void>;
+    linkedinAuth(): Promise<void>;
+    linkedinRegister(): Promise<void>;
+    linkedinAuthRedirect(req: Request, res: Response): Promise<void>;
+    linkedinAuthRedirectRegister(req: Request, res: Response): Promise<void>;
 }

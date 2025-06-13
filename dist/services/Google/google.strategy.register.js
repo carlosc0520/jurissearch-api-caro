@@ -5,7 +5,7 @@ const passport_1 = require("@nestjs/passport");
 const passport_google_oauth20_1 = require("passport-google-oauth20");
 class GoogleRegisterStrategy extends (0, passport_1.PassportStrategy)(passport_google_oauth20_1.Strategy, 'google-register') {
     constructor() {
-        let redirectURLAPI = 'https://api.jurissearch.com';
+        let redirectURLAPI = process.env.URL_API;
         super({
             clientID: process.env.GOOGLE_CLIENT_ID,
             clientSecret: process.env.GOOGLE_CLIENT_SECRET,

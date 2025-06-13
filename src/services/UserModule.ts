@@ -42,6 +42,10 @@ import { HostingerService } from './Aws/hostinger.service';
 import { GoogleStrategy } from './Google/google.strategy';
 import { AuthController } from 'src/controllers/Google/auth.controller';
 import { GoogleRegisterStrategy } from './Google/google.strategy.register';
+import { LinkedInStrategy } from './Google/linkedin.strategy';
+import { LinkedRegisterInStrategy } from './Google/linkedin.strategy.register';
+import { StripeService } from './Stripe/stripe.service';
+import { StripeController } from 'src/controllers/Stripe/stripe.controller';
 
 @Module({
   imports: [
@@ -78,7 +82,8 @@ import { GoogleRegisterStrategy } from './Google/google.strategy.register';
     HelpersController,
     BoletinController,
     ComplytoolsController,
-    AuthController
+    AuthController,
+    StripeController
   ],
   providers: [
     UserService,
@@ -104,7 +109,10 @@ import { GoogleRegisterStrategy } from './Google/google.strategy.register';
     // GOOGLE
     // AuthService,
     GoogleStrategy,
-    GoogleRegisterStrategy
+    GoogleRegisterStrategy,
+    LinkedInStrategy,
+    LinkedRegisterInStrategy,
+    StripeService
   ],
 })
 export class UserModule {}

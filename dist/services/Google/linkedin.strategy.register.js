@@ -9,35 +9,35 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.GoogleStrategy = void 0;
+exports.LinkedRegisterInStrategy = void 0;
+const passport_linkedin_oauth2_1 = require("passport-linkedin-oauth2");
 const passport_1 = require("@nestjs/passport");
 const common_1 = require("@nestjs/common");
-const passport_google_oauth20_1 = require("passport-google-oauth20");
-let GoogleStrategy = class GoogleStrategy extends (0, passport_1.PassportStrategy)(passport_google_oauth20_1.Strategy, 'google') {
+let LinkedRegisterInStrategy = class LinkedRegisterInStrategy extends (0, passport_1.PassportStrategy)(passport_linkedin_oauth2_1.Strategy, 'linkedin-register') {
     constructor() {
         let redirectURLAPI = process.env.URL_API;
         super({
-            clientID: process.env.GOOGLE_CLIENT_ID,
-            clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-            callbackURL: `${redirectURLAPI}/auth/google/redirect`,
-            scope: ['email', 'profile']
+            clientID: process.env.LINKEDIN_CLIENT_ID,
+            clientSecret: process.env.LINKEDIN_CLIENT_SECRET,
+            callbackURL: `${redirectURLAPI}/auth/linkedin/redirect-register`,
+            scope: ['r_emailaddress', 'r_liteprofile']
         });
     }
     async validate(accessToken, refreshToken, profile, done) {
-        const { name, emails, photos } = profile;
+        var _a;
+        const { id, emails, displayName, photos } = profile;
         const user = {
+            linkedinId: id,
+            name: displayName,
             email: emails[0].value,
-            firstName: name.givenName,
-            lastName: name.familyName,
-            picture: photos[0].value,
-            accessToken,
+            picture: (_a = photos === null || photos === void 0 ? void 0 : photos[0]) === null || _a === void 0 ? void 0 : _a.value,
         };
         done(null, user);
     }
 };
-exports.GoogleStrategy = GoogleStrategy;
-exports.GoogleStrategy = GoogleStrategy = __decorate([
+exports.LinkedRegisterInStrategy = LinkedRegisterInStrategy;
+exports.LinkedRegisterInStrategy = LinkedRegisterInStrategy = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [])
-], GoogleStrategy);
-//# sourceMappingURL=google.strategy.js.map
+], LinkedRegisterInStrategy);
+//# sourceMappingURL=linkedin.strategy.register.js.map

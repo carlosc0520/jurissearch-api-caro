@@ -46,6 +46,10 @@ const hostinger_service_1 = require("./Aws/hostinger.service");
 const google_strategy_1 = require("./Google/google.strategy");
 const auth_controller_1 = require("../controllers/Google/auth.controller");
 const google_strategy_register_1 = require("./Google/google.strategy.register");
+const linkedin_strategy_1 = require("./Google/linkedin.strategy");
+const linkedin_strategy_register_1 = require("./Google/linkedin.strategy.register");
+const stripe_service_1 = require("./Stripe/stripe.service");
+const stripe_controller_1 = require("../controllers/Stripe/stripe.controller");
 let UserModule = class UserModule {
 };
 exports.UserModule = UserModule;
@@ -82,7 +86,8 @@ exports.UserModule = UserModule = __decorate([
             helpers_controller_1.HelpersController,
             boletin_controller_1.BoletinController,
             complytools_controller_1.ComplytoolsController,
-            auth_controller_1.AuthController
+            auth_controller_1.AuthController,
+            stripe_controller_1.StripeController
         ],
         providers: [
             user_service_1.UserService,
@@ -103,7 +108,10 @@ exports.UserModule = UserModule = __decorate([
             helpers_service_1.HelpersService,
             hostinger_service_1.HostingerService,
             google_strategy_1.GoogleStrategy,
-            google_strategy_register_1.GoogleRegisterStrategy
+            google_strategy_register_1.GoogleRegisterStrategy,
+            linkedin_strategy_1.LinkedInStrategy,
+            linkedin_strategy_register_1.LinkedRegisterInStrategy,
+            stripe_service_1.StripeService
         ],
     })
 ], UserModule);

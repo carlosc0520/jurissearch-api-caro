@@ -21,13 +21,15 @@ const user_service_1 = require("../../services/User/user.service");
 const google_auth_guard_1 = require("./google-auth.guard");
 const google_auth_guard_register_1 = require("./google-auth.guard.register");
 const emailJurisserivce_1 = require("../../services/acompliance/emailJurisserivce");
+const linkedin_auth_guard_1 = require("./linkedin-auth.guard");
+const linkedin_auth_guard_register_1 = require("./linkedin-auth.guard.register");
 let AuthController = class AuthController {
     constructor(userService, tokenService, emailJurisService) {
         this.userService = userService;
         this.tokenService = tokenService;
         this.emailJurisService = emailJurisService;
-        this.redirectURL = 'https://jurissearch.com';
-        this.redirectURLAPI = 'https://api.jurissearch.com';
+        this.redirectURL = process.env.URL_FRONT;
+        this.redirectURLAPI = process.env.URL_API;
     }
     async googleAuth(req, res) {
     }
@@ -47,7 +49,7 @@ let AuthController = class AuthController {
             res.redirect(`${this.redirectURL}/auth/login?onsuccess=false&autentication=google&message=${(usuario === null || usuario === void 0 ? void 0 : usuario['MESSAGE']) || 'Error al iniciar sesión'}`);
             return;
         }
-        const token = await this.tokenService.generateToken(usuario, false);
+        const token = await this.tokenService.generateToken(usuario, true);
         usuario.TOKEN = token;
         usuario.RTAFTO = process.env.DOMINIO + usuario.RTAFTO;
         res.redirect(`${this.redirectURL}/auth/login?onsuccess=true&autentication=google&message=Autenticación exitosa&accessToken=${token}&user=${JSON.stringify({
@@ -89,6 +91,62 @@ let AuthController = class AuthController {
             EMAIL: user.email,
         })}`);
     }
+    async linkedinAuth() {
+    }
+    async linkedinRegister() {
+    }
+    async linkedinAuthRedirect(req, res) {
+        const user = req['user'];
+        if (!user) {
+            return res.redirect(`${this.redirectURL}/auth/login?onerror=linkedin&message=Error en autenticación con LinkedIn`);
+        }
+        const entidad = new user_model_1.User();
+        entidad.EMAIL = user.email;
+        entidad.PASSWORD = "";
+        const usuario = await this.userService.loguearUsuario(entidad);
+        if ((usuario === null || usuario === void 0 ? void 0 : usuario['STATUS']) == 0) {
+            return res.redirect(`${this.redirectURL}/auth/login?onsuccess=false&autentication=linkedin&message=${(usuario === null || usuario === void 0 ? void 0 : usuario['MESSAGE']) || 'Error al iniciar sesión'}`);
+        }
+        const token = await this.tokenService.generateToken(usuario, true);
+        usuario.TOKEN = token;
+        usuario.RTAFTO = process.env.DOMINIO + usuario.RTAFTO;
+        return res.redirect(`${this.redirectURL}/auth/login?onsuccess=true&autentication=linkedin&message=Autenticación exitosa&accessToken=${token}&user=${JSON.stringify({
+            NOMBRES: user.name,
+            EMAIL: user.email,
+            RTAFTO: usuario.RTAFTO,
+        })}`);
+    }
+    async linkedinAuthRedirectRegister(req, res) {
+        const user = req['user'];
+        if (!user) {
+            return res.redirect(`${this.redirectURL}/auth/login?onerror=linkedin&message=Error al iniciar sesión con LinkedIn`);
+        }
+        const entidad = new user_model_1.User();
+        entidad.IDROLE = 2;
+        entidad.EMAIL = user.email;
+        entidad.NOMBRES = user.name;
+        entidad.APATERNO = "";
+        entidad.AMATERNO = "";
+        entidad.TELEFONO = "";
+        entidad.FNACIMIENTO = null;
+        entidad.PROFESION = "";
+        entidad.CARGO = "";
+        entidad.DIRECCION = "";
+        entidad.RTAFTO = "";
+        entidad.USER = entidad.EMAIL.split('@')[0];
+        entidad.PLAN = '1';
+        entidad.PASSWORD = user.email.split('@')[0];
+        entidad.EMAIL = user.email;
+        let respuesta = await this.userService.createUser(entidad);
+        if ((respuesta === null || respuesta === void 0 ? void 0 : respuesta['isSuccess']) == false) {
+            return res.redirect(`${this.redirectURL}/auth/register?onsuccess=false&autentication=linkedin&message=${(respuesta === null || respuesta === void 0 ? void 0 : respuesta['MESSAGE']) || 'Error al registrarse.'}`);
+        }
+        await this.emailJurisService.sendEmailUser(entidad);
+        res.redirect(`${this.redirectURL}/auth/register?onsuccess=true&autentication=linkedin&message=Registro exitoso&user=${JSON.stringify({
+            NOMBRES: user.name,
+            EMAIL: user.email,
+        })}`);
+    }
 };
 exports.AuthController = AuthController;
 __decorate([
@@ -127,6 +185,38 @@ __decorate([
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "googleAuthRedirectRegister", null);
+__decorate([
+    (0, common_1.Get)('linkedin'),
+    (0, common_1.UseGuards)(linkedin_auth_guard_1.LinkedInAuthGuard),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "linkedinAuth", null);
+__decorate([
+    (0, common_1.Get)('linkedin-register'),
+    (0, common_1.UseGuards)(linkedin_auth_guard_register_1.LinkedRegisterInAuthGuard),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "linkedinRegister", null);
+__decorate([
+    (0, common_1.Get)('linkedin/redirect'),
+    (0, common_1.UseGuards)((0, passport_1.AuthGuard)('linkedin')),
+    __param(0, (0, common_1.Req)()),
+    __param(1, (0, common_1.Res)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "linkedinAuthRedirect", null);
+__decorate([
+    (0, common_1.Get)('linkedin/redirect-register'),
+    (0, common_1.UseGuards)((0, passport_1.AuthGuard)('linkedin-register')),
+    __param(0, (0, common_1.Req)()),
+    __param(1, (0, common_1.Res)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "linkedinAuthRedirectRegister", null);
 exports.AuthController = AuthController = __decorate([
     (0, common_1.Controller)('auth'),
     __metadata("design:paramtypes", [user_service_1.UserService,
