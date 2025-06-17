@@ -1450,6 +1450,13 @@ export class EntriesController {
     }
   }
 
+  @Get('listTopSearch')
+  async listTopSearch(
+    @Request() req
+  ): Promise<EntriesModel[]> {
+    return await this.entriesService.listTopSearch(req.user.UCRCN);
+  }
+  
   @Get('busqueda')
   async busqueda(
     @Request() req,

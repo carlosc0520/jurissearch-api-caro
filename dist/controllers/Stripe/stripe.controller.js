@@ -24,29 +24,16 @@ let StripeController = class StripeController {
         this.stripeService = stripeService;
         this.stripe = new stripe_1.default(process.env.STRIPE_SECRET_KEY, {});
     }
-    async createCheckout(body) {
-        console.log('Creating checkout session with body:', body);
-        return this.stripeService.createCheckoutSession(body.email, body.amount, 'Subscription Type');
-    }
     async createPaymentIntent(body) {
-        console.log('Creating payment intent with body:', body);
         const paymentIntent = await this.stripe.paymentIntents.create({
             amount: Math.round(body.amount * 100),
             currency: 'pen',
             automatic_payment_methods: { enabled: true },
         });
-        console.log('Payment intent created:', paymentIntent);
         return { clientSecret: paymentIntent.client_secret };
     }
 };
 exports.StripeController = StripeController;
-__decorate([
-    (0, common_1.Post)('create-checkout-session'),
-    __param(0, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], StripeController.prototype, "createCheckout", null);
 __decorate([
     (0, common_1.Post)('create-payment-intent'),
     __param(0, (0, common_1.Body)()),

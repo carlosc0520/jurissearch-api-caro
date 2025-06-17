@@ -46,7 +46,6 @@ export class UserService {
 
     async loguearUsuario(entidad: any): Promise<User> {
         try {
-            // VALIDAR SI EXISTE USUARIO
             let queryAsync = procedures.JURIS.loguearUsuario;
             queryAsync += ` @EMAIL = ${entidad?.EMAIL ? `'${entidad.EMAIL}'` : null},`;
             queryAsync += ` @PASSWORD = ${entidad?.PASSWORD ? `'${entidad.PASSWORD}'` : null},`;
@@ -517,6 +516,43 @@ export class UserService {
         }
     }
 
+
+    // subscriptionPayment
+    async subscriptionPayment(entidad: any): Promise<Result> {
+        let queryAsync = procedures.ADMIN.USUARIO.CRUD4;
+        queryAsync += ` @p_cData = ${entidad ? `'${JSON.stringify(entidad)}'` : null},`;
+        queryAsync += ` @p_cUser = ${entidad?.USER ? `'${entidad.USER}'` : null},`;
+        queryAsync += ` @p_nTipo = ${1},`;
+        queryAsync += ` @p_nId = ${0}`;
+
+        try {
+            const result = await this.connection.query(queryAsync);
+            const isSuccess = result?.[0]?.RESULT > 0;
+            const MESSAGE = isSuccess ? "Pago de suscripción realizado correctamente" : "Ocurrió un error al intentar realizar el pago de la suscripción";
+            return { MESSAGE, STATUS: isSuccess };
+        } catch (error) {
+            const MESSAGE = error.originalError?.info?.message || "Ocurrió un error al intentar realizar el pago de la suscripción";
+            return { MESSAGE, STATUS: false };
+        }
+    }
+
+    async updateView(IDUSR: number): Promise<Result> {
+        let queryAsync = procedures.ADMIN.USUARIO.CRUD;
+        queryAsync += ` @p_cData = ${IDUSR ? `'${JSON.stringify({ IDUSR })}'` : null},`;
+        queryAsync += ` @p_cUser = ${null},`;
+        queryAsync += ` @p_nTipo = ${31},`;
+        queryAsync += ` @p_nId = ${0}`;
+
+        try {
+            const result = await this.connection.query(queryAsync);
+            const isSuccess = result?.[0]?.RESULT > 0;
+            const MESSAGE = isSuccess ? "Vista actualizada correctamente" : "Ocurrió un error al intentar actualizar la vista";
+            return { MESSAGE, STATUS: isSuccess };
+        } catch (error) {
+            const MESSAGE = error.originalError?.info?.message || "Ocurrió un error al intentar actualizar la vista";
+            return { MESSAGE, STATUS: false };
+        }
+    }
     
 }
 

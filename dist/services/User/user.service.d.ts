@@ -63,5 +63,7 @@ export declare class UserService {
     obtenerEmails(entidad: any): Promise<User[]>;
     compartir(entidad: any): Promise<Result>;
     listUsersShared(entidad: any): Promise<any[]>;
+    subscriptionPayment(entidad: any): Promise<Result>;
+    updateView(IDUSR: number): Promise<Result>;
 }
 export {};

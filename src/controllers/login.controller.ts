@@ -77,6 +77,7 @@ export class LoginController {
   @Post('autenticar')
   async autenticarUsuario(@Body() entidad: User): Promise<User> {
     const usuario: User = await this.userService.loguearUsuario(entidad);
+
     if (!usuario) {
       throw new BadRequestException({
         MESSAGE: 'Usuario no encontrado',

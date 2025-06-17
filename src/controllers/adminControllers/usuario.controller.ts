@@ -338,4 +338,28 @@ export class UsuarioController {
     return await this.userService.listUsersShared(entidad);
   }
 
+
+  @Post('payment-subscription')
+    async subscriptionPayment(
+    @Request() req,
+    @Body() entidad: any,
+  ): Promise<Result> {
+    if (!req.user.ID) {
+      throw new UnauthorizedException('No tienes permiso para acceder a esta ruta');
+    }
+    entidad.USER = req.user.UCRCN;
+    entidad.IDUSR = req.user.ID;
+    return await this.userService.subscriptionPayment(entidad);
+  }
+
+  @Get('update-view')
+  async updateView(
+    @Request() req
+  ): Promise<Result> {
+    if (!req.user.ID) {
+      throw new UnauthorizedException('No tienes permiso para acceder a esta ruta');
+    }
+    
+    return await this.userService.updateView(req.user.ID);
+  }
 }

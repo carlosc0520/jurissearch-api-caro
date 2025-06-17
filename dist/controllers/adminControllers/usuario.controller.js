@@ -183,6 +183,20 @@ let UsuarioController = class UsuarioController {
         entidad.IDUSR = req.user.ID;
         return await this.userService.listUsersShared(entidad);
     }
+    async subscriptionPayment(req, entidad) {
+        if (!req.user.ID) {
+            throw new common_1.UnauthorizedException('No tienes permiso para acceder a esta ruta');
+        }
+        entidad.USER = req.user.UCRCN;
+        entidad.IDUSR = req.user.ID;
+        return await this.userService.subscriptionPayment(entidad);
+    }
+    async updateView(req) {
+        if (!req.user.ID) {
+            throw new common_1.UnauthorizedException('No tienes permiso para acceder a esta ruta');
+        }
+        return await this.userService.updateView(req.user.ID);
+    }
 };
 exports.UsuarioController = UsuarioController;
 __decorate([
@@ -396,6 +410,21 @@ __decorate([
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
 ], UsuarioController.prototype, "getContactsSelecteds", null);
+__decorate([
+    (0, common_1.Post)('payment-subscription'),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], UsuarioController.prototype, "subscriptionPayment", null);
+__decorate([
+    (0, common_1.Get)('update-view'),
+    __param(0, (0, common_1.Request)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], UsuarioController.prototype, "updateView", null);
 exports.UsuarioController = UsuarioController = __decorate([
     (0, common_1.Controller)('admin/user'),
     __metadata("design:paramtypes", [user_service_1.UserService,

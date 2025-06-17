@@ -66,5 +66,7 @@ export declare class UsuarioController {
     getNotifications(req: any, entidad: DataTable): Promise<any>;
     compartir(req: any, entidad: any): Promise<Result>;
     getContactsSelecteds(req: any, entidad: any): Promise<any>;
+    subscriptionPayment(req: any, entidad: any): Promise<Result>;
+    updateView(req: any): Promise<Result>;
 }
 export {};

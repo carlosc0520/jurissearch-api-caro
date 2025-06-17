@@ -1014,6 +1014,9 @@ let EntriesController = class EntriesController {
             res.status(500).send('Error al descargar el archivo');
         }
     }
+    async listTopSearch(req) {
+        return await this.entriesService.listTopSearch(req.user.UCRCN);
+    }
     async busqueda(req, busqueda) {
         busqueda.UEDCN = req.user.UCRCN;
         busqueda.IDUSR = req.user.ID;
@@ -1298,6 +1301,13 @@ __decorate([
     __metadata("design:paramtypes", [String, Object]),
     __metadata("design:returntype", Promise)
 ], EntriesController.prototype, "downloadFile", null);
+__decorate([
+    (0, common_1.Get)('listTopSearch'),
+    __param(0, (0, common_1.Request)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], EntriesController.prototype, "listTopSearch", null);
 __decorate([
     (0, common_1.Get)('busqueda'),
     __param(0, (0, common_1.Request)()),
