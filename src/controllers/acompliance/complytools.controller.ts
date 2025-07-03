@@ -12,7 +12,7 @@ import { Response } from 'express';
 @Controller('complytools')
 export class ComplytoolsController {
   private transporter: nodemailer.Transporter;
-  private AMBIT = "PROD" // PROD
+  private AMBIT = "DEV" // PROD
   private CONFIG = {
     "DEV": {
       args: ['--no-sandbox', '--disable-setuid-sandbox'],
@@ -791,6 +791,7 @@ export class ComplytoolsController {
         await page.waitForSelector('h5', { timeout: 10000 });
       } catch (error) { }
     } catch (error) {
+      console.log(error)
       res.status(500).send({ error: 'Error durante la ejecución del proxy' });
     } finally {
       await browserP.close();

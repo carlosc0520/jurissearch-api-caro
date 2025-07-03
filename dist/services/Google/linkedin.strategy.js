@@ -8,11 +8,15 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.LinkedInStrategy = void 0;
-const passport_linkedin_oauth2_1 = require("passport-linkedin-oauth2");
-const passport_1 = require("@nestjs/passport");
 const common_1 = require("@nestjs/common");
+const passport_1 = require("@nestjs/passport");
+const axios_1 = __importDefault(require("axios"));
+const passport_linkedin_oauth2_1 = require("passport-linkedin-oauth2");
 let LinkedInStrategy = class LinkedInStrategy extends (0, passport_1.PassportStrategy)(passport_linkedin_oauth2_1.Strategy, 'linkedin') {
     constructor() {
         let redirectURLAPI = process.env.URL_API;
@@ -20,19 +24,40 @@ let LinkedInStrategy = class LinkedInStrategy extends (0, passport_1.PassportStr
             clientID: process.env.LINKEDIN_CLIENT_ID,
             clientSecret: process.env.LINKEDIN_CLIENT_SECRET,
             callbackURL: `${redirectURLAPI}/auth/linkedin/redirect`,
-            scope: ['r_emailaddress', 'r_liteprofile']
+            scope: ['profile', 'email', 'openid']
         });
     }
+    async userProfile(accessToken, done) {
+        try {
+            const profileResponse = await axios_1.default.get('https://api.linkedin.com/v2/userinfo', {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                },
+            });
+            const profile = profileResponse.data;
+            done(null, profile);
+        }
+        catch (error) {
+            console.log(error);
+            done(error);
+        }
+    }
+    ;
     async validate(accessToken, refreshToken, profile, done) {
-        var _a;
-        const { id, emails, displayName, photos } = profile;
-        const user = {
-            linkedinId: id,
-            name: displayName,
-            email: emails[0].value,
-            picture: (_a = photos === null || photos === void 0 ? void 0 : photos[0]) === null || _a === void 0 ? void 0 : _a.value,
-        };
-        done(null, user);
+        try {
+            const user = {
+                linkedinId: profile.sub,
+                email: profile.email,
+                name: profile.given_name + ' ' + profile.family_name,
+                photo: profile.picture,
+                accessToken,
+            };
+            done(null, user);
+        }
+        catch (err) {
+            console.error('LinkedIn validate error:', err);
+            done(err, null);
+        }
     }
 };
 exports.LinkedInStrategy = LinkedInStrategy;

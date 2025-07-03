@@ -49,7 +49,7 @@ let ComplytoolsController = class ComplytoolsController {
     constructor(httpService, hostingerService) {
         this.httpService = httpService;
         this.hostingerService = hostingerService;
-        this.AMBIT = "PROD";
+        this.AMBIT = "DEV";
         this.CONFIG = {
             "DEV": {
                 args: ['--no-sandbox', '--disable-setuid-sandbox'],
@@ -640,6 +640,7 @@ let ComplytoolsController = class ComplytoolsController {
             catch (error) { }
         }
         catch (error) {
+            console.log(error);
             res.status(500).send({ error: 'Error durante la ejecución del proxy' });
         }
         finally {

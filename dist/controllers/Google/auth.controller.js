@@ -81,7 +81,7 @@ let AuthController = class AuthController {
         entidad.PASSWORD = user.email.split('@')[0];
         entidad.EMAIL = user.email;
         let respuesta = await this.userService.createUser(entidad);
-        if ((respuesta === null || respuesta === void 0 ? void 0 : respuesta['isSuccess']) == false) {
+        if ((respuesta === null || respuesta === void 0 ? void 0 : respuesta['STATUS']) == false) {
             res.redirect(`${this.redirectURL}/auth/register?onsuccess=false&autentication=google&message=${(respuesta === null || respuesta === void 0 ? void 0 : respuesta['MESSAGE']) || 'Error al registrarse.'}`);
             return;
         }
@@ -138,8 +138,9 @@ let AuthController = class AuthController {
         entidad.PASSWORD = user.email.split('@')[0];
         entidad.EMAIL = user.email;
         let respuesta = await this.userService.createUser(entidad);
-        if ((respuesta === null || respuesta === void 0 ? void 0 : respuesta['isSuccess']) == false) {
-            return res.redirect(`${this.redirectURL}/auth/register?onsuccess=false&autentication=linkedin&message=${(respuesta === null || respuesta === void 0 ? void 0 : respuesta['MESSAGE']) || 'Error al registrarse.'}`);
+        if ((respuesta === null || respuesta === void 0 ? void 0 : respuesta['STATUS']) == false) {
+            res.redirect(`${this.redirectURL}/auth/register?onsuccess=false&autentication=linkedin&message=${(respuesta === null || respuesta === void 0 ? void 0 : respuesta['MESSAGE']) || 'Error al registrarse.'}`);
+            return;
         }
         await this.emailJurisService.sendEmailUser(entidad);
         res.redirect(`${this.redirectURL}/auth/register?onsuccess=true&autentication=linkedin&message=Registro exitoso&user=${JSON.stringify({

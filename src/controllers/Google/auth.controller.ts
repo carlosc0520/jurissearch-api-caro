@@ -91,7 +91,7 @@ export class AuthController {
         entidad.EMAIL = user.email;
         let respuesta = await this.userService.createUser(entidad);
 
-        if (respuesta?.['isSuccess'] == false) {
+        if (respuesta?.['STATUS'] == false) {
             res.redirect(`${this.redirectURL}/auth/register?onsuccess=false&autentication=google&message=${respuesta?.['MESSAGE'] || 'Error al registrarse.'}`);
             return;
         }
@@ -104,7 +104,6 @@ export class AuthController {
         })}`);
     }
 
-    // controlador iniciales linkedin
     @Get('linkedin')
     @UseGuards(LinkedInAuthGuard)
     async linkedinAuth() {
@@ -118,8 +117,8 @@ export class AuthController {
     @Get('linkedin/redirect')
     @UseGuards(AuthGuard('linkedin'))
     async linkedinAuthRedirect(@Req() req: Request, @Res() res: Response) {
-        const user = req['user'];
 
+        const user = req['user'];
         if (!user) {
             return res.redirect(`${this.redirectURL}/auth/login?onerror=linkedin&message=Error en autenticación con LinkedIn`);
         }
@@ -129,7 +128,7 @@ export class AuthController {
         entidad.PASSWORD = "";
 
         const usuario = await this.userService.loguearUsuario(entidad);
-        
+
         if (usuario?.['STATUS'] == 0) {
             return res.redirect(`${this.redirectURL}/auth/login?onsuccess=false&autentication=linkedin&message=${usuario?.['MESSAGE'] || 'Error al iniciar sesión'}`);
         }
@@ -171,12 +170,13 @@ export class AuthController {
         entidad.PASSWORD = user.email.split('@')[0];
         entidad.EMAIL = user.email;
         let respuesta = await this.userService.createUser(entidad);
-        if (respuesta?.['isSuccess'] == false) {
-            return res.redirect(`${this.redirectURL}/auth/register?onsuccess=false&autentication=linkedin&message=${respuesta?.['MESSAGE'] || 'Error al registrarse.'}`);
+        if (respuesta?.['STATUS'] == false) {
+            res.redirect(`${this.redirectURL}/auth/register?onsuccess=false&autentication=linkedin&message=${respuesta?.['MESSAGE'] || 'Error al registrarse.'}`);
+            return;
         }
 
         await this.emailJurisService.sendEmailUser(entidad);
-        
+
         res.redirect(`${this.redirectURL}/auth/register?onsuccess=true&autentication=linkedin&message=Registro exitoso&user=${JSON.stringify({
             NOMBRES: user.name,
             EMAIL: user.email,
