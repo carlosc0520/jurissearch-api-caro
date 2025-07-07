@@ -33,4 +33,5 @@ export class BusquedaModel {
     SUBTEMA: string = '';
     FRESOLUTIONSTRING: string = '';
     SHARED?: string = '';
+    MODO?: string = '';
 }
