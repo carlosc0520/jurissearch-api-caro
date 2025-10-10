@@ -1452,9 +1452,19 @@ export class EntriesController {
 
   @Get('listTopSearch')
   async listTopSearch(
-    @Request() req
+    @Request() req,
+    @Query('TYPE') TYPE: string,
   ): Promise<EntriesModel[]> {
-    return await this.entriesService.listTopSearch(req.user.UCRCN);
+    return await this.entriesService.listTopSearch(req.user.UCRCN, TYPE);
+  }
+
+  @Post('clearTopSearch')
+  async clearTopSearch(
+     @Request() req,
+     @Body() entidad: any
+  ): Promise<Result> {
+    entidad.UCRCN = req.user.UCRCN;
+    return await this.entriesService.clearTopSearch(entidad);
   }
   
   @Get('busqueda')

@@ -89,7 +89,7 @@ export class UsuarioController {
   @Get('get')
   async getUser(@Request() req): Promise<User> {
     let result = await this.userService.getUser(req.user.ID);
-    if(result['RTAFTO']){
+    if (result['RTAFTO']) {
       result.RTAFTO = result.RTAFTO ? process.env.DOMINIO + result.RTAFTO : null;
     }
     return result;
@@ -175,7 +175,7 @@ export class UsuarioController {
 
   @Post('delete-directory')
   async deleteDirectory(@Request() req, @Body('DIRECTORIOS') DIRECTORIOS: string): Promise<Result> {
-   
+
     return await this.userService.deleteDirectory(DIRECTORIOS, req.user);
   }
 
@@ -203,7 +203,7 @@ export class UsuarioController {
   // **** FAVORITOS ****
   @Get('add-favorite')
   async addFavoriteUser(
-    @Request() req, 
+    @Request() req,
     @Query('IDENTRIE') IDENTRIE: number,
   ): Promise<any> {
     return await this.userService.addFavoriteUser(
@@ -340,7 +340,7 @@ export class UsuarioController {
 
 
   @Post('payment-subscription')
-    async subscriptionPayment(
+  async subscriptionPayment(
     @Request() req,
     @Body() entidad: any,
   ): Promise<Result> {
@@ -352,6 +352,15 @@ export class UsuarioController {
     return await this.userService.subscriptionPayment(entidad);
   }
 
+  @Get('payment-list')
+  async payment_list(@Query() entidad: DataTable, @Request() req): Promise<any[]> {
+    if (!req.user.ID) {
+      throw new UnauthorizedException('No tienes permiso para acceder a esta ruta');
+    }
+    entidad.IDUSR = req.user.ID;
+    return await this.userService.payment_list(entidad);
+  }
+
   @Get('update-view')
   async updateView(
     @Request() req
@@ -359,7 +368,7 @@ export class UsuarioController {
     if (!req.user.ID) {
       throw new UnauthorizedException('No tienes permiso para acceder a esta ruta');
     }
-    
+
     return await this.userService.updateView(req.user.ID);
   }
 }

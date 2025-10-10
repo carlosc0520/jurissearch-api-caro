@@ -7,7 +7,8 @@ export declare class EntriesService {
     private connection;
     constructor(connection: DataSource);
     createEntries(entidad: EntriesModel): Promise<Result>;
-    listTopSearch(UCRCN: string): Promise<any[]>;
+    listTopSearch(UCRCN: string, TYPE: string): Promise<any[]>;
+    clearTopSearch(entidad: any): Promise<Result>;
     list(entidad: DataTable, TITLE: string, TYPE: string, TIPO: string): Promise<EntriesModel[]>;
     listData(entidad: DataTable, TITLE: string, TYPE: string, TIPO: string, BLOG: string, FRESOLUTION: string, TEMA: string, RTITLE: string, FCRCN?: string): Promise<EntriesModel[]>;
     listSearchData(RTITLE: string, TYPE: number, TIPO: string, BLOG?: string): Promise<EntriesModel[]>;

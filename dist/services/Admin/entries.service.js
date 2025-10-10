@@ -46,9 +46,9 @@ let EntriesService = class EntriesService {
             return { MESSAGE, STATUS: false };
         }
     }
-    async listTopSearch(UCRCN) {
+    async listTopSearch(UCRCN, TYPE) {
         let queryAsync = configMappers_1.default.ADMIN.BUSQUEDAS.CRUD;
-        queryAsync += ` @p_cData = ${null},`;
+        queryAsync += ` @p_cData = '${JSON.stringify({ TYPE })}',`;
         queryAsync += ` @p_cUser = '${UCRCN}',`;
         queryAsync += ` @p_nTipo = ${22},`;
         queryAsync += ` @p_nId = ${0}`;
@@ -58,6 +58,24 @@ let EntriesService = class EntriesService {
         }
         catch (error) {
             return error;
+        }
+    }
+    async clearTopSearch(entidad) {
+        var _a, _b, _c;
+        let queryAsync = configMappers_1.default.ADMIN.BUSQUEDAS.CRUD;
+        queryAsync += ` @p_cData = '${JSON.stringify(entidad)}',`;
+        queryAsync += ` @p_cUser = '${entidad.UCRCN}',`;
+        queryAsync += ` @p_nTipo = ${23},`;
+        queryAsync += ` @p_nId = ${0}`;
+        try {
+            const result = await this.connection.query(queryAsync);
+            const isSuccess = ((_a = result === null || result === void 0 ? void 0 : result[0]) === null || _a === void 0 ? void 0 : _a.RESULT) > 0;
+            const MESSAGE = isSuccess ? "Búsquedas top eliminadas correctamente" : "Ocurrió un error al intentar eliminar las búsquedas top";
+            return { MESSAGE, STATUS: isSuccess };
+        }
+        catch (error) {
+            const MESSAGE = ((_c = (_b = error.originalError) === null || _b === void 0 ? void 0 : _b.info) === null || _c === void 0 ? void 0 : _c.message) || "Ocurrió un error al intentar eliminar las búsquedas top";
+            return { MESSAGE, STATUS: false };
         }
     }
     async list(entidad, TITLE, TYPE, TIPO) {

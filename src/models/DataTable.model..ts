@@ -12,4 +12,5 @@ export class DataTable {
     IDUSR?: number = 0;
     ESTADO?: Boolean = null;
     IDFAV?: number = null;
+    FCRCN?: Date = null;
 }

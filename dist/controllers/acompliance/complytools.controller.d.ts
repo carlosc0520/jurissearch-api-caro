@@ -1,4 +1,3 @@
-/// <reference types="multer" />
 import { HttpService } from '@nestjs/axios';
 import { HostingerService } from 'src/services/Aws/hostinger.service';
 import { Response } from 'express';

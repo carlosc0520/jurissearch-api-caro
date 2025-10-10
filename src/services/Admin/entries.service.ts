@@ -41,18 +41,36 @@ export class EntriesService {
         }
     }
 
-    async listTopSearch(UCRCN: string) : Promise<any[]> {
+    async listTopSearch(UCRCN: string, TYPE: string): Promise<any[]> {
         let queryAsync = procedures.ADMIN.BUSQUEDAS.CRUD;
-        queryAsync += ` @p_cData = ${null},`;
+        queryAsync += ` @p_cData = '${JSON.stringify({TYPE})}',`;
         queryAsync += ` @p_cUser = '${UCRCN}',`;
         queryAsync += ` @p_nTipo = ${22},`
         queryAsync += ` @p_nId = ${0}`;
-
+        
         try {
             const result = await this.connection.query(queryAsync);
             return result;
         } catch (error) {
             return error;
+        }
+    }
+
+    async clearTopSearch(entidad: any): Promise<Result> {
+        let queryAsync = procedures.ADMIN.BUSQUEDAS.CRUD;
+        queryAsync += ` @p_cData = '${JSON.stringify(entidad)}',`;
+        queryAsync += ` @p_cUser = '${entidad.UCRCN}',`;
+        queryAsync += ` @p_nTipo = ${23},`
+        queryAsync += ` @p_nId = ${0}`;
+
+        try {
+            const result = await this.connection.query(queryAsync);
+            const isSuccess = result?.[0]?.RESULT > 0;
+            const MESSAGE = isSuccess ? "Búsquedas top eliminadas correctamente" : "Ocurrió un error al intentar eliminar las búsquedas top";
+            return { MESSAGE, STATUS: isSuccess };
+        } catch (error) {
+            const MESSAGE = error.originalError?.info?.message || "Ocurrió un error al intentar eliminar las búsquedas top";
+            return { MESSAGE, STATUS: false };
         }
     }
 

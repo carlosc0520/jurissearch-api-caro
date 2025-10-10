@@ -67,6 +67,7 @@ export declare class UsuarioController {
     compartir(req: any, entidad: any): Promise<Result>;
     getContactsSelecteds(req: any, entidad: any): Promise<any>;
     subscriptionPayment(req: any, entidad: any): Promise<Result>;
+    payment_list(entidad: DataTable, req: any): Promise<any[]>;
     updateView(req: any): Promise<Result>;
 }
 export {};

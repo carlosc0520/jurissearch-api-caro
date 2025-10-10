@@ -50,6 +50,8 @@ const linkedin_strategy_1 = require("./Google/linkedin.strategy");
 const linkedin_strategy_register_1 = require("./Google/linkedin.strategy.register");
 const stripe_service_1 = require("./Stripe/stripe.service");
 const stripe_controller_1 = require("../controllers/Stripe/stripe.controller");
+const culqi_controller_1 = require("../controllers/Culqi/culqi.controller");
+const CulqiService_1 = require("./Culqi/CulqiService");
 let UserModule = class UserModule {
 };
 exports.UserModule = UserModule;
@@ -87,7 +89,8 @@ exports.UserModule = UserModule = __decorate([
             boletin_controller_1.BoletinController,
             complytools_controller_1.ComplytoolsController,
             auth_controller_1.AuthController,
-            stripe_controller_1.StripeController
+            stripe_controller_1.StripeController,
+            culqi_controller_1.CulqiController
         ],
         providers: [
             user_service_1.UserService,
@@ -111,7 +114,8 @@ exports.UserModule = UserModule = __decorate([
             google_strategy_register_1.GoogleRegisterStrategy,
             linkedin_strategy_1.LinkedInStrategy,
             linkedin_strategy_register_1.LinkedRegisterInStrategy,
-            stripe_service_1.StripeService
+            stripe_service_1.StripeService,
+            CulqiService_1.CulqiService
         ],
     })
 ], UserModule);

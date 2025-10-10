@@ -46,6 +46,8 @@ import { LinkedInStrategy } from './Google/linkedin.strategy';
 import { LinkedRegisterInStrategy } from './Google/linkedin.strategy.register';
 import { StripeService } from './Stripe/stripe.service';
 import { StripeController } from 'src/controllers/Stripe/stripe.controller';
+import { CulqiController } from '@/controllers/Culqi/culqi.controller';
+import { CulqiService } from '@/services/Culqi/CulqiService';
 
 @Module({
   imports: [
@@ -83,7 +85,8 @@ import { StripeController } from 'src/controllers/Stripe/stripe.controller';
     BoletinController,
     ComplytoolsController,
     AuthController,
-    StripeController
+    StripeController,
+    CulqiController
   ],
   providers: [
     UserService,
@@ -112,7 +115,8 @@ import { StripeController } from 'src/controllers/Stripe/stripe.controller';
     GoogleRegisterStrategy,
     LinkedInStrategy,
     LinkedRegisterInStrategy,
-    StripeService
+    StripeService,
+    CulqiService
   ],
 })
 export class UserModule {}

@@ -24,7 +24,8 @@ export declare class EntriesController {
     Obtener(ID: number): Promise<EntriesModel>;
     getPrint(ID: number): Promise<EntriesModel>;
     downloadFile(PATH: string, res: Response): Promise<any>;
-    listTopSearch(req: any): Promise<EntriesModel[]>;
+    listTopSearch(req: any, TYPE: string): Promise<EntriesModel[]>;
+    clearTopSearch(req: any, entidad: any): Promise<Result>;
     busqueda(req: any, busqueda: BusquedaModel): Promise<EntriesModel[]>;
     busquedaSugges(req: any, busqueda: BusquedaModel): Promise<EntriesModel[]>;
     busquedaFavorites(req: any, busqueda: BusquedaModel): Promise<EntriesModel[]>;

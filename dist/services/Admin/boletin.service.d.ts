@@ -1,4 +1,3 @@
-/// <reference types="multer" />
 import { DataSource } from 'typeorm';
 import { Result } from '../../models/result.model';
 import { DataTable } from 'src/models/DataTable.model.';

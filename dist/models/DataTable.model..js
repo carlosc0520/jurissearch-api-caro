@@ -10,6 +10,7 @@ class DataTable {
         this.IDUSR = 0;
         this.ESTADO = null;
         this.IDFAV = null;
+        this.FCRCN = null;
     }
 }
 exports.DataTable = DataTable;

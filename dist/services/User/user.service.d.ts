@@ -64,6 +64,7 @@ export declare class UserService {
     compartir(entidad: any): Promise<Result>;
     listUsersShared(entidad: any): Promise<any[]>;
     subscriptionPayment(entidad: any): Promise<Result>;
+    payment_list(entidad: DataTable): Promise<any[]>;
     updateView(IDUSR: number): Promise<Result>;
 }
 export {};

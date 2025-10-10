@@ -150,7 +150,7 @@ export class UserService {
         }
     }
 
-    async deleteFavoriteDirectory (IDDIRECTORIO: number, IDENTRIE: number, UCRCN: string): Promise<Result> {
+    async deleteFavoriteDirectory(IDDIRECTORIO: number, IDENTRIE: number, UCRCN: string): Promise<Result> {
         let queryAsync = procedures.ADMIN.USUARIO.CRUD;
         queryAsync += ` @p_cData = '${JSON.stringify({ IDDIRECTORIO, IDENTRIE })}',`;
         queryAsync += ` @p_cUser = '${UCRCN}',`;
@@ -299,7 +299,7 @@ export class UserService {
 
     async deleteDirectory(DIRECTORIOS: string, USER: any): Promise<Result> {
         let queryAsync = procedures.ADMIN.USUARIO.CRUD2;
-        queryAsync += ` @p_cData = ${DIRECTORIOS ? `'${JSON.stringify({DIRECTORIOS, IDUSER: USER.ID})}'` : null},`;
+        queryAsync += ` @p_cData = ${DIRECTORIOS ? `'${JSON.stringify({ DIRECTORIOS, IDUSER: USER.ID })}'` : null},`;
         queryAsync += ` @p_cUser = ${USER.UCRCN ? `'${USER.UCRCN}'` : null},`;
         queryAsync += ` @p_nTipo = ${2},`;
         queryAsync += ` @p_nId = ${0}`;
@@ -386,7 +386,7 @@ export class UserService {
         queryAsync += ` @p_cUser = ${null},`;
         queryAsync += ` @p_nTipo = ${4},`;
         queryAsync += ` @p_nId = ${0}`;
-      
+
         try {
             const result = await this.connection.query(queryAsync);
             return result;
@@ -489,7 +489,7 @@ export class UserService {
         queryAsync += ` @p_nTipo = ${1},`;
         queryAsync += ` @p_nId = ${0}`
 
-        
+
         try {
             const result = await this.connection.query(queryAsync);
             const isSuccess = result?.[0]?.RESULT > 0;
@@ -507,7 +507,7 @@ export class UserService {
         queryAsync += ` @p_cUser = ${null},`;
         queryAsync += ` @p_nTipo = ${4},`;
         queryAsync += ` @p_nId = ${0}`;
-        
+
         try {
             const result = await this.connection.query(queryAsync);
             return result;
@@ -536,6 +536,21 @@ export class UserService {
         }
     }
 
+    async payment_list(entidad: DataTable): Promise<any[]> {
+        let queryAsync = procedures.ADMIN.USUARIO.CRUD4;
+        queryAsync += ` @p_cData = ${entidad ? `'${JSON.stringify(entidad)}'` : null},`;
+        queryAsync += ` @p_cUser = ${null},`;
+        queryAsync += ` @p_nTipo = ${4},`;
+        queryAsync += ` @p_nId = ${0}`;
+
+        try {
+            const result = await this.connection.query(queryAsync);
+            return result;
+        } catch (error) {
+            return error;
+        }
+    }
+
     async updateView(IDUSR: number): Promise<Result> {
         let queryAsync = procedures.ADMIN.USUARIO.CRUD;
         queryAsync += ` @p_cData = ${IDUSR ? `'${JSON.stringify({ IDUSR })}'` : null},`;
@@ -553,6 +568,6 @@ export class UserService {
             return { MESSAGE, STATUS: false };
         }
     }
-    
+
 }
 

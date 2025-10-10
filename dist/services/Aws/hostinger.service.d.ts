@@ -1,4 +1,3 @@
-/// <reference types="multer" />
 export declare class HostingerService {
     private ftpClient;
     private readonly ftpHost;

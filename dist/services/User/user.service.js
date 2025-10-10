@@ -490,6 +490,20 @@ let UserService = class UserService {
             return { MESSAGE, STATUS: false };
         }
     }
+    async payment_list(entidad) {
+        let queryAsync = configMappers_1.default.ADMIN.USUARIO.CRUD4;
+        queryAsync += ` @p_cData = ${entidad ? `'${JSON.stringify(entidad)}'` : null},`;
+        queryAsync += ` @p_cUser = ${null},`;
+        queryAsync += ` @p_nTipo = ${4},`;
+        queryAsync += ` @p_nId = ${0}`;
+        try {
+            const result = await this.connection.query(queryAsync);
+            return result;
+        }
+        catch (error) {
+            return error;
+        }
+    }
     async updateView(IDUSR) {
         var _a, _b, _c;
         let queryAsync = configMappers_1.default.ADMIN.USUARIO.CRUD;
