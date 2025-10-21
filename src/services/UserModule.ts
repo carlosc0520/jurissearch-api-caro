@@ -48,6 +48,8 @@ import { StripeService } from './Stripe/stripe.service';
 import { StripeController } from 'src/controllers/Stripe/stripe.controller';
 import { CulqiController } from '@/controllers/Culqi/culqi.controller';
 import { CulqiService } from '@/services/Culqi/CulqiService';
+import { OpenAIService } from '@/services/OpenAI/openai.service';
+import { OpenAIController } from '@/controllers/openai/openai.controller';
 
 @Module({
   imports: [
@@ -86,7 +88,9 @@ import { CulqiService } from '@/services/Culqi/CulqiService';
     ComplytoolsController,
     AuthController,
     StripeController,
-    CulqiController
+    CulqiController,
+    OpenAIController
+
   ],
   providers: [
     UserService,
@@ -116,7 +120,8 @@ import { CulqiService } from '@/services/Culqi/CulqiService';
     LinkedInStrategy,
     LinkedRegisterInStrategy,
     StripeService,
-    CulqiService
+    CulqiService,
+    OpenAIService
   ],
 })
-export class UserModule {}
+export class UserModule { }

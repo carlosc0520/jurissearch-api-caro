@@ -50,6 +50,7 @@
     "mssql2": "^3.3.1",
     "nestjs-ftp": "^0.1.13",
     "nodemailer": "^6.9.14",
+    "openai": "^6.3.0",
     "passport": "^0.7.0",
     "passport-google-oauth20": "^2.0.0",
     "passport-linkedin-oauth2": "^2.0.0",

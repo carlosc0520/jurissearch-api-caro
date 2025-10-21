@@ -1119,7 +1119,7 @@ let EntriesController = class EntriesController {
         const buffer = doc.getZip().generate({ type: 'nodebuffer' });
         res.set({
             'Content-Type': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-            'Content-Disposition': `attachment; filename="${data.TITLE}.docx"`,
+            'Content-Disposition': `attachment; filename="${makeSafeContentDisposition(data === null || data === void 0 ? void 0 : data.TITLE)}"`,
         });
         res.send(buffer);
     }
@@ -1392,6 +1392,24 @@ exports.EntriesController = EntriesController = __decorate([
     __metadata("design:paramtypes", [entries_service_1.EntriesService,
         aws_service_1.S3Service])
 ], EntriesController);
+function makeSafeContentDisposition(rawName) {
+    const name = (rawName || 'document').toString();
+    const cleaned = name.replace(/[\u0000-\u001F\u007F]/g, '').trim();
+    const asciiFallback = cleaned
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^\x20-\x7E]/g, '-')
+        .replace(/["\\]/g, '')
+        .replace(/\/+/g, '-')
+        .replace(/[-\s]+/g, '-')
+        .replace(/^-+|-+$/g, '')
+        .slice(0, 120) || 'document';
+    const utf8 = cleaned
+        .replace(/["\\]/g, '')
+        .slice(0, 240);
+    const encodedUtf8 = encodeURIComponent(utf8);
+    return `attachment; filename="${asciiFallback}.docx"; filename*=UTF-8''${encodedUtf8}.docx`;
+}
 const decodeHtmlEntities = (text) => {
     if (text === null)
         return '';

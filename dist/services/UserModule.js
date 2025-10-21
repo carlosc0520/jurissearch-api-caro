@@ -52,6 +52,8 @@ const stripe_service_1 = require("./Stripe/stripe.service");
 const stripe_controller_1 = require("../controllers/Stripe/stripe.controller");
 const culqi_controller_1 = require("../controllers/Culqi/culqi.controller");
 const CulqiService_1 = require("./Culqi/CulqiService");
+const openai_service_1 = require("./OpenAI/openai.service");
+const openai_controller_1 = require("../controllers/openai/openai.controller");
 let UserModule = class UserModule {
 };
 exports.UserModule = UserModule;
@@ -90,7 +92,8 @@ exports.UserModule = UserModule = __decorate([
             complytools_controller_1.ComplytoolsController,
             auth_controller_1.AuthController,
             stripe_controller_1.StripeController,
-            culqi_controller_1.CulqiController
+            culqi_controller_1.CulqiController,
+            openai_controller_1.OpenAIController
         ],
         providers: [
             user_service_1.UserService,
@@ -115,7 +118,8 @@ exports.UserModule = UserModule = __decorate([
             linkedin_strategy_1.LinkedInStrategy,
             linkedin_strategy_register_1.LinkedRegisterInStrategy,
             stripe_service_1.StripeService,
-            CulqiService_1.CulqiService
+            CulqiService_1.CulqiService,
+            openai_service_1.OpenAIService
         ],
     })
 ], UserModule);

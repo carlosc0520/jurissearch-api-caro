@@ -1460,13 +1460,13 @@ export class EntriesController {
 
   @Post('clearTopSearch')
   async clearTopSearch(
-     @Request() req,
-     @Body() entidad: any
+    @Request() req,
+    @Body() entidad: any
   ): Promise<Result> {
     entidad.UCRCN = req.user.UCRCN;
     return await this.entriesService.clearTopSearch(entidad);
   }
-  
+
   @Get('busqueda')
   async busqueda(
     @Request() req,
@@ -1581,7 +1581,7 @@ export class EntriesController {
       tabla_fecha: data?.FRESOLUTIONSTRING || "",
       tabla_jurisdiccional: data?.OJURISDICCIONAL || "",
       tabla_magistrados: data?.MAGISTRATES?.replace(/\s*, /g, ', ') || "",
-      tabla_voto:  data?.VDESIDENTE?.replace(/,/g, ', ')  || "-",
+      tabla_voto: data?.VDESIDENTE?.replace(/,/g, ', ') || "-",
       tabla_votoc: data?.CVOTE?.replace(/,/g, ', ') || '-',
       year_footer: new Date().getFullYear(),
       link_text: "Haz clic aquí",
@@ -1592,11 +1592,40 @@ export class EntriesController {
     const buffer = doc.getZip().generate({ type: 'nodebuffer' });
     res.set({
       'Content-Type': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-      'Content-Disposition': `attachment; filename="${data.TITLE}.docx"`,
+      'Content-Disposition': `attachment; filename="${makeSafeContentDisposition(data?.TITLE)}"`,
     });
     res.send(buffer);
   }
 }
+
+function makeSafeContentDisposition(rawName: string | undefined): string {
+  const name = (rawName || 'document').toString();
+
+  // 1) Elimina caracteres de control y saltos de línea
+  const cleaned = name.replace(/[\u0000-\u001F\u007F]/g, '').trim();
+
+  // 2) Versión ASCII "segura" (fallback) — reemplaza no ASCII por guion
+  const asciiFallback = cleaned
+    .normalize('NFD')                      // separa diacríticos
+    .replace(/[\u0300-\u036f]/g, '')       // quita marcas de acento
+    .replace(/[^\x20-\x7E]/g, '-')        // cualquier no-ASCII -> '-'
+    .replace(/["\\]/g, '')                // quita comillas y backslash
+    .replace(/\/+/g, '-')                 // evita slashes
+    .replace(/[-\s]+/g, '-')              // colapsa espacios/guiones repetidos
+    .replace(/^-+|-+$/g, '')              // quita guiones al inicio/fin
+    .slice(0, 120) || 'document';
+
+  // 3) Versión UTF-8 encoded para filename* (RFC5987)
+  const utf8 = cleaned
+    .replace(/["\\]/g, '')               // quita comillas/backslash
+    .slice(0, 240);                      // limitar largo por seguridad
+
+  const encodedUtf8 = encodeURIComponent(utf8);
+
+  // 4) Construye header seguro usando filename (ASCII) + filename* (UTF-8)
+  return `attachment; filename="${asciiFallback}.docx"; filename*=UTF-8''${encodedUtf8}.docx`;
+}
+
 
 const decodeHtmlEntities = (text) => {
   if (text === null) return '';
