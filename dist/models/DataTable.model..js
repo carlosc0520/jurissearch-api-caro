@@ -11,6 +11,7 @@ class DataTable {
         this.ESTADO = null;
         this.IDFAV = null;
         this.FCRCN = null;
+        this.ORDER = 0;
     }
 }
 exports.DataTable = DataTable;

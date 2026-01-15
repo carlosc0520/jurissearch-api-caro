@@ -29,7 +29,6 @@ export class HelpController {
     @Post('add')
     async addUser(@Body() entidad: HelpModel): Promise<Result> {
         entidad.UCRCN = entidad.NOMBRES.toString().trim();
-
         await this.emailJurisService.sendEmailContacto(entidad);
 
         return await this.helpService.create(entidad);

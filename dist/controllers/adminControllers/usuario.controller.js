@@ -162,6 +162,15 @@ let UsuarioController = class UsuarioController {
         }
         return await this.userService.deleteContactos(ID, req.user.UCRCN);
     }
+    async deleteNotification(req, IDS) {
+        if (!req.user.ID) {
+            throw new common_1.UnauthorizedException('No tienes permiso para acceder a esta ruta');
+        }
+        if (!IDS) {
+            throw new common_1.BadRequestException('No hay notificaciones para eliminar');
+        }
+        return await this.userService.deleteNotificaciones(IDS, req.user.UCRCN);
+    }
     async getNotifications(req, entidad) {
         if (!req.user.ID) {
             throw new common_1.UnauthorizedException('No tienes permiso para acceder a esta ruta');
@@ -393,6 +402,14 @@ __decorate([
     __metadata("design:paramtypes", [Object, Number]),
     __metadata("design:returntype", Promise)
 ], UsuarioController.prototype, "deleteContact", null);
+__decorate([
+    (0, common_1.Post)('delete-notificaciones'),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Body)('IDS')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, String]),
+    __metadata("design:returntype", Promise)
+], UsuarioController.prototype, "deleteNotification", null);
 __decorate([
     (0, common_1.Get)('get-notifications'),
     __param(0, (0, common_1.Request)()),

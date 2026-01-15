@@ -63,6 +63,7 @@ export declare class UsuarioController {
     addContact(req: any, entidad: any): Promise<Result>;
     editContact(req: any, entidad: any): Promise<Result>;
     deleteContact(req: any, ID: number): Promise<Result>;
+    deleteNotification(req: any, IDS: string): Promise<Result>;
     getNotifications(req: any, entidad: DataTable): Promise<any>;
     compartir(req: any, entidad: any): Promise<Result>;
     getContactsSelecteds(req: any, entidad: any): Promise<any>;

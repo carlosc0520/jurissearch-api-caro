@@ -13,4 +13,5 @@ export class DataTable {
     ESTADO?: Boolean = null;
     IDFAV?: number = null;
     FCRCN?: Date = null;
+    ORDER?: number = 0;
 }

@@ -301,6 +301,22 @@ export class UsuarioController {
     return await this.userService.deleteContactos(ID, req.user.UCRCN);
   }
 
+  @Post('delete-notificaciones')
+  async deleteNotification(
+    @Request() req,
+    @Body('IDS') IDS: string,
+  ): Promise<Result> {
+    if (!req.user.ID) {
+      throw new UnauthorizedException('No tienes permiso para acceder a esta ruta');
+    }
+
+    if (!IDS) {
+      throw new BadRequestException('No hay notificaciones para eliminar');
+    }
+
+    return await this.userService.deleteNotificaciones(IDS, req.user.UCRCN);
+  }
+
   @Get('get-notifications')
   async getNotifications(
     @Request() req,

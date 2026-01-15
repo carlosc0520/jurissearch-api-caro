@@ -410,6 +410,24 @@ let UserService = class UserService {
             return { MESSAGE, STATUS: false };
         }
     }
+    async deleteNotificaciones(ids, UCRCN) {
+        var _a, _b, _c;
+        let queryAsync = configMappers_1.default.ADMIN.USUARIO.CRUD;
+        queryAsync += ` @p_cData = ${ids ? `'${JSON.stringify({ IDS: ids })}'` : null},`;
+        queryAsync += ` @p_cUser = ${UCRCN},`;
+        queryAsync += ` @p_nTipo = ${32},`;
+        queryAsync += ` @p_nId = ${0}`;
+        try {
+            const result = await this.connection.query(queryAsync);
+            const isSuccess = ((_a = result === null || result === void 0 ? void 0 : result[0]) === null || _a === void 0 ? void 0 : _a.RESULT) > 0;
+            const MESSAGE = isSuccess ? "Notificaciones eliminadas correctamente" : "Ocurrió un error al intentar eliminar las notificaciones";
+            return { MESSAGE, STATUS: isSuccess };
+        }
+        catch (error) {
+            const MESSAGE = ((_c = (_b = error.originalError) === null || _b === void 0 ? void 0 : _b.info) === null || _c === void 0 ? void 0 : _c.message) || "Ocurrió un error al intentar eliminar las notificaciones";
+            return { MESSAGE, STATUS: false };
+        }
+    }
     async listNotificaciones(entidad) {
         let queryAsync = configMappers_1.default.ADMIN.USUARIO.CRUD;
         queryAsync += ` @p_cData = ${entidad ? `'${JSON.stringify(entidad)}'` : null},`;

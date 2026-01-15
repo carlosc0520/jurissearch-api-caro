@@ -449,6 +449,24 @@ export class UserService {
         }
     }
 
+    async deleteNotificaciones(ids: string, UCRCN: string): Promise<Result> {
+        let queryAsync = procedures.ADMIN.USUARIO.CRUD;
+        queryAsync += ` @p_cData = ${ids ? `'${JSON.stringify({ IDS: ids })}'` : null},`;
+        queryAsync += ` @p_cUser = ${UCRCN},`;
+        queryAsync += ` @p_nTipo = ${32},`;
+        queryAsync += ` @p_nId = ${0}`;
+
+        try {
+            const result = await this.connection.query(queryAsync);
+            const isSuccess = result?.[0]?.RESULT > 0;
+            const MESSAGE = isSuccess ? "Notificaciones eliminadas correctamente" : "Ocurrió un error al intentar eliminar las notificaciones";
+            return { MESSAGE, STATUS: isSuccess };
+        } catch (error) {
+            const MESSAGE = error.originalError?.info?.message || "Ocurrió un error al intentar eliminar las notificaciones";
+            return { MESSAGE, STATUS: false };
+        }
+    }
+
     async listNotificaciones(entidad: DataTable): Promise<any[]> {
         let queryAsync = procedures.ADMIN.USUARIO.CRUD;
         queryAsync += ` @p_cData = ${entidad ? `'${JSON.stringify(entidad)}'` : null},`;
