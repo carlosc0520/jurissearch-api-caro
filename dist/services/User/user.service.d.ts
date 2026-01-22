@@ -32,6 +32,7 @@ declare class User {
     MESSAGE?: string;
     RTAFTO?: string;
     IDPLN?: number;
+    NOTIFI?: string;
 }
 export declare class UserService {
     private connection;

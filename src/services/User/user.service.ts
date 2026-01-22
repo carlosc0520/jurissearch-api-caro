@@ -36,6 +36,7 @@ class User {
     MESSAGE?: string;
     RTAFTO?: string;
     IDPLN?: number;
+    NOTIFI?: string;
 }
 
 @Injectable()
@@ -120,6 +121,7 @@ export class UserService {
         queryAsync += ` @p_cUser = ${entidad?.USER ? `'${entidad.USER}'` : null},`;
         queryAsync += ` @p_nTipo = ${1},`;
         queryAsync += ` @p_nId = ${entidad?.ID}`;
+        console.log(queryAsync);
 
         try {
             const result = await this.connection.query(queryAsync);
@@ -340,7 +342,6 @@ export class UserService {
         queryAsync += ` @p_cUser = ${'USUARIO'},`;
         queryAsync += ` @p_nTipo = ${4},`;
         queryAsync += ` @p_nId = ${0}`;
-
         try {
             const result = await this.connection.query(queryAsync);
             return result;

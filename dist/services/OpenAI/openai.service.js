@@ -22,7 +22,6 @@ let OpenAIService = class OpenAIService {
         });
     }
     async chat(mensaje) {
-        console.log('Mensaje recibido en el servicio:', mensaje);
         const respuesta = await this.openai.chat.completions.create({
             model: 'gpt-4o-mini',
             messages: [

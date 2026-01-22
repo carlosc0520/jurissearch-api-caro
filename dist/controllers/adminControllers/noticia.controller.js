@@ -96,7 +96,7 @@ let NoticiaController = class NoticiaController {
             const result = await this.noticiaService.create(entidad);
             if (result.STATUS) {
                 let usuarios = await this.usuarioService.obtenerEmails({});
-                let titleNoticia = entidad.TITULO.replace(/[^a-zA-Z0-9]/g, '-');
+                let titleNoticia = entidad.TITULO;
                 await this.emailService.emailNewNoticias(usuarios, titleNoticia, result.ID, entidad.ENLACE, process.env.DOMINIO + entidad.IMAGEN);
             }
             return result;

@@ -33,6 +33,7 @@ class User {
   TOKEN: string;
   DATOS?: string;
   RTAFTO?: string;
+  NOTIFI?: string;
 }
 
 @Controller('admin/user')

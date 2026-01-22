@@ -95,6 +95,7 @@ let UserService = class UserService {
         queryAsync += ` @p_cUser = ${(entidad === null || entidad === void 0 ? void 0 : entidad.USER) ? `'${entidad.USER}'` : null},`;
         queryAsync += ` @p_nTipo = ${1},`;
         queryAsync += ` @p_nId = ${entidad === null || entidad === void 0 ? void 0 : entidad.ID}`;
+        console.log(queryAsync);
         try {
             const result = await this.connection.query(queryAsync);
             const isSuccess = ((_a = result === null || result === void 0 ? void 0 : result[0]) === null || _a === void 0 ? void 0 : _a.RESULT) > 0;

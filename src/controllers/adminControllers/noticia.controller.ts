@@ -88,10 +88,9 @@ export class NoticiaController {
 
             entidad.UCRCN = req.user.UCRCN;
             const result = await this.noticiaService.create(entidad);
-
             if (result.STATUS) {
                 let usuarios = await this.usuarioService.obtenerEmails({});
-                let titleNoticia = entidad.TITULO.replace(/[^a-zA-Z0-9]/g, '-');
+                let titleNoticia = entidad.TITULO;
                 await this.emailService.emailNewNoticias(usuarios,
                     titleNoticia,
                     result.ID,
@@ -179,7 +178,7 @@ export class NoticiaController {
                 RUTA: item['RUTA'] ? process.env.DOMINIO + item['RUTA'] : null,
             }
         });
-        
+
         return data;
     }
 
