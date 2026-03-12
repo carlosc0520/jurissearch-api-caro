@@ -1477,6 +1477,26 @@ export class EntriesController {
     return await this.entriesService.busqueda(busqueda);
   }
 
+  @Get('filters-busqueda-search')
+  async filtersBusquedaSearch(
+    @Request() req,
+    @Query() busqueda: BusquedaModel,
+  ): Promise<EntriesModel[]> {
+    busqueda.UEDCN = req.user.UCRCN;
+    busqueda.IDUSR = req.user.ID;
+    return await this.entriesService.filtersBusquedaSearch(busqueda);
+  }
+
+  @Post('save-open-entrie')
+  async saveOpenEntrie(
+    @Request() req,
+    @Body() entidad: BusquedaModel,
+  ): Promise<Result> {
+    entidad.UEDCN = req.user.UCRCN;
+    entidad.IDUSR = req.user.ID;
+    return await this.entriesService.saveOpenEntrie(entidad);
+  }
+
   @Get('busqueda-sugges')
   async busquedaSugges(
     @Request() req,

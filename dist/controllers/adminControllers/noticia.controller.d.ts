@@ -17,8 +17,14 @@ export declare class NoticiaController {
     listaAll(entidad: DataTable): Promise<NoticiaModel[]>;
     downloadFile(KEY: string, res: Response): Promise<any>;
     deleteUser(req: any, ID: number): Promise<Result>;
-    addNoticia(req: any, entidad: NoticiaModel, files: any): Promise<Result>;
-    editNoticia(req: any, entidad: NoticiaModel, files?: any[]): Promise<Result>;
+    addNoticia(req: any, entidad: NoticiaModel, files: {
+        files?: Express.Multer.File[];
+        pdf?: Express.Multer.File[];
+    }): Promise<Result>;
+    editNoticia(req: any, entidad: NoticiaModel, files: {
+        files?: Express.Multer.File[];
+        pdf?: Express.Multer.File[];
+    }): Promise<Result>;
     listaAutores(entidad: DataTable): Promise<NoticiaModel[]>;
     addAutor(req: any, entidad: AutorModel, files: any): Promise<Result>;
     editAutor(req: any, entidad: AutorModel, files?: any[]): Promise<Result>;

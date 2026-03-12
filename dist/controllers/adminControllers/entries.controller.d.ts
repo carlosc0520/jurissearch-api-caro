@@ -27,6 +27,8 @@ export declare class EntriesController {
     listTopSearch(req: any, TYPE: string): Promise<EntriesModel[]>;
     clearTopSearch(req: any, entidad: any): Promise<Result>;
     busqueda(req: any, busqueda: BusquedaModel): Promise<EntriesModel[]>;
+    filtersBusquedaSearch(req: any, busqueda: BusquedaModel): Promise<EntriesModel[]>;
+    saveOpenEntrie(req: any, entidad: BusquedaModel): Promise<Result>;
     busquedaSugges(req: any, busqueda: BusquedaModel): Promise<EntriesModel[]>;
     busquedaFavorites(req: any, busqueda: BusquedaModel): Promise<EntriesModel[]>;
     busquedaFavoritesEntrie(req: any, busqueda: BusquedaModel): Promise<EntriesModel[]>;

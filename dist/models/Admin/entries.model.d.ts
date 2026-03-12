@@ -40,4 +40,6 @@ export declare class EntriesModel {
     FLGDOC: string;
     JURISDICCIONV: string;
     SITUACION: string;
+    ORDER: string;
+    ISOPEN: number;
 }

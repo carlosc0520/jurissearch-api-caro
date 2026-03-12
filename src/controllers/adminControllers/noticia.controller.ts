@@ -1,5 +1,5 @@
 import { Body, Controller, Get, Request, Post, Query, Res, UploadedFiles, UseInterceptors } from '@nestjs/common';
-import { FilesInterceptor } from '@nestjs/platform-express';
+import { FilesInterceptor, FileFieldsInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { S3Service } from 'src/services/Aws/aws.service';
 import * as fs from 'fs';
@@ -57,7 +57,10 @@ export class NoticiaController {
 
     @Post('add')
     @UseInterceptors(
-        FilesInterceptor('files', 20, {
+        FileFieldsInterceptor([
+            { name: 'files', maxCount: 1 },
+            { name: 'pdf', maxCount: 1 },
+        ], {
             storage: diskStorage({
                 destination: './uploads/noticias',
                 filename: function (req, file, cb) {
@@ -66,104 +69,121 @@ export class NoticiaController {
                 }
             }),
             fileFilter: (req, file, cb) => {
-                if (file.mimetype.match(/\/(jpg|jpeg|png|gif)$/)) {
+                if (file.fieldname === 'files' && file.mimetype.match(/\/(jpg|jpeg|png|gif)$/)) {
+                    cb(null, true);
+                } else if (file.fieldname === 'pdf' && file.mimetype === 'application/pdf') {
                     cb(null, true);
                 } else {
-                    cb(new Error('Solo se permiten imagenes'), false);
+                    cb(new Error('Tipo de archivo no permitido'), false);
                 }
             }
         }),
     )
-    async addNoticia(@Request() req, @Body() entidad: NoticiaModel, @UploadedFiles() files): Promise<Result> {
+    async addNoticia(@Request() req, @Body() entidad: NoticiaModel, @UploadedFiles() files: { files?: Express.Multer.File[], pdf?: Express.Multer.File[] }): Promise<Result> {
+        const allFiles = [...(files.files || []), ...(files.pdf || [])];
         try {
+            const [imageFile] = files.files || [];
+            const [pdfFile] = files.pdf || [];
 
-            const [file1] = files;
+            if (!imageFile) return { MESSAGE: 'La imagen es requerida', STATUS: false };
 
-            if (!file1) return { MESSAGE: 'La imagen es requerida', STATUS: false };
-            if (file1) {
-                const resultFile: any = await this.hostingerService.saveFile(file1, 'noticias');
-                if (!resultFile.success) return { MESSAGE: 'Error al subir la imagen', STATUS: false };
-                entidad.IMAGEN = resultFile.path;
+            const resultImage: any = await this.hostingerService.saveFile(imageFile, 'noticias/images');
+            if (!resultImage.success) return { MESSAGE: 'Error al subir la imagen', STATUS: false };
+            entidad.IMAGEN = resultImage.path;
+
+            if (pdfFile) {
+                const resultPdf: any = await this.hostingerService.saveFile(pdfFile, 'noticias/docs');
+                if (!resultPdf.success) return { MESSAGE: 'Error al subir el documento PDF', STATUS: false };
+                entidad.ARCHIVO = resultPdf.path;
             }
 
             entidad.UCRCN = req.user.UCRCN;
             const result = await this.noticiaService.create(entidad);
             if (result.STATUS) {
-                let usuarios = await this.usuarioService.obtenerEmails({});
-                let titleNoticia = entidad.TITULO;
-                await this.emailService.emailNewNoticias(usuarios,
-                    titleNoticia,
+                const usuarios = await this.usuarioService.obtenerEmails({});
+                // Envío de emails en segundo plano (no bloqueante)
+                this.emailService.emailNewNoticias(
+                    usuarios,
+                    entidad.TITULO,
                     result.ID,
-                    entidad.ENLACE,
+                    null,
                     process.env.DOMINIO + entidad.IMAGEN,
-                );
+                    process.env.DOMINIO + entidad.ARCHIVO
+                ).then(() => {
+                    console.log('Emails enviados correctamente en segundo plano');
+                }).catch((error) => {
+                    console.error('Error al enviar emails en segundo plano:', error);
+                });
             }
 
-
-            return result
+            return result;
         }
         catch (error) {
             return { MESSAGE: error.message, STATUS: false };
         }
         finally {
-            await files.forEach(file => {
-                try {
-                    if (file.path) {
-                        fs.unlinkSync(file.path);
-                    }
-                } catch (error) {
-                }
+            allFiles.forEach(file => {
+                try { if (file?.path) fs.unlinkSync(file.path); } catch (e) { }
             });
         }
     }
 
     @Post('edit')
     @UseInterceptors(
-        FilesInterceptor('files', 20, {
+        FileFieldsInterceptor([
+            { name: 'files', maxCount: 1 },
+            { name: 'pdf', maxCount: 1 },
+        ], {
             storage: diskStorage({
                 destination: './uploads/noticias',
                 filename: function (req, file, cb) {
-                    if (file) {
-                        const filename = `${Date.now()}-${file.originalname.replace(/\s/g, '')}`;
-                        return cb(null, filename);
-                    }
+                    const filename = `${Date.now()}-${file.originalname.replace(/\s/g, '')}`;
+                    return cb(null, filename);
                 }
             }),
             fileFilter: (req, file, cb) => {
-                if (file.mimetype.match(/\/(jpg|jpeg|png|gif)$/)) {
+                if (file.fieldname === 'files' && file.mimetype.match(/\/(jpg|jpeg|png|gif)$/)) {
+                    cb(null, true);
+                } else if (file.fieldname === 'pdf' && file.mimetype === 'application/pdf') {
                     cb(null, true);
                 } else {
-                    cb(new Error('Solo se permiten imagenes'), false);
+                    cb(new Error('Tipo de archivo no permitido'), false);
                 }
             }
         }),
     )
-    async editNoticia(@Request() req, @Body() entidad: NoticiaModel, @UploadedFiles() files?: any[]): Promise<Result> {
+    async editNoticia(@Request() req, @Body() entidad: NoticiaModel, @UploadedFiles() files: { files?: Express.Multer.File[], pdf?: Express.Multer.File[] }): Promise<Result> {
+        const allFiles = [...(files.files || []), ...(files.pdf || [])];
         try {
             if (!entidad.ID) return { MESSAGE: 'El Identificador es requerido', STATUS: false };
 
-            const [file1] = files;
-            if (file1) {
-                const deleteFile = await this.hostingerService.deleteFile(entidad.IMAGEN);
-                const resultFile: any = await this.hostingerService.saveFile(file1, 'noticias');
-                if (!resultFile.success) return { MESSAGE: 'Error al subir la imagen', STATUS: false };
-                entidad.IMAGEN = resultFile.path;
+            const [imageFile] = files.files || [];
+            const [pdfFile] = files.pdf || [];
+
+            if (imageFile) {
+                await this.hostingerService.deleteFile(entidad.IMAGEN);
+                const resultImage: any = await this.hostingerService.saveFile(imageFile, 'noticias');
+                if (!resultImage.success) return { MESSAGE: 'Error al subir la imagen', STATUS: false };
+                entidad.IMAGEN = resultImage.path;
+            }
+
+            if (pdfFile) {
+                if (entidad.ARCHIVO) await this.hostingerService.deleteFile(entidad.ARCHIVO);
+                const resultPdf: any = await this.hostingerService.saveFile(pdfFile, 'noticias/docs');
+                if (!resultPdf.success) return { MESSAGE: 'Error al subir el documento PDF', STATUS: false };
+                entidad.ARCHIVO = resultPdf.path;
             }
 
             entidad.UCRCN = req.user.UCRCN;
             const result = await this.noticiaService.edit(entidad);
-            return result
+            return result;
         }
         catch (error) {
             return { MESSAGE: error.message, STATUS: false };
         }
         finally {
-            await files.forEach(file => {
-                try {
-                    fs.unlinkSync(file.path);
-                } catch (error) {
-                    console.log('Error deleting file:', error);
-                }
+            allFiles.forEach(file => {
+                try { if (file?.path) fs.unlinkSync(file.path); } catch (e) { }
             });
         }
     }

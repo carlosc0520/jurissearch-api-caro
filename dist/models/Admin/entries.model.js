@@ -44,6 +44,8 @@ class EntriesModel {
         this.FLGDOC = '';
         this.JURISDICCIONV = '';
         this.SITUACION = '';
+        this.ORDER = '';
+        this.ISOPEN = 0;
     }
 }
 exports.EntriesModel = EntriesModel;

@@ -83,6 +83,7 @@ let HostingerService = class HostingerService {
             return { success: true, path: remotePath };
         }
         catch (error) {
+            console.error(`Error uploading file:`, error);
             throw new common_1.HttpException('Error al subir su archivo al servidor', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

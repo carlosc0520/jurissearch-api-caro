@@ -1,7 +1,9 @@
 export class NoticiaModel {
     ID: number = 0;
+    TIPO: number = 1;
+    DTIPO: string = '';
     TITULO: string = '';
-    DESCRIPCION: string = '';
+    SUBTITULO: string = '';
     IMAGEN: string = '';
     IMAGEN2?: string = '';
     UCRCN: string = '';
@@ -9,9 +11,11 @@ export class NoticiaModel {
     FEDCN: Date = new Date();
     IDAUTORES: string = '';
     AUTORES: string = '';
-    IDCATEGORIAS: string = '';
-    ENLACE: string = '';
-    CATEGORIAS: string = '';
+    FCHPUB: Date = null;
+    FCHCONSULTA: Date = null;
+    ORGANO: string = '';
+    DORGANO: string = '';
+    ARCHIVO: string = '';
     CDESTDO: string = '';
 }
 

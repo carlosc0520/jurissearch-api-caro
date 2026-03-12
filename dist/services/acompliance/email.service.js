@@ -164,7 +164,7 @@ let EmailService = class EmailService {
             return { MESSAGE: 'Error al enviar los correos', STATUS: false, ERROR: error.message };
         }
     }
-    async emailNewNoticias(usuarios, TITULO, ID, ENLACE, PATH) {
+    async emailNewNoticias(usuarios, TITULO, ID, ENLACE, PATH, PATHARCHIVO) {
         const validarEmail = (email) => {
             const regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
             return regex.test(email);
@@ -206,9 +206,9 @@ let EmailService = class EmailService {
                       <!-- Imagen destacada -->
                       <tr>
                         <td align="center" style="padding-bottom: 25px;">
-                          <a href="${ENLACE}" style="text-decoration: none; display: block;">
+                        ${ENLACE ? `<a href="${ENLACE}" style="text-decoration: none; display: block;">` : ''}
                             <img src="${PATH}" alt="Newsletter ${TITULO}" style="width: 100%; max-width: 540px; height: auto; border-radius: 10px; display: block; border: 0;" />
-                          </a>
+                          ${ENLACE ? '</a>' : ''}
                         </td>
                       </tr>
                       
@@ -216,27 +216,31 @@ let EmailService = class EmailService {
                       <tr>
                         <td style="padding-bottom: 30px;">
                           <p style="margin: 0; font-size: 17px; color: #333333; line-height: 1.7; text-align: center;">
-                            Explora el último boletín para descubrir las <strong>novedades y actualizaciones legales</strong> más importantes. 
+                            Explora lo último para descubrir las <strong>novedades y actualizaciones legales</strong> más importantes. 
                             Mantente informado con contenido de calidad.
                           </p>
                         </td>
                       </tr>
-                      
-                      <!-- Botón CTA -->
+                 
+                     
+                      <!-- Botón Ver Documento -->
+                      ${PATHARCHIVO ? `
                       <tr>
                         <td align="center" style="padding-bottom: 10px;">
                           <table border="0" cellspacing="0" cellpadding="0">
                             <tr>
-                              <td align="center" style="border-radius: 6px; background: linear-gradient(135deg, #e71fb3 0%, #1864ff 100%); background-color: #1864ff;">
-                                <a href="https://side.jurissearch.com/publicaciones?search=${TITULO}" 
+                              <td align="center" style="border-radius: 6px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); background-color: #10b981;">
+                                <a href="${PATHARCHIVO}" 
+                                   target="_blank"
                                    style="display: inline-block; padding: 14px 35px; color: #ffffff; text-decoration: none; font-size: 16px; font-weight: 600; border-radius: 6px; letter-spacing: 0.3px;">
-                                  📖 Leer el boletín completo
+                                  📄 Ver documento
                                 </a>
                               </td>
                             </tr>
                           </table>
                         </td>
                       </tr>
+                      ` : ''}
                     </table>
                   </td>
                 </tr>
@@ -294,7 +298,7 @@ let EmailService = class EmailService {
                 const mailOptions = {
                     from: '"JurisSearch Informativo 📰" <jsearch@ccfirma.com>',
                     to: usuario.EMAIL,
-                    subject: `📰 Newsletter: ${TITULO}`,
+                    subject: `📰 ${TITULO}`,
                     html,
                 };
                 return this.transporter3.sendMail(mailOptions);

@@ -24,7 +24,7 @@ export class EntriesService {
         entidad.SHORTSUMMARY = entidad.SHORTSUMMARY ? entidad.SHORTSUMMARY.replace(/‟/g, '"').replace(/”/g, '"').replace(/“/g, '"') : entidad.SHORTSUMMARY;
         entidad.SUBTEMA = entidad.SUBTEMA ? entidad.SUBTEMA.replace(/‟/g, '"').replace(/”/g, '"').replace(/“/g, '"') : entidad.SUBTEMA;
         entidad.TEMA = entidad.TEMA ? entidad.TEMA.replace(/‟/g, '"').replace(/”/g, '"').replace(/“/g, '"') : entidad.TEMA;
-        
+
         queryAsync += ` @p_cData = ${entidad ? `'${JSON.stringify(entidad)}'` : null},`;
         queryAsync += ` @p_cUser = '${entidad.UCRCN}',`;
         queryAsync += ` @p_nTipo = ${1},`;
@@ -43,11 +43,11 @@ export class EntriesService {
 
     async listTopSearch(UCRCN: string, TYPE: string): Promise<any[]> {
         let queryAsync = procedures.ADMIN.BUSQUEDAS.CRUD;
-        queryAsync += ` @p_cData = '${JSON.stringify({TYPE})}',`;
+        queryAsync += ` @p_cData = '${JSON.stringify({ TYPE })}',`;
         queryAsync += ` @p_cUser = '${UCRCN}',`;
         queryAsync += ` @p_nTipo = ${22},`
         queryAsync += ` @p_nId = ${0}`;
-        
+
         try {
             const result = await this.connection.query(queryAsync);
             return result;
@@ -113,7 +113,7 @@ export class EntriesService {
     async listSearchData(RTITLE: string, TYPE: number, TIPO: string, BLOG: string = ''
     ): Promise<EntriesModel[]> {
         let queryAsync = procedures.ADMIN.ENTRIES.CRUD;
-        queryAsync += ` @p_cData = '${JSON.stringify({ RTITLE, TYPE, TIPO, BLOG})}',`;
+        queryAsync += ` @p_cData = '${JSON.stringify({ RTITLE, TYPE, TIPO, BLOG })}',`;
         queryAsync += ` @p_cUser = ${null},`;
         queryAsync += ` @p_nTipo = ${12},`
         queryAsync += ` @p_nId = ${0}`;
@@ -216,7 +216,7 @@ export class EntriesService {
         entidad.SHORTSUMMARY = entidad.SHORTSUMMARY ? entidad.SHORTSUMMARY.replace(/‟/g, '"').replace(/”/g, '"').replace(/“/g, '"') : entidad.SHORTSUMMARY;
         entidad.SUBTEMA = entidad.SUBTEMA ? entidad.SUBTEMA.replace(/‟/g, '"').replace(/”/g, '"').replace(/“/g, '"') : entidad.SUBTEMA;
         entidad.TEMA = entidad.TEMA ? entidad.TEMA.replace(/‟/g, '"').replace(/”/g, '"').replace(/“/g, '"') : entidad.TEMA;
-    
+
         queryAsync += ` @p_cData = ${entidad ? `'${JSON.stringify(entidad)}'` : null},`;
         queryAsync += ` @p_cUser = ${entidad.UCRCN},`;
         queryAsync += ` @p_nTipo = ${1},`;
@@ -240,7 +240,7 @@ export class EntriesService {
         queryAsync += ` @p_cUser = '${entidad.UEDCN}',`;
         queryAsync += ` @p_nTipo = ${entidad.INDICADOR},`
         queryAsync += ` @p_nId = ${0}`;
-        
+
         try {
             const result = await this.connection.query(queryAsync);
             return result;
@@ -291,6 +291,42 @@ export class EntriesService {
             return result;
         } catch (error) {
             return error;
+        }
+    }
+
+    async filtersBusquedaSearch(entidad: BusquedaModel): Promise<EntriesModel[]> {
+        let queryAsync = procedures.ADMIN.BUSQUEDAS.CRUD;
+        queryAsync += ` @p_cData = ${entidad ? `'${JSON.stringify(entidad)}'` : null},`;
+        queryAsync += ` @p_cUser = '${entidad.UEDCN}',`;
+        queryAsync += ` @p_nTipo = ${24},`
+        queryAsync += ` @p_nId = ${0}`;
+
+        try {
+            const result = await this.connection.query(queryAsync);
+            return result;
+        } catch (error) {
+            return error;
+        }
+    }
+
+    async saveOpenEntrie(entidad: BusquedaModel): Promise<Result> {
+        let queryAsync = procedures.ADMIN.BUSQUEDAS.CRUD;
+        queryAsync += ` @p_cData = ${entidad ? `'${JSON.stringify(entidad)}'` : null},`;
+        queryAsync += ` @p_cUser = '${entidad.UEDCN}',`;
+        queryAsync += ` @p_nTipo = ${25},`
+        queryAsync += ` @p_nId = ${0}`;
+
+        console.log('Query Async:', queryAsync); // Agrega este log para verificar el contenido de queryAsync
+
+        try {
+            const result = await this.connection.query(queryAsync);
+            const isSuccess = result?.[0]?.RESULT > 0;
+            const MESSAGE = isSuccess ? "Entrada guardada correctamente" : "Ocurrió un error al intentar guardar la entrada";
+            return { MESSAGE, STATUS: isSuccess };
+        }
+        catch (error) {
+            const MESSAGE = error.originalError?.info?.message || "Ocurrió un error al intentar guardar la entrada";
+            return { MESSAGE, STATUS: false };
         }
     }
 

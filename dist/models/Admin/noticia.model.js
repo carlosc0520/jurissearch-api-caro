@@ -4,8 +4,10 @@ exports.CategoriaModel = exports.AutorModel = exports.NoticiaModel = void 0;
 class NoticiaModel {
     constructor() {
         this.ID = 0;
+        this.TIPO = 1;
+        this.DTIPO = '';
         this.TITULO = '';
-        this.DESCRIPCION = '';
+        this.SUBTITULO = '';
         this.IMAGEN = '';
         this.IMAGEN2 = '';
         this.UCRCN = '';
@@ -13,9 +15,11 @@ class NoticiaModel {
         this.FEDCN = new Date();
         this.IDAUTORES = '';
         this.AUTORES = '';
-        this.IDCATEGORIAS = '';
-        this.ENLACE = '';
-        this.CATEGORIAS = '';
+        this.FCHPUB = null;
+        this.FCHCONSULTA = null;
+        this.ORGANO = '';
+        this.DORGANO = '';
+        this.ARCHIVO = '';
         this.CDESTDO = '';
     }
 }

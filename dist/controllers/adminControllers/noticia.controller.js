@@ -82,22 +82,31 @@ let NoticiaController = class NoticiaController {
         return await this.noticiaService.delete(ID, req.user.UCRCN);
     }
     async addNoticia(req, entidad, files) {
+        const allFiles = [...(files.files || []), ...(files.pdf || [])];
         try {
-            const [file1] = files;
-            if (!file1)
+            const [imageFile] = files.files || [];
+            const [pdfFile] = files.pdf || [];
+            if (!imageFile)
                 return { MESSAGE: 'La imagen es requerida', STATUS: false };
-            if (file1) {
-                const resultFile = await this.hostingerService.saveFile(file1, 'noticias');
-                if (!resultFile.success)
-                    return { MESSAGE: 'Error al subir la imagen', STATUS: false };
-                entidad.IMAGEN = resultFile.path;
+            const resultImage = await this.hostingerService.saveFile(imageFile, 'noticias/images');
+            if (!resultImage.success)
+                return { MESSAGE: 'Error al subir la imagen', STATUS: false };
+            entidad.IMAGEN = resultImage.path;
+            if (pdfFile) {
+                const resultPdf = await this.hostingerService.saveFile(pdfFile, 'noticias/docs');
+                if (!resultPdf.success)
+                    return { MESSAGE: 'Error al subir el documento PDF', STATUS: false };
+                entidad.ARCHIVO = resultPdf.path;
             }
             entidad.UCRCN = req.user.UCRCN;
             const result = await this.noticiaService.create(entidad);
             if (result.STATUS) {
-                let usuarios = await this.usuarioService.obtenerEmails({});
-                let titleNoticia = entidad.TITULO;
-                await this.emailService.emailNewNoticias(usuarios, titleNoticia, result.ID, entidad.ENLACE, process.env.DOMINIO + entidad.IMAGEN);
+                const usuarios = await this.usuarioService.obtenerEmails({});
+                this.emailService.emailNewNoticias(usuarios, entidad.TITULO, result.ID, null, process.env.DOMINIO + entidad.IMAGEN, process.env.DOMINIO + entidad.ARCHIVO).then(() => {
+                    console.log('Emails enviados correctamente en segundo plano');
+                }).catch((error) => {
+                    console.error('Error al enviar emails en segundo plano:', error);
+                });
             }
             return result;
         }
@@ -105,28 +114,36 @@ let NoticiaController = class NoticiaController {
             return { MESSAGE: error.message, STATUS: false };
         }
         finally {
-            await files.forEach(file => {
+            allFiles.forEach(file => {
                 try {
-                    if (file.path) {
+                    if (file === null || file === void 0 ? void 0 : file.path)
                         fs.unlinkSync(file.path);
-                    }
                 }
-                catch (error) {
-                }
+                catch (e) { }
             });
         }
     }
     async editNoticia(req, entidad, files) {
+        const allFiles = [...(files.files || []), ...(files.pdf || [])];
         try {
             if (!entidad.ID)
                 return { MESSAGE: 'El Identificador es requerido', STATUS: false };
-            const [file1] = files;
-            if (file1) {
-                const deleteFile = await this.hostingerService.deleteFile(entidad.IMAGEN);
-                const resultFile = await this.hostingerService.saveFile(file1, 'noticias');
-                if (!resultFile.success)
+            const [imageFile] = files.files || [];
+            const [pdfFile] = files.pdf || [];
+            if (imageFile) {
+                await this.hostingerService.deleteFile(entidad.IMAGEN);
+                const resultImage = await this.hostingerService.saveFile(imageFile, 'noticias');
+                if (!resultImage.success)
                     return { MESSAGE: 'Error al subir la imagen', STATUS: false };
-                entidad.IMAGEN = resultFile.path;
+                entidad.IMAGEN = resultImage.path;
+            }
+            if (pdfFile) {
+                if (entidad.ARCHIVO)
+                    await this.hostingerService.deleteFile(entidad.ARCHIVO);
+                const resultPdf = await this.hostingerService.saveFile(pdfFile, 'noticias/docs');
+                if (!resultPdf.success)
+                    return { MESSAGE: 'Error al subir el documento PDF', STATUS: false };
+                entidad.ARCHIVO = resultPdf.path;
             }
             entidad.UCRCN = req.user.UCRCN;
             const result = await this.noticiaService.edit(entidad);
@@ -136,13 +153,12 @@ let NoticiaController = class NoticiaController {
             return { MESSAGE: error.message, STATUS: false };
         }
         finally {
-            await files.forEach(file => {
+            allFiles.forEach(file => {
                 try {
-                    fs.unlinkSync(file.path);
+                    if (file === null || file === void 0 ? void 0 : file.path)
+                        fs.unlinkSync(file.path);
                 }
-                catch (error) {
-                    console.log('Error deleting file:', error);
-                }
+                catch (e) { }
             });
         }
     }
@@ -319,7 +335,10 @@ __decorate([
 ], NoticiaController.prototype, "deleteUser", null);
 __decorate([
     (0, common_1.Post)('add'),
-    (0, common_1.UseInterceptors)((0, platform_express_1.FilesInterceptor)('files', 20, {
+    (0, common_1.UseInterceptors)((0, platform_express_1.FileFieldsInterceptor)([
+        { name: 'files', maxCount: 1 },
+        { name: 'pdf', maxCount: 1 },
+    ], {
         storage: (0, multer_1.diskStorage)({
             destination: './uploads/noticias',
             filename: function (req, file, cb) {
@@ -328,11 +347,14 @@ __decorate([
             }
         }),
         fileFilter: (req, file, cb) => {
-            if (file.mimetype.match(/\/(jpg|jpeg|png|gif)$/)) {
+            if (file.fieldname === 'files' && file.mimetype.match(/\/(jpg|jpeg|png|gif)$/)) {
+                cb(null, true);
+            }
+            else if (file.fieldname === 'pdf' && file.mimetype === 'application/pdf') {
                 cb(null, true);
             }
             else {
-                cb(new Error('Solo se permiten imagenes'), false);
+                cb(new Error('Tipo de archivo no permitido'), false);
             }
         }
     })),
@@ -345,22 +367,26 @@ __decorate([
 ], NoticiaController.prototype, "addNoticia", null);
 __decorate([
     (0, common_1.Post)('edit'),
-    (0, common_1.UseInterceptors)((0, platform_express_1.FilesInterceptor)('files', 20, {
+    (0, common_1.UseInterceptors)((0, platform_express_1.FileFieldsInterceptor)([
+        { name: 'files', maxCount: 1 },
+        { name: 'pdf', maxCount: 1 },
+    ], {
         storage: (0, multer_1.diskStorage)({
             destination: './uploads/noticias',
             filename: function (req, file, cb) {
-                if (file) {
-                    const filename = `${Date.now()}-${file.originalname.replace(/\s/g, '')}`;
-                    return cb(null, filename);
-                }
+                const filename = `${Date.now()}-${file.originalname.replace(/\s/g, '')}`;
+                return cb(null, filename);
             }
         }),
         fileFilter: (req, file, cb) => {
-            if (file.mimetype.match(/\/(jpg|jpeg|png|gif)$/)) {
+            if (file.fieldname === 'files' && file.mimetype.match(/\/(jpg|jpeg|png|gif)$/)) {
+                cb(null, true);
+            }
+            else if (file.fieldname === 'pdf' && file.mimetype === 'application/pdf') {
                 cb(null, true);
             }
             else {
-                cb(new Error('Solo se permiten imagenes'), false);
+                cb(new Error('Tipo de archivo no permitido'), false);
             }
         }
     })),
@@ -368,7 +394,7 @@ __decorate([
     __param(1, (0, common_1.Body)()),
     __param(2, (0, common_1.UploadedFiles)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, noticia_model_1.NoticiaModel, Array]),
+    __metadata("design:paramtypes", [Object, noticia_model_1.NoticiaModel, Object]),
     __metadata("design:returntype", Promise)
 ], NoticiaController.prototype, "editNoticia", null);
 __decorate([

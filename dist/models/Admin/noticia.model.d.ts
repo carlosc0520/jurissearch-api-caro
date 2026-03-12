@@ -1,7 +1,9 @@
 export declare class NoticiaModel {
     ID: number;
+    TIPO: number;
+    DTIPO: string;
     TITULO: string;
-    DESCRIPCION: string;
+    SUBTITULO: string;
     IMAGEN: string;
     IMAGEN2?: string;
     UCRCN: string;
@@ -9,9 +11,11 @@ export declare class NoticiaModel {
     FEDCN: Date;
     IDAUTORES: string;
     AUTORES: string;
-    IDCATEGORIAS: string;
-    ENLACE: string;
-    CATEGORIAS: string;
+    FCHPUB: Date;
+    FCHCONSULTA: Date;
+    ORGANO: string;
+    DORGANO: string;
+    ARCHIVO: string;
     CDESTDO: string;
 }
 export declare class AutorModel {

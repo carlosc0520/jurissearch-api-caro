@@ -1036,6 +1036,16 @@ let EntriesController = class EntriesController {
         busqueda.IDUSR = req.user.ID;
         return await this.entriesService.busqueda(busqueda);
     }
+    async filtersBusquedaSearch(req, busqueda) {
+        busqueda.UEDCN = req.user.UCRCN;
+        busqueda.IDUSR = req.user.ID;
+        return await this.entriesService.filtersBusquedaSearch(busqueda);
+    }
+    async saveOpenEntrie(req, entidad) {
+        entidad.UEDCN = req.user.UCRCN;
+        entidad.IDUSR = req.user.ID;
+        return await this.entriesService.saveOpenEntrie(entidad);
+    }
     async busquedaSugges(req, busqueda) {
         busqueda.UEDCN = req.user.UCRCN;
         busqueda.IDUSR = req.user.ID;
@@ -1339,6 +1349,22 @@ __decorate([
     __metadata("design:paramtypes", [Object, busqueda_model_1.BusquedaModel]),
     __metadata("design:returntype", Promise)
 ], EntriesController.prototype, "busqueda", null);
+__decorate([
+    (0, common_1.Get)('filters-busqueda-search'),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Query)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, busqueda_model_1.BusquedaModel]),
+    __metadata("design:returntype", Promise)
+], EntriesController.prototype, "filtersBusquedaSearch", null);
+__decorate([
+    (0, common_1.Post)('save-open-entrie'),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, busqueda_model_1.BusquedaModel]),
+    __metadata("design:returntype", Promise)
+], EntriesController.prototype, "saveOpenEntrie", null);
 __decorate([
     (0, common_1.Get)('busqueda-sugges'),
     __param(0, (0, common_1.Request)()),
