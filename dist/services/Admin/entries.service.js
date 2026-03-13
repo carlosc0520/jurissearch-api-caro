@@ -60,13 +60,33 @@ let EntriesService = class EntriesService {
             return error;
         }
     }
+    async intercambioOrderSearch(entidad) {
+        var _a, _b, _c;
+        let queryAsync = configMappers_1.default.ADMIN.BUSQUEDAS.CRUD2;
+        queryAsync += ` @Termino = '',`;
+        queryAsync += ` @Usuario = '',`;
+        queryAsync += ` @TYPE = '',`;
+        queryAsync += ` @MODO = '',`;
+        queryAsync += ` @IdOrdenar = ${entidad.IdOrden},`;
+        queryAsync += ` @IdReferencia = ${entidad.IdOrden2}`;
+        try {
+            const result = await this.connection.query(queryAsync);
+            const isSuccess = ((_a = result === null || result === void 0 ? void 0 : result[0]) === null || _a === void 0 ? void 0 : _a.RESULT) > 0;
+            const MESSAGE = isSuccess ? "Orden de búsqueda intercambiada correctamente" : "Ocurrió un error al intentar intercambiar el orden de búsqueda";
+            return { MESSAGE, STATUS: isSuccess };
+        }
+        catch (error) {
+            const MESSAGE = ((_c = (_b = error.originalError) === null || _b === void 0 ? void 0 : _b.info) === null || _c === void 0 ? void 0 : _c.message) || "Ocurrió un error al intentar intercambiar el orden de búsqueda";
+            return { MESSAGE, STATUS: false };
+        }
+    }
     async clearTopSearch(entidad) {
         var _a, _b, _c;
         let queryAsync = configMappers_1.default.ADMIN.BUSQUEDAS.CRUD;
-        queryAsync += ` @p_cData = '${JSON.stringify(entidad)}',`;
+        queryAsync += ` @p_cData = '{}',`;
         queryAsync += ` @p_cUser = '${entidad.UCRCN}',`;
         queryAsync += ` @p_nTipo = ${23},`;
-        queryAsync += ` @p_nId = ${0}`;
+        queryAsync += ` @p_nId = ${entidad.GLOBAL}`;
         try {
             const result = await this.connection.query(queryAsync);
             const isSuccess = ((_a = result === null || result === void 0 ? void 0 : result[0]) === null || _a === void 0 ? void 0 : _a.RESULT) > 0;
@@ -298,7 +318,6 @@ let EntriesService = class EntriesService {
         queryAsync += ` @p_cUser = '${entidad.UEDCN}',`;
         queryAsync += ` @p_nTipo = ${25},`;
         queryAsync += ` @p_nId = ${0}`;
-        console.log('Query Async:', queryAsync);
         try {
             const result = await this.connection.query(queryAsync);
             const isSuccess = ((_a = result === null || result === void 0 ? void 0 : result[0]) === null || _a === void 0 ? void 0 : _a.RESULT) > 0;

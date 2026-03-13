@@ -56,12 +56,33 @@ export class EntriesService {
         }
     }
 
+    async intercambioOrderSearch(entidad: any): Promise<Result> {
+        let queryAsync = procedures.ADMIN.BUSQUEDAS.CRUD2;
+        queryAsync += ` @Termino = '',`;
+        queryAsync += ` @Usuario = '',`;
+        queryAsync += ` @TYPE = '',`;
+        queryAsync += ` @MODO = '',`;
+        queryAsync += ` @IdOrdenar = ${entidad.IdOrden},`;
+        queryAsync += ` @IdReferencia = ${entidad.IdOrden2}`;
+
+        try {
+            const result = await this.connection.query(queryAsync);
+            const isSuccess = result?.[0]?.RESULT > 0;
+            const MESSAGE = isSuccess ? "Orden de búsqueda intercambiada correctamente" : "Ocurrió un error al intentar intercambiar el orden de búsqueda";
+            return { MESSAGE, STATUS: isSuccess };
+        }
+        catch (error) {
+            const MESSAGE = error.originalError?.info?.message || "Ocurrió un error al intentar intercambiar el orden de búsqueda";
+            return { MESSAGE, STATUS: false };
+        }
+    }
+
     async clearTopSearch(entidad: any): Promise<Result> {
         let queryAsync = procedures.ADMIN.BUSQUEDAS.CRUD;
-        queryAsync += ` @p_cData = '${JSON.stringify(entidad)}',`;
+        queryAsync += ` @p_cData = '{}',`;
         queryAsync += ` @p_cUser = '${entidad.UCRCN}',`;
         queryAsync += ` @p_nTipo = ${23},`
-        queryAsync += ` @p_nId = ${0}`;
+        queryAsync += ` @p_nId = ${entidad.GLOBAL}`;
 
         try {
             const result = await this.connection.query(queryAsync);
@@ -241,6 +262,7 @@ export class EntriesService {
         queryAsync += ` @p_nTipo = ${entidad.INDICADOR},`
         queryAsync += ` @p_nId = ${0}`;
 
+
         try {
             const result = await this.connection.query(queryAsync);
             return result;
@@ -315,8 +337,6 @@ export class EntriesService {
         queryAsync += ` @p_cUser = '${entidad.UEDCN}',`;
         queryAsync += ` @p_nTipo = ${25},`
         queryAsync += ` @p_nId = ${0}`;
-
-        console.log('Query Async:', queryAsync); // Agrega este log para verificar el contenido de queryAsync
 
         try {
             const result = await this.connection.query(queryAsync);

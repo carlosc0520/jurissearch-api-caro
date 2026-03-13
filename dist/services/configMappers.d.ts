@@ -23,6 +23,7 @@ declare const procedures: {
         };
         BUSQUEDAS: {
             CRUD: string;
+            CRUD2: string;
         };
         HELP: {
             CRUD: string;

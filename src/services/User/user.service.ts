@@ -121,7 +121,6 @@ export class UserService {
         queryAsync += ` @p_cUser = ${entidad?.USER ? `'${entidad.USER}'` : null},`;
         queryAsync += ` @p_nTipo = ${1},`;
         queryAsync += ` @p_nId = ${entidad?.ID}`;
-        console.log(queryAsync);
 
         try {
             const result = await this.connection.query(queryAsync);

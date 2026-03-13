@@ -1027,6 +1027,10 @@ let EntriesController = class EntriesController {
     async listTopSearch(req, TYPE) {
         return await this.entriesService.listTopSearch(req.user.UCRCN, TYPE);
     }
+    async intercambioOrderSearch(req, entidad) {
+        entidad.UCRCN = req.user.UCRCN;
+        return await this.entriesService.intercambioOrderSearch(entidad);
+    }
     async clearTopSearch(req, entidad) {
         entidad.UCRCN = req.user.UCRCN;
         return await this.entriesService.clearTopSearch(entidad);
@@ -1333,6 +1337,14 @@ __decorate([
     __metadata("design:paramtypes", [Object, String]),
     __metadata("design:returntype", Promise)
 ], EntriesController.prototype, "listTopSearch", null);
+__decorate([
+    (0, common_1.Post)('intercambio-order-search'),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], EntriesController.prototype, "intercambioOrderSearch", null);
 __decorate([
     (0, common_1.Post)('clearTopSearch'),
     __param(0, (0, common_1.Request)()),

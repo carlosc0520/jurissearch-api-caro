@@ -1458,6 +1458,15 @@ export class EntriesController {
     return await this.entriesService.listTopSearch(req.user.UCRCN, TYPE);
   }
 
+  @Post('intercambio-order-search')
+  async intercambioOrderSearch(
+    @Request() req,
+    @Body() entidad: any
+  ): Promise<Result> {
+    entidad.UCRCN = req.user.UCRCN;
+    return await this.entriesService.intercambioOrderSearch(entidad);
+  }
+
   @Post('clearTopSearch')
   async clearTopSearch(
     @Request() req,

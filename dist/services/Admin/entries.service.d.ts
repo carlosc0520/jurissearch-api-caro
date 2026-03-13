@@ -8,6 +8,7 @@ export declare class EntriesService {
     constructor(connection: DataSource);
     createEntries(entidad: EntriesModel): Promise<Result>;
     listTopSearch(UCRCN: string, TYPE: string): Promise<any[]>;
+    intercambioOrderSearch(entidad: any): Promise<Result>;
     clearTopSearch(entidad: any): Promise<Result>;
     list(entidad: DataTable, TITLE: string, TYPE: string, TIPO: string): Promise<EntriesModel[]>;
     listData(entidad: DataTable, TITLE: string, TYPE: string, TIPO: string, BLOG: string, FRESOLUTION: string, TEMA: string, RTITLE: string, FCRCN?: string): Promise<EntriesModel[]>;

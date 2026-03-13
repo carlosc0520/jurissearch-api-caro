@@ -29,7 +29,6 @@ let OpenAIService = class OpenAIService {
                 { role: 'user', content: mensaje },
             ],
         });
-        console.log('Respuesta del modelo:', respuesta);
         return respuesta;
     }
 };

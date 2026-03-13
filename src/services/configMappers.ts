@@ -22,7 +22,8 @@ const procedures = {
             "CRUD": "EXEC JURIS.USP_CRUD_MAGISTRADOS"
         },
         "BUSQUEDAS": {
-            "CRUD": "EXEC JURIS.USP_CRUD_ENTRIES_BUSQUEDA"
+            "CRUD": "EXEC JURIS.USP_CRUD_ENTRIES_BUSQUEDA",
+            "CRUD2": "EXEC JURIS.RegistrarBusqueda"
         },
         "HELP": {
             "CRUD": "EXEC JURIS.USP_CRUD_HELP"
