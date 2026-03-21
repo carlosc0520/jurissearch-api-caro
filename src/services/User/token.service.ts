@@ -2,7 +2,7 @@
 import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
 import * as jwt from 'jsonwebtoken';
 import { User } from '../../models/Admin/user.model';
-import { SolicitudModel } from 'src/models/Public/Solicitud.model';
+import { SolicitudModel } from 'src/models/public/Solicitud.model';
 import * as uuid from 'uuid';
 import * as path from 'path';
 import * as fs from 'fs';
