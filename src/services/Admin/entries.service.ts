@@ -41,6 +41,21 @@ export class EntriesService {
         }
     }
 
+    async listSearchNames(entidad: any): Promise<string[]> {
+        let queryAsync = procedures.ADMIN.ENTRIES.CRUD;
+        queryAsync += ` @p_cData = ${entidad ? `'${JSON.stringify(entidad)}'` : null},`;
+        queryAsync += ` @p_cUser = ${null},`;
+        queryAsync += ` @p_nTipo = ${16},`
+        queryAsync += ` @p_nId = ${0}`;
+
+        try {
+            const result = await this.connection.query(queryAsync);
+            return result;
+        } catch (error) {
+            return [];
+        }
+    }
+
     async listTopSearch(UCRCN: string, TYPE: string): Promise<any[]> {
         let queryAsync = procedures.ADMIN.BUSQUEDAS.CRUD;
         queryAsync += ` @p_cData = '${JSON.stringify({ TYPE })}',`;
@@ -259,9 +274,8 @@ export class EntriesService {
         let queryAsync = procedures.ADMIN.BUSQUEDAS.CRUD;
         queryAsync += ` @p_cData = ${entidad ? `'${JSON.stringify(entidad)}'` : null},`;
         queryAsync += ` @p_cUser = '${entidad.UEDCN}',`;
-        queryAsync += ` @p_nTipo = ${entidad.INDICADOR},`
+        queryAsync += ` @p_nTipo = ${entidad?.INDICADOR || 2},`
         queryAsync += ` @p_nId = ${0}`;
-
 
         try {
             const result = await this.connection.query(queryAsync);

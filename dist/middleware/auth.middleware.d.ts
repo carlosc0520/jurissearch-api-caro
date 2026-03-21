@@ -4,6 +4,7 @@ import { TokenService } from '../services/User/token.service';
 export declare class AuthMiddleware implements NestMiddleware {
     private readonly tokenService;
     private readonly secretKey;
+    private readonly USE_SQL_SESSIONS;
     private activeSessions;
     constructor(tokenService: TokenService);
     use(req: Request, res: Response, next: NextFunction): Promise<Response<any, Record<string, any>>>;

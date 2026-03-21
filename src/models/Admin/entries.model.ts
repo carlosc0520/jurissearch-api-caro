@@ -42,4 +42,6 @@ export class EntriesModel {
     SITUACION: string = '';
     ORDER: string = '';
     ISOPEN: number = 0;
+    IDSVIN: string = '';
+    JIDSVIN: string = '';
 }

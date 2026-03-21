@@ -46,6 +46,20 @@ let EntriesService = class EntriesService {
             return { MESSAGE, STATUS: false };
         }
     }
+    async listSearchNames(entidad) {
+        let queryAsync = configMappers_1.default.ADMIN.ENTRIES.CRUD;
+        queryAsync += ` @p_cData = ${entidad ? `'${JSON.stringify(entidad)}'` : null},`;
+        queryAsync += ` @p_cUser = ${null},`;
+        queryAsync += ` @p_nTipo = ${16},`;
+        queryAsync += ` @p_nId = ${0}`;
+        try {
+            const result = await this.connection.query(queryAsync);
+            return result;
+        }
+        catch (error) {
+            return [];
+        }
+    }
     async listTopSearch(UCRCN, TYPE) {
         let queryAsync = configMappers_1.default.ADMIN.BUSQUEDAS.CRUD;
         queryAsync += ` @p_cData = '${JSON.stringify({ TYPE })}',`;
@@ -245,7 +259,7 @@ let EntriesService = class EntriesService {
         let queryAsync = configMappers_1.default.ADMIN.BUSQUEDAS.CRUD;
         queryAsync += ` @p_cData = ${entidad ? `'${JSON.stringify(entidad)}'` : null},`;
         queryAsync += ` @p_cUser = '${entidad.UEDCN}',`;
-        queryAsync += ` @p_nTipo = ${entidad.INDICADOR},`;
+        queryAsync += ` @p_nTipo = ${(entidad === null || entidad === void 0 ? void 0 : entidad.INDICADOR) || 2},`;
         queryAsync += ` @p_nId = ${0}`;
         try {
             const result = await this.connection.query(queryAsync);

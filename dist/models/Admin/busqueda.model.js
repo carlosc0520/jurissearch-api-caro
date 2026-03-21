@@ -35,6 +35,7 @@ class BusquedaModel {
         this.FRESOLUTIONSTRING = '';
         this.SHARED = '';
         this.MODO = '';
+        this.JIDSVIN = '';
     }
 }
 exports.BusquedaModel = BusquedaModel;

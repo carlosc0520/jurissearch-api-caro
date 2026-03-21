@@ -227,6 +227,9 @@ let EntriesController = class EntriesController {
     async listData(entidad, TYPE, BLOG, FRESOLUTION, TEMA, RTITLE, FCRCN) {
         return await this.entriesService.listData(entidad, entidad.DESC, TYPE, null, BLOG, FRESOLUTION, TEMA, RTITLE, FCRCN);
     }
+    async listSearchNames(entidad) {
+        return await this.entriesService.listSearchNames(entidad);
+    }
     async listSearchData(req, RTITLE, TYPE, BLOG, res) {
         try {
             let data = await this.entriesService.listSearchData(RTITLE, 2, TYPE, BLOG);
@@ -1270,6 +1273,13 @@ __decorate([
     __metadata("design:paramtypes", [DataTable_model_1.DataTable, String, String, String, String, String, String]),
     __metadata("design:returntype", Promise)
 ], EntriesController.prototype, "listData", null);
+__decorate([
+    (0, common_1.Get)('list-search-names'),
+    __param(0, (0, common_1.Query)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], EntriesController.prototype, "listSearchNames", null);
 __decorate([
     (0, common_1.Get)('list-search-data'),
     __param(0, (0, common_1.Request)()),

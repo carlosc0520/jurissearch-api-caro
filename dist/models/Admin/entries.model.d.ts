@@ -42,4 +42,6 @@ export declare class EntriesModel {
     SITUACION: string;
     ORDER: string;
     ISOPEN: number;
+    IDSVIN: string;
+    JIDSVIN: string;
 }

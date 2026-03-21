@@ -46,6 +46,8 @@ class EntriesModel {
         this.SITUACION = '';
         this.ORDER = '';
         this.ISOPEN = 0;
+        this.IDSVIN = '';
+        this.JIDSVIN = '';
     }
 }
 exports.EntriesModel = EntriesModel;

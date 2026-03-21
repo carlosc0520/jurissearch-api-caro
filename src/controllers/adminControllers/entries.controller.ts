@@ -377,6 +377,13 @@ export class EntriesController {
     );
   }
 
+  @Get('list-search-names')
+  async listSearchNames(
+    @Query() entidad: any): Promise<string[]> {
+    return await this.entriesService.listSearchNames(entidad);
+  }
+
+
   @Get('list-search-data')
   async listSearchData(
     @Request() req,

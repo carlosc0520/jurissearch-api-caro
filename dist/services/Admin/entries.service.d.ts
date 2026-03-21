@@ -7,6 +7,7 @@ export declare class EntriesService {
     private connection;
     constructor(connection: DataSource);
     createEntries(entidad: EntriesModel): Promise<Result>;
+    listSearchNames(entidad: any): Promise<string[]>;
     listTopSearch(UCRCN: string, TYPE: string): Promise<any[]>;
     intercambioOrderSearch(entidad: any): Promise<Result>;
     clearTopSearch(entidad: any): Promise<Result>;

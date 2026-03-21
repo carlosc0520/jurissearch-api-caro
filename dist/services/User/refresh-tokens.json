@@ -1,0 +1,74 @@
+[
+  {
+    "tokenId": "dd044a0c-06b4-4656-9e2f-dbb0b78e4f68",
+    "userId": 211,
+    "sessionId": "62b8230a-5a1a-4425-98d4-0ebafa719fdb",
+    "expiresAt": 1774578446685,
+    "createdAt": 1773973646685,
+    "lastUsed": 1773973646685,
+    "deviceInfo": "unknown"
+  },
+  {
+    "tokenId": "4a766d49-79c6-4c76-81f4-98344759567e",
+    "userId": 211,
+    "sessionId": "39033d01-a8f8-4563-9d74-c08130b29f9c",
+    "expiresAt": 1774579109275,
+    "createdAt": 1773974309275,
+    "lastUsed": 1773974309275,
+    "deviceInfo": "unknown"
+  },
+  {
+    "tokenId": "a4f9259a-f6f2-46b5-8e8a-bd88d11dafa7",
+    "userId": 211,
+    "sessionId": "954d115d-7dff-4614-90fd-583d8e76e39e",
+    "expiresAt": 1774579506014,
+    "createdAt": 1773974706014,
+    "lastUsed": 1773974706014,
+    "deviceInfo": "unknown"
+  },
+  {
+    "tokenId": "3939c177-d58a-443d-93ca-e3ac8442f033",
+    "userId": 211,
+    "sessionId": "9feb99e7-05a7-484e-9a9c-5f59d0ba8d43",
+    "expiresAt": 1774580683660,
+    "createdAt": 1773975883660,
+    "lastUsed": 1773975883660,
+    "deviceInfo": "unknown"
+  },
+  {
+    "tokenId": "c821a37b-6811-475d-ba56-242a73717fb2",
+    "userId": 211,
+    "sessionId": "09f15483-8b91-4781-9f71-84f21051f547",
+    "expiresAt": 1774580797001,
+    "createdAt": 1773975997001,
+    "lastUsed": 1773975997001,
+    "deviceInfo": "unknown"
+  },
+  {
+    "tokenId": "69dd8d3f-c57b-462f-992c-4b704f4396f6",
+    "userId": 211,
+    "sessionId": "55190e3f-d00e-4a9a-99c4-c736695cb830",
+    "expiresAt": 1774580813650,
+    "createdAt": 1773976013650,
+    "lastUsed": 1773976013650,
+    "deviceInfo": "unknown"
+  },
+  {
+    "tokenId": "2d461561-e737-4482-b131-0913ad8726e9",
+    "userId": 211,
+    "sessionId": "3948fc1a-1ffe-4477-9e77-136ff735dcf1",
+    "expiresAt": 1774581044848,
+    "createdAt": 1773976244848,
+    "lastUsed": 1773976244848,
+    "deviceInfo": "unknown"
+  },
+  {
+    "tokenId": "5657ec4a-ec6a-4ad6-9757-512ecb5ade18",
+    "userId": 211,
+    "sessionId": "9842e55d-836c-49e3-8ac2-71f1ccd67109",
+    "expiresAt": 1774581058199,
+    "createdAt": 1773976258199,
+    "lastUsed": 1773976258199,
+    "deviceInfo": "unknown"
+  }
+]

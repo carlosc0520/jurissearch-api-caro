@@ -35,6 +35,7 @@ declare class User {
     FEDCN: Date;
     CDESTDO: string;
     TOKEN: string;
+    REFRESH_TOKEN?: string;
     PLAN?: string;
     DATOS?: string;
     STATUS?: number;
@@ -42,6 +43,7 @@ declare class User {
     BANDERA?: boolean;
     RTAFTO?: string;
     IDPLN?: number;
+    EXPIRES_IN?: number;
 }
 export declare class LoginController {
     private readonly userService;
@@ -56,6 +58,9 @@ export declare class LoginController {
     removeSession(token: string): Promise<boolean>;
     listaPreguntas(entidad: DataTable): Promise<PreguntaModel[]>;
     refreshToken(token: string): Promise<string>;
+    refresh(body: {
+        refreshToken: string;
+    }): Promise<any>;
     validateToken(token: string): Promise<boolean>;
     validateTokenSolicitudTime(token: string): Promise<boolean>;
     generateUser(entidad: User): Promise<Result>;

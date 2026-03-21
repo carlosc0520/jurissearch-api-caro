@@ -50,37 +50,139 @@ let AuthMiddleware = class AuthMiddleware {
     constructor(tokenService) {
         this.tokenService = tokenService;
         this.secretKey = process.env.SECRET_KEY;
+        this.USE_SQL_SESSIONS = process.env.USE_SQL_SESSIONS !== 'false';
+        if (!this.secretKey || this.secretKey.length < 32) {
+            throw new Error('SECRET_KEY no configurada o demasiado corta');
+        }
     }
     async use(req, res, next) {
-        let token = req.headers.authorization;
-        if (!token) {
-            return res.status(401).json({ message: 'Token no proporcionado' });
-        }
-        token = token.replace('Bearer ', '');
         try {
-            const decoded = await jwt.verify(token, this.secretKey);
-            this.activeSessions = this.tokenService.readActiveSessionsFromFile();
-            const session = this.activeSessions.get(decoded['sessionId'].toString());
-            if (!this.isSessionActive(session)) {
-                return res
-                    .status(401)
-                    .json({ message: 'Token inválido o sesión cerrada' });
+            let token = req.headers.authorization;
+            if (!token || typeof token !== 'string') {
+                return res.status(401).json({
+                    message: 'Acceso no autorizado',
+                    statusCode: 401
+                });
+            }
+            token = token.trim();
+            if (token.startsWith('Bearer ')) {
+                token = token.substring(7).trim();
+            }
+            if (token.length < 20 || token.length > 2000) {
+                return res.status(401).json({
+                    message: 'Acceso no autorizado',
+                    statusCode: 401
+                });
+            }
+            const tokenRegex = /^[A-Za-z0-9_\-]+\.[A-Za-z0-9_\-]+\.[A-Za-z0-9_\-]+$/;
+            if (!tokenRegex.test(token)) {
+                return res.status(401).json({
+                    message: 'Acceso no autorizado',
+                    statusCode: 401
+                });
+            }
+            const decoded = await jwt.verify(token, this.secretKey, {
+                algorithms: ['HS256'],
+                maxAge: '24h',
+            });
+            if (!decoded || typeof decoded !== 'object') {
+                return res.status(401).json({
+                    message: 'Acceso no autorizado',
+                    statusCode: 401
+                });
+            }
+            if (!decoded['sessionId']) {
+                return res.status(401).json({
+                    message: 'Acceso no autorizado',
+                    statusCode: 401
+                });
+            }
+            const sessionId = decoded['sessionId'].toString();
+            if (this.USE_SQL_SESSIONS) {
+                try {
+                    const sessionData = await this.tokenService.getSessionDB(sessionId);
+                    if (!sessionData) {
+                        return res.status(401).json({
+                            message: 'Sesión expirada o inválida',
+                            statusCode: 401
+                        });
+                    }
+                    if (!sessionData.IS_ACTIVE) {
+                        return res.status(401).json({
+                            message: 'Sesión cerrada',
+                            statusCode: 401
+                        });
+                    }
+                    const expiresAt = new Date(sessionData.EXPIRES_AT).getTime();
+                    if (expiresAt <= Date.now()) {
+                        return res.status(401).json({
+                            message: 'Sesión expirada',
+                            statusCode: 401
+                        });
+                    }
+                }
+                catch (sqlError) {
+                    console.error('[AUTH MIDDLEWARE] Error validando sesión:', sqlError.message);
+                    return res.status(401).json({
+                        message: 'Error validando sesión',
+                        statusCode: 401
+                    });
+                }
+            }
+            else {
+                this.activeSessions = this.tokenService.readActiveSessionsFromFile();
+                const session = this.activeSessions.get(sessionId);
+                if (!this.isSessionActive(session)) {
+                    return res.status(401).json({
+                        message: 'Sesión expirada o inválida',
+                        statusCode: 401
+                    });
+                }
             }
             req['user'] = decoded;
             next();
         }
         catch (error) {
+            if (error instanceof jwt.TokenExpiredError) {
+                return res.status(401).json({
+                    message: 'Sesión expirada',
+                    statusCode: 401
+                });
+            }
             if (error instanceof jwt.JsonWebTokenError) {
-                return res.status(401).json({ message: 'Token inválido' });
+                console.error('JWT Error:', error.message);
+                return res.status(401).json({
+                    message: 'Acceso no autorizado',
+                    statusCode: 401
+                });
+            }
+            if (error instanceof jwt.NotBeforeError) {
+                return res.status(401).json({
+                    message: 'Acceso no autorizado',
+                    statusCode: 401
+                });
             }
             if (error instanceof common_1.UnauthorizedException) {
-                return res.status(401).json({ message: error.message });
+                return res.status(401).json({
+                    message: 'Acceso no autorizado',
+                    statusCode: 401
+                });
             }
-            return res.status(500).json({ message: 'Su código de sesión ha expirado o ha sido alterado' });
+            console.error('Auth Middleware Error:', error);
+            return res.status(500).json({
+                message: 'Error interno del servidor',
+                statusCode: 500
+            });
         }
     }
     isSessionActive(session) {
-        return session && session.expiresIn > Date.now();
+        if (!session) {
+            return false;
+        }
+        if (!session.expiresIn || typeof session.expiresIn !== 'number') {
+            return false;
+        }
+        return session.expiresIn > Date.now();
     }
 };
 exports.AuthMiddleware = AuthMiddleware;

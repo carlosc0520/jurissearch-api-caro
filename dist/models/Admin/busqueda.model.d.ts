@@ -34,4 +34,5 @@ export declare class BusquedaModel {
     FRESOLUTIONSTRING: string;
     SHARED?: string;
     MODO?: string;
+    JIDSVIN?: string;
 }

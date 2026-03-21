@@ -15,6 +15,7 @@ export declare class EntriesController {
     editSingleFile(req: any, entidad: EntriesModel, files?: any[]): Promise<Result>;
     listUsers(entidad: DataTable, TYPE: string): Promise<EntriesModel[]>;
     listData(entidad: DataTable, TYPE: string, BLOG: string, FRESOLUTION: string, TEMA: string, RTITLE: string, FCRCN: string): Promise<EntriesModel[]>;
+    listSearchNames(entidad: any): Promise<string[]>;
     listSearchData(req: any, RTITLE: string, TYPE: string, BLOG: string, res: any): Promise<any>;
     listSearchDataAllZip(req: any, paths: string, res: any): Promise<void>;
     listSearchDataFull(RTITLE: string, TYPE: string, res: Response): Promise<void>;

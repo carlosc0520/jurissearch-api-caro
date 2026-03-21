@@ -53,6 +53,7 @@ class User {
   FEDCN: Date;
   CDESTDO: string;
   TOKEN: string;
+  REFRESH_TOKEN?: string;
   PLAN?: string;
   DATOS?: string;
   STATUS?: number;
@@ -60,6 +61,7 @@ class User {
   BANDERA?: boolean = false;
   RTAFTO?: string;
   IDPLN?: number;
+  EXPIRES_IN?: number;
 }
 
 @Controller('login')
@@ -76,38 +78,128 @@ export class LoginController {
 
   @Post('autenticar')
   async autenticarUsuario(@Body() entidad: User): Promise<User> {
+    // Validar campos requeridos
+    if (!entidad || !entidad.USER || !entidad.PASSWORD) {
+      throw new BadRequestException({
+        MESSAGE: 'Credenciales inválidas',
+        STATUS: false,
+      });
+    }
+
+    // Sanitizar inputs
+    const userSanitized = entidad.USER?.trim();
+    const passwordSanitized = entidad.PASSWORD?.trim();
+
+    // Validar longitud mínima
+    if (userSanitized.length < 3 || passwordSanitized.length < 6) {
+      throw new BadRequestException({
+        MESSAGE: 'Credenciales inválidas',
+        STATUS: false,
+      });
+    }
+
+    // Validar formato de usuario (alfanumérico, @, ., -, _)
+    const userRegex = /^[a-zA-Z0-9@.\-_]+$/;
+    if (!userRegex.test(userSanitized)) {
+      throw new BadRequestException({
+        MESSAGE: 'Formato de usuario inválido',
+        STATUS: false,
+      });
+    }
+
+    entidad.USER = userSanitized;
+    entidad.PASSWORD = passwordSanitized;
+
     const usuario: User = await this.userService.loguearUsuario(entidad);
 
+    // Mensaje genérico para no revelar si el usuario existe o no
     if (!usuario) {
       throw new BadRequestException({
-        MESSAGE: 'Usuario no encontrado',
+        MESSAGE: 'Credenciales inválidas',
+        STATUS: false,
+      });
+    }
+
+    // Verificar si la cuenta está bloqueada
+    if (usuario?.EBLOQUEO === true) {
+      throw new BadRequestException({
+        MESSAGE: 'Cuenta bloqueada. Contacte al administrador',
         STATUS: false,
       });
     }
 
     if (usuario?.STATUS === 0) {
       throw new BadRequestException({
-        MESSAGE: usuario.MESSAGE,
+        MESSAGE: usuario.MESSAGE || 'Cuenta inactiva',
         STATUS: false,
       });
     }
 
+    // Validar intentos excesivos
+    if (usuario.INTENTOS && usuario.INTENTOS >= 5) {
+      throw new BadRequestException({
+        MESSAGE: 'Cuenta bloqueada por múltiples intentos fallidos',
+        STATUS: false,
+      });
+    }
+
+    // Validar contraseña - mensaje genérico
     if (usuario.PASSWORD !== entidad.PASSWORD) {
       throw new BadRequestException({
-        MESSAGE: 'Contraseña incorrecta',
+        MESSAGE: 'Credenciales inválidas',
         STATUS: false,
       });
     }
 
-    const token = await this.tokenService.generateToken(usuario, entidad.BANDERA);
-    usuario.TOKEN = token;
+    // Validar que el usuario tenga un rol asignado
+    if (usuario.IDROLE == null || usuario.IDROLE < 0) {
+      throw new BadRequestException({
+        MESSAGE: 'Usuario sin permisos asignados',
+        STATUS: false,
+      });
+    }
+
+
+    // Generar access token y refresh token
+    const tokens = await this.tokenService.generateTokens(usuario, entidad.BANDERA);
+
+    if (!tokens || !tokens.accessToken || !tokens.refreshToken) {
+      throw new BadRequestException({
+        MESSAGE: 'Error al generar sesión',
+        STATUS: false,
+      });
+    }
+
+    usuario.TOKEN = tokens.accessToken;
+    usuario.REFRESH_TOKEN = tokens.refreshToken;
+    usuario.EXPIRES_IN = tokens.expiresIn;
     usuario.RTAFTO = process.env.DOMINIO + usuario.RTAFTO;
+
+    // Limpiar datos sensibles antes de retornar
+    delete usuario.PASSWORD;
+
     return usuario;
   }
 
   @Get('logout')
   async removeSession(@Query('token') token: string): Promise<boolean> {
-    this.tokenService.removeSession(token);
+    // Validar que el token exista
+    if (!token || token.trim().length === 0) {
+      throw new BadRequestException({
+        MESSAGE: 'Token inválido',
+        STATUS: false,
+      });
+    }
+
+    // Validar formato básico del token
+    if (token.length < 20 || token.length > 1000) {
+      throw new BadRequestException({
+        MESSAGE: 'Token inválido',
+        STATUS: false,
+      });
+    }
+
+    await this.tokenService.removeSession(token);
     return true;
   }
 
@@ -120,7 +212,86 @@ export class LoginController {
 
   @Get('refreshToken')
   async refreshToken(@Query('token') token: string): Promise<string> {
-    return await this.tokenService.refreshToken(token);
+    // Validar que el token exista
+    if (!token || token.trim().length === 0) {
+      throw new BadRequestException({
+        MESSAGE: 'Token inválido',
+        STATUS: false,
+      });
+    }
+
+    // Validar formato básico del token
+    if (token.length < 20 || token.length > 1000) {
+      throw new BadRequestException({
+        MESSAGE: 'Token inválido',
+        STATUS: false,
+      });
+    }
+
+    const newToken = await this.tokenService.refreshToken(token);
+
+    if (!newToken) {
+      throw new BadRequestException({
+        MESSAGE: 'No se pudo renovar el token',
+        STATUS: false,
+      });
+    }
+
+    return newToken;
+  }
+
+  // Nuevo endpoint para refresh token
+  @Post('refresh')
+  async refresh(@Body() body: { refreshToken: string }): Promise<any> {
+    // Validar que el refresh token exista
+    if (!body || !body.refreshToken || body.refreshToken.trim().length === 0) {
+      throw new BadRequestException({
+        MESSAGE: 'Refresh token inválido',
+        STATUS: false,
+      });
+    }
+
+    // Validar formato básico del refresh token
+    const refreshToken = body.refreshToken.trim();
+    if (refreshToken.length < 20 || refreshToken.length > 2000) {
+      throw new BadRequestException({
+        MESSAGE: 'Refresh token inválido',
+        STATUS: false,
+      });
+    }
+
+    // Validar formato JWT
+    const jwtRegex = /^[A-Za-z0-9_\-]+\.[A-Za-z0-9_\-]+\.[A-Za-z0-9_\-]+$/;
+    if (!jwtRegex.test(refreshToken)) {
+      throw new BadRequestException({
+        MESSAGE: 'Formato de refresh token inválido',
+        STATUS: false,
+      });
+    }
+
+    try {
+      const tokens = await this.tokenService.refreshAccessToken(refreshToken);
+
+      if (!tokens || !tokens.accessToken || !tokens.refreshToken) {
+        throw new BadRequestException({
+          MESSAGE: 'No se pudo renovar el token',
+          STATUS: false,
+        });
+      }
+
+      return {
+        accessToken: tokens.accessToken,
+        refreshToken: tokens.refreshToken,
+        expiresIn: tokens.expiresIn,
+        STATUS: true,
+        MESSAGE: 'Token renovado exitosamente',
+      };
+    } catch (error) {
+      throw new BadRequestException({
+        MESSAGE: error.message || 'No se pudo renovar el token',
+        STATUS: false,
+      });
+    }
   }
 
   @Get('validateToken')
@@ -137,17 +308,50 @@ export class LoginController {
 
   @Post('generateUser')
   async generateUser(@Body() entidad: User): Promise<Result> {
+    // Validar campos requeridos
+    if (!entidad || !entidad.TOKEN || !entidad.EMAIL || !entidad.PASSWORD) {
+      throw new BadRequestException({
+        MESSAGE: 'Datos incompletos',
+        STATUS: false,
+      });
+    }
+
+    // Sanitizar y validar email
+    const emailSanitized = entidad.EMAIL?.trim().toLowerCase();
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    if (!emailRegex.test(emailSanitized)) {
+      throw new BadRequestException({
+        MESSAGE: 'Formato de email inválido',
+        STATUS: false,
+      });
+    }
+
+    // Validar longitud de contraseña
+    if (!entidad.PASSWORD || entidad.PASSWORD.length < 8) {
+      throw new BadRequestException({
+        MESSAGE: 'La contraseña debe tener al menos 8 caracteres',
+        STATUS: false,
+      });
+    }
+
+    // Validar token
     const result = await this.tokenService.validateTokenSolicitud(
       entidad.TOKEN,
     );
-    if (result) {
-      entidad.IDROLE = 2;
-      entidad.USER = 'AUTOLOGIN';
-      entidad.PLAN = '1';
-      return await this.userService.createUser(entidad);
-    } else {
-      return { MESSAGE: 'Token invalido', STATUS: false };
+
+    if (!result) {
+      throw new BadRequestException({
+        MESSAGE: 'Token inválido o expirado',
+        STATUS: false,
+      });
     }
+
+    entidad.EMAIL = emailSanitized;
+    entidad.IDROLE = 2;
+    entidad.USER = 'AUTOLOGIN';
+    entidad.PLAN = '1';
+
+    return await this.userService.createUser(entidad);
   }
 
   @Post('generateUserFind')
@@ -174,20 +378,53 @@ export class LoginController {
 
   @Post('recovery')
   async recoveryPassword(@Body() entidad: User): Promise<Result> {
-    const usuario: User = await this.userService.obtenerUsuario(entidad);
-
-    if (!usuario) {
+    // Validar que se proporcione email
+    if (!entidad || !entidad.EMAIL) {
       throw new BadRequestException({
-        MESSAGE: 'Usuario no encontrado',
+        MESSAGE: 'Email requerido',
         STATUS: false,
       });
     }
 
-    if (usuario?.STATUS === 0) {
+    // Sanitizar email
+    const emailSanitized = entidad.EMAIL?.trim().toLowerCase();
+
+    // Validar formato de email
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    if (!emailRegex.test(emailSanitized)) {
       throw new BadRequestException({
-        MESSAGE: usuario.MESSAGE,
+        MESSAGE: 'Formato de email inválido',
         STATUS: false,
       });
+    }
+
+    // Validar longitud del email
+    if (emailSanitized.length > 100) {
+      throw new BadRequestException({
+        MESSAGE: 'Email demasiado largo',
+        STATUS: false,
+      });
+    }
+
+    entidad.EMAIL = emailSanitized;
+
+    const usuario: User = await this.userService.obtenerUsuario(entidad);
+
+    // Mensaje genérico para evitar enumeración de usuarios
+    if (!usuario) {
+      // Retornar éxito aunque no exista para evitar enumeración
+      return {
+        MESSAGE: 'Si el email existe, recibirá instrucciones de recuperación',
+        STATUS: true,
+      };
+    }
+
+    if (usuario?.STATUS === 0 || usuario?.EBLOQUEO === true) {
+      // Retornar mensaje genérico
+      return {
+        MESSAGE: 'Si el email existe, recibirá instrucciones de recuperación',
+        STATUS: true,
+      };
     }
 
     const result = await this.emailJurisService.recoveryPassword(entidad);

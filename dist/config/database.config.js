@@ -33,24 +33,33 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.DATABASE_CONFIG = void 0;
+exports.validateDatabaseConfig = validateDatabaseConfig;
 const dotenv = __importStar(require("dotenv"));
 dotenv.config();
-const entorno = process.env.NODE_ENV === 'production' ? 'PROD' : 'DEV';
-const DBS = {
-    "DEV": {
-        "host": process.env.DB_SERVER || "SQL5113.site4now.net",
-        "port": parseInt(process.env.DB_PORT || "1433"),
-        "username": process.env.DB_USER || "db_a9ec8e_jurissearchdev_admin",
-        "password": process.env.DB_PASSWORD || "ING052001",
-        "database": process.env.DB_NAME || "db_a9ec8e_jurissearchdev",
+exports.DATABASE_CONFIG = {
+    USER: process.env.DB_USER || '',
+    PASSWORD: process.env.DB_PASSWORD || '',
+    DATABASE: process.env.DB_NAME || 'JURIS_BD',
+    SERVER: process.env.DB_SERVER || 'localhost',
+    OPTIONS: {
+        ENCRYPT: true,
+        TRUST_SERVER_CERTIFICATE: process.env.DB_TRUST_CERT !== 'false',
+        ENABLE_ARITH_ABORT: true,
+        CONNECTION_TIMEOUT: 30000,
+        REQUEST_TIMEOUT: 30000,
     },
-    "PROD": {
-        "host": process.env.DB_SERVER || "SQL5113.site4now.net",
-        "port": parseInt(process.env.DB_PORT || "1433"),
-        "username": process.env.DB_USER || "db_a9ec8e_jurissearchpro_admin",
-        "password": process.env.DB_PASSWORD || "ING052001",
-        "database": process.env.DB_NAME || "db_a9ec8e_jurissearchpro",
-    }
+    POOL: {
+        MAX: 10,
+        MIN: 0,
+        IDLE_TIMEOUT_MILLIS: 30000,
+    },
 };
-exports.default = DBS[entorno];
-//# sourceMappingURL=config.js.map
+function validateDatabaseConfig() {
+    const requiredVars = ['DB_USER', 'DB_PASSWORD', 'DB_SERVER'];
+    const missing = requiredVars.filter(varName => !process.env[varName]);
+    if (missing.length > 0) {
+        throw new Error(`Variables de entorno faltantes: ${missing.join(', ')}`);
+    }
+}
+//# sourceMappingURL=database.config.js.map

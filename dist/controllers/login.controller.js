@@ -77,32 +77,95 @@ let LoginController = class LoginController {
         this.entriesService = entriesService;
     }
     async autenticarUsuario(entidad) {
+        var _a, _b;
+        if (!entidad || !entidad.USER || !entidad.PASSWORD) {
+            throw new common_1.BadRequestException({
+                MESSAGE: 'Credenciales inválidas',
+                STATUS: false,
+            });
+        }
+        const userSanitized = (_a = entidad.USER) === null || _a === void 0 ? void 0 : _a.trim();
+        const passwordSanitized = (_b = entidad.PASSWORD) === null || _b === void 0 ? void 0 : _b.trim();
+        if (userSanitized.length < 3 || passwordSanitized.length < 6) {
+            throw new common_1.BadRequestException({
+                MESSAGE: 'Credenciales inválidas',
+                STATUS: false,
+            });
+        }
+        const userRegex = /^[a-zA-Z0-9@.\-_]+$/;
+        if (!userRegex.test(userSanitized)) {
+            throw new common_1.BadRequestException({
+                MESSAGE: 'Formato de usuario inválido',
+                STATUS: false,
+            });
+        }
+        entidad.USER = userSanitized;
+        entidad.PASSWORD = passwordSanitized;
         const usuario = await this.userService.loguearUsuario(entidad);
         if (!usuario) {
             throw new common_1.BadRequestException({
-                MESSAGE: 'Usuario no encontrado',
+                MESSAGE: 'Credenciales inválidas',
+                STATUS: false,
+            });
+        }
+        if ((usuario === null || usuario === void 0 ? void 0 : usuario.EBLOQUEO) === true) {
+            throw new common_1.BadRequestException({
+                MESSAGE: 'Cuenta bloqueada. Contacte al administrador',
                 STATUS: false,
             });
         }
         if ((usuario === null || usuario === void 0 ? void 0 : usuario.STATUS) === 0) {
             throw new common_1.BadRequestException({
-                MESSAGE: usuario.MESSAGE,
+                MESSAGE: usuario.MESSAGE || 'Cuenta inactiva',
+                STATUS: false,
+            });
+        }
+        if (usuario.INTENTOS && usuario.INTENTOS >= 5) {
+            throw new common_1.BadRequestException({
+                MESSAGE: 'Cuenta bloqueada por múltiples intentos fallidos',
                 STATUS: false,
             });
         }
         if (usuario.PASSWORD !== entidad.PASSWORD) {
             throw new common_1.BadRequestException({
-                MESSAGE: 'Contraseña incorrecta',
+                MESSAGE: 'Credenciales inválidas',
                 STATUS: false,
             });
         }
-        const token = await this.tokenService.generateToken(usuario, entidad.BANDERA);
-        usuario.TOKEN = token;
+        if (usuario.IDROLE == null || usuario.IDROLE < 0) {
+            throw new common_1.BadRequestException({
+                MESSAGE: 'Usuario sin permisos asignados',
+                STATUS: false,
+            });
+        }
+        const tokens = await this.tokenService.generateTokens(usuario, entidad.BANDERA);
+        if (!tokens || !tokens.accessToken || !tokens.refreshToken) {
+            throw new common_1.BadRequestException({
+                MESSAGE: 'Error al generar sesión',
+                STATUS: false,
+            });
+        }
+        usuario.TOKEN = tokens.accessToken;
+        usuario.REFRESH_TOKEN = tokens.refreshToken;
+        usuario.EXPIRES_IN = tokens.expiresIn;
         usuario.RTAFTO = process.env.DOMINIO + usuario.RTAFTO;
+        delete usuario.PASSWORD;
         return usuario;
     }
     async removeSession(token) {
-        this.tokenService.removeSession(token);
+        if (!token || token.trim().length === 0) {
+            throw new common_1.BadRequestException({
+                MESSAGE: 'Token inválido',
+                STATUS: false,
+            });
+        }
+        if (token.length < 20 || token.length > 1000) {
+            throw new common_1.BadRequestException({
+                MESSAGE: 'Token inválido',
+                STATUS: false,
+            });
+        }
+        await this.tokenService.removeSession(token);
         return true;
     }
     async listaPreguntas(entidad) {
@@ -111,7 +174,70 @@ let LoginController = class LoginController {
         return preguntas;
     }
     async refreshToken(token) {
-        return await this.tokenService.refreshToken(token);
+        if (!token || token.trim().length === 0) {
+            throw new common_1.BadRequestException({
+                MESSAGE: 'Token inválido',
+                STATUS: false,
+            });
+        }
+        if (token.length < 20 || token.length > 1000) {
+            throw new common_1.BadRequestException({
+                MESSAGE: 'Token inválido',
+                STATUS: false,
+            });
+        }
+        const newToken = await this.tokenService.refreshToken(token);
+        if (!newToken) {
+            throw new common_1.BadRequestException({
+                MESSAGE: 'No se pudo renovar el token',
+                STATUS: false,
+            });
+        }
+        return newToken;
+    }
+    async refresh(body) {
+        if (!body || !body.refreshToken || body.refreshToken.trim().length === 0) {
+            throw new common_1.BadRequestException({
+                MESSAGE: 'Refresh token inválido',
+                STATUS: false,
+            });
+        }
+        const refreshToken = body.refreshToken.trim();
+        if (refreshToken.length < 20 || refreshToken.length > 2000) {
+            throw new common_1.BadRequestException({
+                MESSAGE: 'Refresh token inválido',
+                STATUS: false,
+            });
+        }
+        const jwtRegex = /^[A-Za-z0-9_\-]+\.[A-Za-z0-9_\-]+\.[A-Za-z0-9_\-]+$/;
+        if (!jwtRegex.test(refreshToken)) {
+            throw new common_1.BadRequestException({
+                MESSAGE: 'Formato de refresh token inválido',
+                STATUS: false,
+            });
+        }
+        try {
+            const tokens = await this.tokenService.refreshAccessToken(refreshToken);
+            if (!tokens || !tokens.accessToken || !tokens.refreshToken) {
+                throw new common_1.BadRequestException({
+                    MESSAGE: 'No se pudo renovar el token',
+                    STATUS: false,
+                });
+            }
+            return {
+                accessToken: tokens.accessToken,
+                refreshToken: tokens.refreshToken,
+                expiresIn: tokens.expiresIn,
+                STATUS: true,
+                MESSAGE: 'Token renovado exitosamente',
+            };
+        }
+        catch (error) {
+            throw new common_1.BadRequestException({
+                MESSAGE: error.message || 'No se pudo renovar el token',
+                STATUS: false,
+            });
+        }
     }
     async validateToken(token) {
         return this.tokenService.validateTokenSolicitud(token);
@@ -120,16 +246,39 @@ let LoginController = class LoginController {
         return this.tokenService.validateTokenSolicitudTime(token);
     }
     async generateUser(entidad) {
+        var _a;
+        if (!entidad || !entidad.TOKEN || !entidad.EMAIL || !entidad.PASSWORD) {
+            throw new common_1.BadRequestException({
+                MESSAGE: 'Datos incompletos',
+                STATUS: false,
+            });
+        }
+        const emailSanitized = (_a = entidad.EMAIL) === null || _a === void 0 ? void 0 : _a.trim().toLowerCase();
+        const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        if (!emailRegex.test(emailSanitized)) {
+            throw new common_1.BadRequestException({
+                MESSAGE: 'Formato de email inválido',
+                STATUS: false,
+            });
+        }
+        if (!entidad.PASSWORD || entidad.PASSWORD.length < 8) {
+            throw new common_1.BadRequestException({
+                MESSAGE: 'La contraseña debe tener al menos 8 caracteres',
+                STATUS: false,
+            });
+        }
         const result = await this.tokenService.validateTokenSolicitud(entidad.TOKEN);
-        if (result) {
-            entidad.IDROLE = 2;
-            entidad.USER = 'AUTOLOGIN';
-            entidad.PLAN = '1';
-            return await this.userService.createUser(entidad);
+        if (!result) {
+            throw new common_1.BadRequestException({
+                MESSAGE: 'Token inválido o expirado',
+                STATUS: false,
+            });
         }
-        else {
-            return { MESSAGE: 'Token invalido', STATUS: false };
-        }
+        entidad.EMAIL = emailSanitized;
+        entidad.IDROLE = 2;
+        entidad.USER = 'AUTOLOGIN';
+        entidad.PLAN = '1';
+        return await this.userService.createUser(entidad);
     }
     async generateUserFind(entidad) {
         entidad.IDROLE = 2;
@@ -146,18 +295,40 @@ let LoginController = class LoginController {
         return result;
     }
     async recoveryPassword(entidad) {
-        const usuario = await this.userService.obtenerUsuario(entidad);
-        if (!usuario) {
+        var _a;
+        if (!entidad || !entidad.EMAIL) {
             throw new common_1.BadRequestException({
-                MESSAGE: 'Usuario no encontrado',
+                MESSAGE: 'Email requerido',
                 STATUS: false,
             });
         }
-        if ((usuario === null || usuario === void 0 ? void 0 : usuario.STATUS) === 0) {
+        const emailSanitized = (_a = entidad.EMAIL) === null || _a === void 0 ? void 0 : _a.trim().toLowerCase();
+        const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        if (!emailRegex.test(emailSanitized)) {
             throw new common_1.BadRequestException({
-                MESSAGE: usuario.MESSAGE,
+                MESSAGE: 'Formato de email inválido',
                 STATUS: false,
             });
+        }
+        if (emailSanitized.length > 100) {
+            throw new common_1.BadRequestException({
+                MESSAGE: 'Email demasiado largo',
+                STATUS: false,
+            });
+        }
+        entidad.EMAIL = emailSanitized;
+        const usuario = await this.userService.obtenerUsuario(entidad);
+        if (!usuario) {
+            return {
+                MESSAGE: 'Si el email existe, recibirá instrucciones de recuperación',
+                STATUS: true,
+            };
+        }
+        if ((usuario === null || usuario === void 0 ? void 0 : usuario.STATUS) === 0 || (usuario === null || usuario === void 0 ? void 0 : usuario.EBLOQUEO) === true) {
+            return {
+                MESSAGE: 'Si el email existe, recibirá instrucciones de recuperación',
+                STATUS: true,
+            };
         }
         const result = await this.emailJurisService.recoveryPassword(entidad);
         return result;
@@ -351,6 +522,13 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], LoginController.prototype, "refreshToken", null);
+__decorate([
+    (0, common_1.Post)('refresh'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], LoginController.prototype, "refresh", null);
 __decorate([
     (0, common_1.Get)('validateToken'),
     __param(0, (0, common_1.Query)('token')),
