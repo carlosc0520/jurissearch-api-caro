@@ -1,5 +1,5 @@
 import { User } from '../../models/Admin/user.model';
-import { SolicitudModel } from 'src/models/Public/Solicitud.model';
+import { SolicitudModel } from 'src/models/public/Solicitud.model';
 interface Session {
     sessionId: string;
     expiresIn: number;

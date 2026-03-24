@@ -661,7 +661,6 @@ let TokenService = class TokenService {
     async closeSessionDB(sessionId) {
         var _a;
         try {
-            console.log('🔒 Cerrando sesión en SQL Server, SESSION_ID:', sessionId);
             const result = await database_service_1.DatabaseService.executeStoredProcedure('JURIS.SP_CLOSE_SESSION', [
                 { name: 'SESSION_ID', type: sql.UniqueIdentifier, value: sessionId }
             ]);
