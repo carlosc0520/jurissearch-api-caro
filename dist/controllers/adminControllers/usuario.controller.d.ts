@@ -30,6 +30,8 @@ declare class User {
     DATOS?: string;
     RTAFTO?: string;
     NOTIFI?: string;
+    DESCRIPCION?: string;
+    IDPLN?: number;
 }
 export declare class UsuarioController {
     private readonly userService;

@@ -34,6 +34,8 @@ class User {
   DATOS?: string;
   RTAFTO?: string;
   NOTIFI?: string;
+  DESCRIPCION?: string;
+  IDPLN?: number;
 }
 
 @Controller('admin/user')

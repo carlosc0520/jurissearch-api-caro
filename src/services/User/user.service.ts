@@ -37,6 +37,7 @@ class User {
     RTAFTO?: string;
     IDPLN?: number;
     NOTIFI?: string;
+    DESCRIPCION?: string;
 }
 
 @Injectable()
