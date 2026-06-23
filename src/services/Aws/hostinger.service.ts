@@ -61,7 +61,12 @@ export class HostingerService {
             await this.connectFTP();
             await this.ftpClient.downloadTo(tempFile, remotePath);
         } catch (error) {
-            throw new HttpException('Error al descargar el archivo del servidor', HttpStatus.INTERNAL_SERVER_ERROR);
+            const detail = (error as any)?.message ?? String(error);
+            console.error('[FTP downloadDocumento]', remotePath, detail);
+            throw new HttpException(
+                `FTP download failed — path: ${remotePath} — ${detail}`,
+                HttpStatus.INTERNAL_SERVER_ERROR,
+            );
         }
 
         const buffer = fs.readFileSync(tempFile);
