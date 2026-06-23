@@ -58,13 +58,14 @@ export class HostingerService {
         fs.mkdirSync(tempDir, { recursive: true });
 
         try {
+            console.log(`[FTP] host="${this.ftpHost}" user="${this.ftpUser}" pass="${this.ftpPassword ? this.ftpPassword.slice(0,3)+'***' : 'UNDEFINED'}" path="${remotePath}" tempFile="${tempFile}"`);
             await this.connectFTP();
             await this.ftpClient.downloadTo(tempFile, remotePath);
         } catch (error) {
             const detail = (error as any)?.message ?? String(error);
             console.error('[FTP downloadDocumento]', remotePath, detail);
             throw new HttpException(
-                `FTP download failed — path: ${remotePath} — ${detail}`,
+                `FTP download failed — host:${this.ftpHost} user:${this.ftpUser} pass:${this.ftpPassword ? this.ftpPassword.slice(0,3)+'***' : 'UNDEFINED'} — path: ${remotePath} — ${detail}`,
                 HttpStatus.INTERNAL_SERVER_ERROR,
             );
         }
