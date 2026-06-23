@@ -30,7 +30,12 @@ export class NoticiaController {
     @Post("get-image")
     async downloadFile(@Body('KEY') KEY: string, @Res() res: Response): Promise<any> {
         try {
-            const file = await this.s3Service.getImage(KEY);
+            let file: Buffer;
+            if (KEY?.startsWith('/uploads/')) {
+                file = await this.hostingerService.downloadDocumento(KEY);
+            } else {
+                file = await this.s3Service.getImage(KEY);
+            }
             res.set('Content-Type', 'application/octet-stream');
             res.send(file);
         } catch (error) {

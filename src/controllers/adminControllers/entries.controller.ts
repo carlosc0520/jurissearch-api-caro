@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Get,
+  Param,
   Request,
   Post,
   Query,
@@ -15,6 +16,8 @@ import { EntriesService } from '../../services/Admin/entries.service';
 import { Result } from 'src/models/result.model';
 import { diskStorage } from 'multer';
 import { S3Service } from 'src/services/Aws/aws.service';
+import { HostingerService } from 'src/services/Aws/hostinger.service';
+import * as ExcelJS from 'exceljs';
 import * as fs from 'fs';
 import { DataTable } from 'src/models/DataTable.model.';
 import { Response } from 'express';
@@ -28,12 +31,27 @@ import pdfFonts from 'pdfmake/build/vfs_fonts';
 import PizZip from 'pizzip';
 import Docxtemplater from 'docxtemplater';
 
+interface MigJob {
+  status: 'running' | 'done' | 'error';
+  total: number; current: number; ok: number; errors: number;
+  errMsg?: string;
+  results: Array<{ id: number; titulo: string; campo: string; ok: boolean; error?: string }>;
+}
+
 @Controller('admin/entries')
 export class EntriesController {
   constructor(
     private readonly entriesService: EntriesService,
     private readonly s3Service: S3Service,
+    private readonly hostingerService: HostingerService,
   ) { }
+
+  private async downloadEntriefile(filePath: string): Promise<Buffer> {
+    if (filePath?.startsWith('/uploads/')) {
+      return this.hostingerService.downloadDocumento(filePath);
+    }
+    return this.s3Service.downloadFile(filePath);
+  }
 
   @Post('add')
   @UseInterceptors(
@@ -88,16 +106,7 @@ export class EntriesController {
       const pdfBytes = await pdfDoc.save();
       fs.writeFileSync(file1.path, pdfBytes);
 
-      const file2 = { filename: null, path: null };
-      const keysLocation: string[] = await this.s3Service.uploadFiles(
-        entidad,
-        file1.filename,
-        file1.path,
-        file2.filename,
-        file2.path,
-      );
-
-      entidad.ENTRIEFILE = keysLocation[0];
+      entidad.ENTRIEFILE = await this.hostingerService.uploadDocumento(file1, entidad.TYPE, entidad.TIPO);
       entidad.ENTRIEFILERESUMEN = '';
       entidad.UCRCN = req.user.UCRCN;
       const result = await this.entriesService.createEntries(entidad);
@@ -165,13 +174,7 @@ export class EntriesController {
       const pdfBytes = await pdfDoc.save();
       fs.writeFileSync(file1.path, pdfBytes);
 
-      const keysLocation: string = await this.s3Service.uploadFile(
-        entidad,
-        file1.filename,
-        file1.path,
-      );
-
-      entidad.ENTRIEFILE = keysLocation;
+      entidad.ENTRIEFILE = await this.hostingerService.uploadDocumento(file1, entidad.TYPE, entidad.TIPO);
       entidad.UCRCN = req.user.UCRCN;
       const result = await this.entriesService.createEntries(entidad);
       return result;
@@ -244,13 +247,7 @@ export class EntriesController {
         const pdfBytes = await pdfDoc.save();
         fs.writeFileSync(file1.path, pdfBytes);
 
-        const keysLocation: string = await this.s3Service.uploadFile(
-          entidad,
-          file1.filename,
-          file1.path,
-        );
-
-        entidad.ENTRIEFILE = keysLocation;
+        entidad.ENTRIEFILE = await this.hostingerService.uploadDocumento(file1, entidad.TYPE, entidad.TIPO);
       }
 
       entidad.UCRCN = req.user.UCRCN;
@@ -325,13 +322,7 @@ export class EntriesController {
         const pdfBytes = await pdfDoc.save();
         fs.writeFileSync(file1.path, pdfBytes);
 
-        const keysLocation: string = await this.s3Service.uploadFile(
-          entidad,
-          file1.filename,
-          file1.path,
-        );
-
-        entidad.ENTRIEFILE = keysLocation;
+        entidad.ENTRIEFILE = await this.hostingerService.uploadDocumento(file1, entidad.TYPE, entidad.TIPO);
       }
 
       entidad.UCRCN = req.user.UCRCN;
@@ -436,9 +427,7 @@ export class EntriesController {
       const downloadPromises = data.map(async (entry) => {
         try {
 
-          const fileBuffer = await this.s3Service.downloadFile(
-            entry.ENTRIEFILE,
-          );
+          const fileBuffer = await this.downloadEntriefile(entry.ENTRIEFILE);
 
           let fEntry = new Date(entry.FCRCN);
           let modificar = false;
@@ -638,9 +627,7 @@ export class EntriesController {
 
       const downloadPromises = pathArray.map(async (entry) => {
         try {
-          const fileBuffer = await this.s3Service.downloadFile(
-            entry.ENTRIEFILE,
-          );
+          const fileBuffer = await this.downloadEntriefile(entry.ENTRIEFILE);
 
           const pdfDoc = await PDFDocument.load(fileBuffer);
 
@@ -1292,7 +1279,7 @@ export class EntriesController {
         modificar = true;
       }
 
-      const fileBuffer = await this.s3Service.downloadFile(PATH);
+      const fileBuffer = await this.downloadEntriefile(PATH);
 
       const pathcaroa = path.join(
         __dirname,
@@ -1631,6 +1618,137 @@ export class EntriesController {
       'Content-Disposition': `attachment; filename="${makeSafeContentDisposition(data?.TITLE)}"`,
     });
     res.send(buffer);
+  }
+
+  // ── Migración S3 → Hostinger ──────────────────────────────────────────────
+  private migJobs = new Map<string, MigJob>();
+
+  @Get('migration/preview')
+  async migrationPreview() {
+    const conn = this.entriesService['connection'];
+    const rows: any[] = await conn.query(
+      `SELECT COUNT(*) AS total FROM JURIS.ENTRADA
+       WHERE ENTRIEFILE LIKE 'ju%' OR ENTRIEFILE LIKE 'le%'
+          OR ENTRIEFILERESUMEN LIKE 'ju%' OR ENTRIEFILERESUMEN LIKE 'le%'`,
+    );
+    return { total: rows[0]?.total ?? rows[0]?.[''] ?? 0 };
+  }
+
+  @Post('migration/start')
+  async migrationStart() {
+    const jobId = Date.now().toString(36);
+    const job: MigJob = { status: 'running', total: 0, current: 0, ok: 0, errors: 0, results: [] };
+    this.migJobs.set(jobId, job);
+    this.runMigration(job).catch((err) => {
+      job.status = 'error';
+      job.errMsg = (err as any)?.message ?? String(err);
+      console.error('[Migration] Error fatal:', job.errMsg);
+    });
+    return { jobId };
+  }
+
+  private async runMigration(job: MigJob) {
+    const conn = this.entriesService['connection'];
+    const rows: any[] = await conn.query(
+      `SELECT ID, TITULO, ENTRIEFILE, ENTRIEFILERESUMEN FROM JURIS.ENTRADA
+       WHERE ENTRIEFILE LIKE 'ju%' OR ENTRIEFILE LIKE 'le%'
+          OR ENTRIEFILERESUMEN LIKE 'ju%' OR ENTRIEFILERESUMEN LIKE 'le%'`,
+    );
+    job.total = rows.length;
+
+    for (const row of rows) {
+      job.current++;
+      for (const campo of ['ENTRIEFILE', 'ENTRIEFILERESUMEN'] as const) {
+        const oldPath: string = row[campo];
+        if (!oldPath || (!oldPath.startsWith('ju') && !oldPath.startsWith('le'))) continue;
+        try {
+          // TYPE y TIPO se extraen del propio path S3: {TYPE}/{TIPO}/{title}/{uuid}.pdf
+          const parts   = oldPath.split('/');
+          const tipo    = parts[0] ?? 'general';
+          const subtipo = parts[1] ?? 'general';
+
+          const buffer  = await this.s3Service.downloadFile(oldPath);
+          const newPath = await this.hostingerService.uploadFromBuffer(buffer, 'pdf', tipo, subtipo);
+          await conn.query(
+            `UPDATE JURIS.ENTRADA SET ${campo} = @0,
+             FEDCN = SYSDATETIMEOFFSET() AT TIME ZONE 'SA Pacific Standard Time' WHERE ID = @1`,
+            [newPath, row.ID],
+          );
+          job.ok++;
+          job.results.push({ id: row.ID, titulo: row.TITULO, campo, ok: true });
+        } catch (err) {
+          job.errors++;
+          job.results.push({ id: row.ID, titulo: row.TITULO, campo, ok: false, error: (err as any)?.message });
+        }
+      }
+    }
+    job.status = 'done';
+  }
+
+  @Get('migration/progress/:jobId')
+  migrationProgress(@Param('jobId') jobId: string) {
+    const job = this.migJobs.get(jobId);
+    if (!job) return { status: 'not_found' };
+    const { status, total, current, ok, errors, errMsg } = job;
+    return { status, total, current, ok, errors, errMsg };
+  }
+
+  @Get('migration/excel/:jobId')
+  async migrationExcel(@Param('jobId') jobId: string, @Res() res: Response) {
+    const job = this.migJobs.get(jobId);
+    if (!job || job.status !== 'done') { res.status(400).json({ error: 'Job no disponible' }); return; }
+
+    const wb = new ExcelJS.Workbook();
+    const ws = wb.addWorksheet('Migración');
+    ws.columns = [
+      { header: 'ID', key: 'id', width: 8 },
+      { header: 'Título', key: 'titulo', width: 50 },
+      { header: 'Campo', key: 'campo', width: 20 },
+      { header: 'Estado', key: 'estado', width: 10 },
+      { header: 'Error', key: 'error', width: 60 },
+    ];
+    ws.getRow(1).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF1e3a5f' } };
+    ws.getRow(1).font = { color: { argb: 'FFFFFFFF' }, bold: true };
+    for (const r of job.results) {
+      ws.addRow({ id: r.id, titulo: r.titulo, campo: r.campo, estado: r.ok ? 'OK' : 'ERROR', error: r.error ?? '' });
+    }
+    const buffer = await (wb.xlsx.writeBuffer() as unknown as Promise<Buffer>);
+    res.set({ 'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'Content-Disposition': 'attachment; filename="migracion.xlsx"' });
+    res.send(buffer);
+  }
+
+  // ── Sync archivos desde JSON exportado de V2 ─────────────────────────────
+  @Post('sync-files')
+  async syncFiles(@Body() body: { entries: Array<{ id: number; titulo: string; entriefile: string; entriefileresumen: string }> }) {
+    const entries = body?.entries ?? [];
+    let subidos = 0, actualizados = 0;
+    const conn = this.entriesService['connection'];
+
+    for (const item of entries) {
+      const ef     = String(item.entriefile ?? '').trim();
+      const efr    = String(item.entriefileresumen ?? '').trim();
+      const titulo = String(item.titulo ?? '').trim().toUpperCase();
+
+      // Contar como "subido" si al menos uno de los dos campos tiene path de Hostinger
+      if (ef.startsWith('/uploads/') || efr.startsWith('/uploads/')) {
+        subidos++;
+      } else {
+        continue; // sin archivos migrados, no hay nada que actualizar
+      }
+
+      // Actualizar solo si coinciden AMBOS: ID y TITULO
+      const r: any = await conn.query(
+        `UPDATE JURIS.ENTRADA
+         SET ENTRIEFILE = @0, ENTRIEFILERESUMEN = @1,
+             FEDCN = SYSDATETIMEOFFSET() AT TIME ZONE 'SA Pacific Standard Time'
+         WHERE ID = @2 AND UPPER(TITULO) = @3`,
+        [ef || null, efr || null, item.id, titulo],
+      );
+      const affected = r?.[0]?.rowsAffected?.[0] ?? (r as any)?.rowsAffected?.[0] ?? 0;
+      if (affected > 0) actualizados++;
+    }
+
+    return { total: entries.length, subidos, actualizados };
   }
 }
 

@@ -16,6 +16,7 @@ import { NoticiaService } from 'src/services/mantenimiento/noticia.service';
 import { NoticiaModel } from 'src/models/Admin/noticia.model';
 import { DataTable } from 'src/models/DataTable.model.';
 import { S3Service } from 'src/services/Aws/aws.service';
+import { HostingerService } from 'src/services/Aws/hostinger.service';
 import { PreguntasService } from 'src/services/mantenimiento/preguntas.service';
 import { PreguntaModel } from 'src/models/Admin/preguntas.model';
 import { EmailJurisService } from 'src/services/acompliance/emailJurisserivce';
@@ -74,6 +75,7 @@ export class LoginController {
     private readonly emailJurisService: EmailJurisService,
     private readonly s3Service: S3Service,
     private readonly entriesService: EntriesService,
+    private readonly hostingerService: HostingerService,
   ) { }
 
   @Post('autenticar')
@@ -506,7 +508,9 @@ export class LoginController {
         modificar = true;
       }
 
-      const fileBuffer = await this.s3Service.downloadFile(data.ENTRIEFILE);
+      const fileBuffer = data.ENTRIEFILE?.startsWith('/uploads/')
+        ? await this.hostingerService.downloadDocumento(data.ENTRIEFILE)
+        : await this.s3Service.downloadFile(data.ENTRIEFILE);
 
       const pathcaroa = path.join(
         __dirname,

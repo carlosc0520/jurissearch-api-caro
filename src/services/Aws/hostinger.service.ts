@@ -4,18 +4,69 @@ import * as fs from 'fs';
 import * as path from 'path';
 import archiver from 'archiver';
 import { Readable } from 'stream';
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class HostingerService {
     private ftpClient: Client;
 
-    private readonly ftpHost = 'jurissearch.com';
-    private readonly ftpUser = 'u551436692.jurisFiles';
-    private readonly ftpPassword = 'jurisFiles123$';
+    private readonly ftpHost     = process.env.FTP_HOST;
+    private readonly ftpUser     = process.env.FTP_USER;
+    private readonly ftpPassword = process.env.FTP_PASSWORD;
     private readonly ftpDir = '/uploads/';
 
     constructor() {
         this.ftpClient = new Client();
+    }
+
+    private sanitizeSegment(s: string): string {
+        return (s || 'other')
+            .normalize('NFD').replace(/[̀-ͯ]/g, '')
+            .toLowerCase()
+            .replace(/[^a-z0-9_-]+/g, '_')
+            .replace(/^_+|_+$/g, '');
+    }
+
+    // ── Sube un PDF a /uploads/documentos/{tipo}/{subtipo}/{year}/{month}/ ──
+    async uploadDocumento(file: Express.Multer.File, tipo: string, subtipo: string): Promise<string> {
+        if (!file) throw new HttpException('No file provided', HttpStatus.BAD_REQUEST);
+
+        const now       = new Date();
+        const year      = now.getFullYear().toString();
+        const month     = String(now.getMonth() + 1).padStart(2, '0');
+        const remoteDir = `/uploads/documentos/${this.sanitizeSegment(tipo)}/${this.sanitizeSegment(subtipo)}/${year}/${month}`;
+        const remotePath = `${remoteDir}/${uuidv4()}.pdf`;
+
+        try {
+            await this.connectFTP();
+            await this.ftpClient.ensureDir(remoteDir);
+            await this.ftpClient.uploadFrom(fs.createReadStream(file.path), remotePath);
+        } catch (error) {
+            console.warn(`FTP uploadDocumento failed: ${(error as any)?.message}`);
+            throw new HttpException('Error al subir el archivo al servidor', HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        return remotePath;
+    }
+
+    // ── Descarga un PDF desde FTP y retorna Buffer ──
+    async downloadDocumento(remotePath: string): Promise<Buffer> {
+        const fileName = path.basename(remotePath);
+        const tempDir  = path.join(process.cwd(), 'uploads', 'temp');
+        const tempFile = path.join(tempDir, fileName);
+
+        fs.mkdirSync(tempDir, { recursive: true });
+
+        try {
+            await this.connectFTP();
+            await this.ftpClient.downloadTo(tempFile, remotePath);
+        } catch (error) {
+            throw new HttpException('Error al descargar el archivo del servidor', HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        const buffer = fs.readFileSync(tempFile);
+        try { fs.unlinkSync(tempFile); } catch { /* ignora error al limpiar temp */ }
+        return buffer;
     }
 
     private async connectFTP() {
@@ -198,6 +249,24 @@ export class HostingerService {
 
             return { fileName: 'files.zip', fileBuffer: zipBuffer.toString('base64') };
         }
+    }
+
+    async uploadFromBuffer(buffer: Buffer, ext: string, tipo: string, subtipo: string): Promise<string> {
+        const now        = new Date();
+        const year       = now.getFullYear().toString();
+        const month      = String(now.getMonth() + 1).padStart(2, '0');
+        const remoteDir  = `/uploads/documentos/${this.sanitizeSegment(tipo)}/${this.sanitizeSegment(subtipo)}/${year}/${month}`;
+        const remotePath = `${remoteDir}/${uuidv4()}.${ext}`;
+
+        const client = new Client();
+        try {
+            await client.access({ host: this.ftpHost, user: this.ftpUser, password: this.ftpPassword });
+            await client.ensureDir(remoteDir);
+            await client.uploadFrom(Readable.from(buffer), remotePath);
+        } finally {
+            client.close();
+        }
+        return remotePath;
     }
 
     async deleteFiles(filePaths: string[]): Promise<{ message: string }> {
