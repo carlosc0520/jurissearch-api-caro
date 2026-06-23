@@ -55,6 +55,8 @@ const entries_model_1 = require("../../models/Admin/entries.model");
 const entries_service_1 = require("../../services/Admin/entries.service");
 const multer_1 = require("multer");
 const aws_service_1 = require("../../services/Aws/aws.service");
+const hostinger_service_1 = require("../../services/Aws/hostinger.service");
+const ExcelJS = __importStar(require("exceljs"));
 const fs = __importStar(require("fs"));
 const DataTable_model_1 = require("../../models/DataTable.model.");
 const busqueda_model_1 = require("../../models/Admin/busqueda.model");
@@ -67,9 +69,17 @@ const vfs_fonts_1 = __importDefault(require("pdfmake/build/vfs_fonts"));
 const pizzip_1 = __importDefault(require("pizzip"));
 const docxtemplater_1 = __importDefault(require("docxtemplater"));
 let EntriesController = class EntriesController {
-    constructor(entriesService, s3Service) {
+    constructor(entriesService, s3Service, hostingerService) {
         this.entriesService = entriesService;
         this.s3Service = s3Service;
+        this.hostingerService = hostingerService;
+        this.migJobs = new Map();
+    }
+    async downloadEntriefile(filePath) {
+        if (filePath === null || filePath === void 0 ? void 0 : filePath.startsWith('/uploads/')) {
+            return this.hostingerService.downloadDocumento(filePath);
+        }
+        return this.s3Service.downloadFile(filePath);
     }
     async uploadMultipleFiles(req, entidad, files) {
         try {
@@ -92,9 +102,7 @@ let EntriesController = class EntriesController {
             const pdfDoc = await pdf_lib_1.PDFDocument.load(templatePDFBytes);
             const pdfBytes = await pdfDoc.save();
             fs.writeFileSync(file1.path, pdfBytes);
-            const file2 = { filename: null, path: null };
-            const keysLocation = await this.s3Service.uploadFiles(entidad, file1.filename, file1.path, file2.filename, file2.path);
-            entidad.ENTRIEFILE = keysLocation[0];
+            entidad.ENTRIEFILE = await this.hostingerService.uploadDocumento(file1, entidad.TYPE, entidad.TIPO);
             entidad.ENTRIEFILERESUMEN = '';
             entidad.UCRCN = req.user.UCRCN;
             const result = await this.entriesService.createEntries(entidad);
@@ -130,8 +138,7 @@ let EntriesController = class EntriesController {
             const pdfDoc = await pdf_lib_1.PDFDocument.load(templatePDFBytes);
             const pdfBytes = await pdfDoc.save();
             fs.writeFileSync(file1.path, pdfBytes);
-            const keysLocation = await this.s3Service.uploadFile(entidad, file1.filename, file1.path);
-            entidad.ENTRIEFILE = keysLocation;
+            entidad.ENTRIEFILE = await this.hostingerService.uploadDocumento(file1, entidad.TYPE, entidad.TIPO);
             entidad.UCRCN = req.user.UCRCN;
             const result = await this.entriesService.createEntries(entidad);
             return result;
@@ -167,8 +174,7 @@ let EntriesController = class EntriesController {
                 const pdfDoc = await pdf_lib_1.PDFDocument.load(templatePDFBytes);
                 const pdfBytes = await pdfDoc.save();
                 fs.writeFileSync(file1.path, pdfBytes);
-                const keysLocation = await this.s3Service.uploadFile(entidad, file1.filename, file1.path);
-                entidad.ENTRIEFILE = keysLocation;
+                entidad.ENTRIEFILE = await this.hostingerService.uploadDocumento(file1, entidad.TYPE, entidad.TIPO);
             }
             entidad.UCRCN = req.user.UCRCN;
             const result = await this.entriesService.edit(entidad);
@@ -205,8 +211,7 @@ let EntriesController = class EntriesController {
                 const pdfDoc = await pdf_lib_1.PDFDocument.load(templatePDFBytes);
                 const pdfBytes = await pdfDoc.save();
                 fs.writeFileSync(file1.path, pdfBytes);
-                const keysLocation = await this.s3Service.uploadFile(entidad, file1.filename, file1.path);
-                entidad.ENTRIEFILE = keysLocation;
+                entidad.ENTRIEFILE = await this.hostingerService.uploadDocumento(file1, entidad.TYPE, entidad.TIPO);
             }
             entidad.UCRCN = req.user.UCRCN;
             const result = await this.entriesService.edit(entidad);
@@ -241,7 +246,7 @@ let EntriesController = class EntriesController {
             let fecha = new Date('2024-11-08');
             const downloadPromises = data.map(async (entry) => {
                 try {
-                    const fileBuffer = await this.s3Service.downloadFile(entry.ENTRIEFILE);
+                    const fileBuffer = await this.downloadEntriefile(entry.ENTRIEFILE);
                     let fEntry = new Date(entry.FCRCN);
                     let modificar = false;
                     if (fEntry > fecha || entry.FLGDOC === '1') {
@@ -375,7 +380,7 @@ let EntriesController = class EntriesController {
             let fecha = new Date('2024-11-08');
             const downloadPromises = pathArray.map(async (entry) => {
                 try {
-                    const fileBuffer = await this.s3Service.downloadFile(entry.ENTRIEFILE);
+                    const fileBuffer = await this.downloadEntriefile(entry.ENTRIEFILE);
                     const pdfDoc = await pdf_lib_1.PDFDocument.load(fileBuffer);
                     let fEntry = new Date(entry.FCRCN);
                     let modificar = false;
@@ -905,6 +910,7 @@ let EntriesController = class EntriesController {
         return await this.entriesService.getPrint(ID);
     }
     async downloadFile(PATH, res) {
+        var _a;
         try {
             let data = await this.entriesService.getEntriePrint(PATH);
             let fecha = new Date('2024-11-08');
@@ -912,7 +918,7 @@ let EntriesController = class EntriesController {
             if (data.FCRCN > fecha || data.FLGDOC === '1') {
                 modificar = true;
             }
-            const fileBuffer = await this.s3Service.downloadFile(PATH);
+            const fileBuffer = await this.downloadEntriefile(PATH);
             const pathcaroa = path.join(__dirname, '..', '..', 'files/files', 'caroa.png');
             const pathccfirma = path.join(__dirname, '..', '..', 'files/files', 'ccfirma.png');
             const pathmarcadeagua = path.join(__dirname, '..', '..', 'files/files', 'marcadeagua.png');
@@ -1024,7 +1030,9 @@ let EntriesController = class EntriesController {
             res.send(Buffer.from(pdfBytes));
         }
         catch (error) {
-            res.status(500).send('Error al descargar el archivo');
+            const msg = (_a = error === null || error === void 0 ? void 0 : error.message) !== null && _a !== void 0 ? _a : String(error);
+            console.error('[download-file]', msg);
+            res.status(500).json({ error: 'Error al descargar el archivo', detail: msg });
         }
     }
     async listTopSearch(req, TYPE) {
@@ -1139,6 +1147,133 @@ let EntriesController = class EntriesController {
             'Content-Disposition': `attachment; filename="${makeSafeContentDisposition(data === null || data === void 0 ? void 0 : data.TITLE)}"`,
         });
         res.send(buffer);
+    }
+    fsInfo() {
+        var _a;
+        const cwd = process.cwd();
+        const dirname = __dirname;
+        const publicEnv = (_a = process.env.HOSTINGER_PUBLIC_PATH) !== null && _a !== void 0 ? _a : '(no definido)';
+        const candidates = [
+            cwd + '/public_html',
+            cwd + '/../public_html',
+            cwd + '/../../public_html',
+            '/home/u551436692/domains/jurissearch.com/public_html',
+        ];
+        return {
+            cwd,
+            dirname,
+            HOSTINGER_PUBLIC_PATH: publicEnv,
+            candidates: candidates.map(p => ({ path: p, exists: fs.existsSync(p) })),
+        };
+    }
+    async migrationPreview() {
+        var _a, _b, _c, _d;
+        const conn = this.entriesService['connection'];
+        const rows = await conn.query(`SELECT COUNT(*) AS total FROM JURIS.ENTRADA
+       WHERE ENTRIEFILE LIKE 'ju%' OR ENTRIEFILE LIKE 'le%'
+          OR ENTRIEFILERESUMEN LIKE 'ju%' OR ENTRIEFILERESUMEN LIKE 'le%'`);
+        return { total: (_d = (_b = (_a = rows[0]) === null || _a === void 0 ? void 0 : _a.total) !== null && _b !== void 0 ? _b : (_c = rows[0]) === null || _c === void 0 ? void 0 : _c['']) !== null && _d !== void 0 ? _d : 0 };
+    }
+    async migrationStart() {
+        const jobId = Date.now().toString(36);
+        const job = { status: 'running', total: 0, current: 0, ok: 0, errors: 0, results: [] };
+        this.migJobs.set(jobId, job);
+        this.runMigration(job).catch((err) => {
+            var _a;
+            job.status = 'error';
+            job.errMsg = (_a = err === null || err === void 0 ? void 0 : err.message) !== null && _a !== void 0 ? _a : String(err);
+            console.error('[Migration] Error fatal:', job.errMsg);
+        });
+        return { jobId };
+    }
+    async runMigration(job) {
+        var _a, _b;
+        const conn = this.entriesService['connection'];
+        const rows = await conn.query(`SELECT ID, TITULO, ENTRIEFILE, ENTRIEFILERESUMEN FROM JURIS.ENTRADA
+       WHERE ENTRIEFILE LIKE 'ju%' OR ENTRIEFILE LIKE 'le%'
+          OR ENTRIEFILERESUMEN LIKE 'ju%' OR ENTRIEFILERESUMEN LIKE 'le%'`);
+        job.total = rows.length;
+        for (const row of rows) {
+            job.current++;
+            for (const campo of ['ENTRIEFILE', 'ENTRIEFILERESUMEN']) {
+                const oldPath = row[campo];
+                if (!oldPath || (!oldPath.startsWith('ju') && !oldPath.startsWith('le')))
+                    continue;
+                try {
+                    const parts = oldPath.split('/');
+                    const tipo = (_a = parts[0]) !== null && _a !== void 0 ? _a : 'general';
+                    const subtipo = (_b = parts[1]) !== null && _b !== void 0 ? _b : 'general';
+                    const buffer = await this.s3Service.downloadFile(oldPath);
+                    const newPath = await this.hostingerService.uploadFromBuffer(buffer, 'pdf', tipo, subtipo);
+                    await conn.query(`UPDATE JURIS.ENTRADA SET ${campo} = @0,
+             FEDCN = SYSDATETIMEOFFSET() AT TIME ZONE 'SA Pacific Standard Time' WHERE ID = @1`, [newPath, row.ID]);
+                    job.ok++;
+                    job.results.push({ id: row.ID, titulo: row.TITULO, campo, ok: true });
+                }
+                catch (err) {
+                    job.errors++;
+                    job.results.push({ id: row.ID, titulo: row.TITULO, campo, ok: false, error: err === null || err === void 0 ? void 0 : err.message });
+                }
+            }
+        }
+        job.status = 'done';
+    }
+    migrationProgress(jobId) {
+        const job = this.migJobs.get(jobId);
+        if (!job)
+            return { status: 'not_found' };
+        const { status, total, current, ok, errors, errMsg } = job;
+        return { status, total, current, ok, errors, errMsg };
+    }
+    async migrationExcel(jobId, res) {
+        var _a;
+        const job = this.migJobs.get(jobId);
+        if (!job || job.status !== 'done') {
+            res.status(400).json({ error: 'Job no disponible' });
+            return;
+        }
+        const wb = new ExcelJS.Workbook();
+        const ws = wb.addWorksheet('Migración');
+        ws.columns = [
+            { header: 'ID', key: 'id', width: 8 },
+            { header: 'Título', key: 'titulo', width: 50 },
+            { header: 'Campo', key: 'campo', width: 20 },
+            { header: 'Estado', key: 'estado', width: 10 },
+            { header: 'Error', key: 'error', width: 60 },
+        ];
+        ws.getRow(1).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF1e3a5f' } };
+        ws.getRow(1).font = { color: { argb: 'FFFFFFFF' }, bold: true };
+        for (const r of job.results) {
+            ws.addRow({ id: r.id, titulo: r.titulo, campo: r.campo, estado: r.ok ? 'OK' : 'ERROR', error: (_a = r.error) !== null && _a !== void 0 ? _a : '' });
+        }
+        const buffer = await wb.xlsx.writeBuffer();
+        res.set({ 'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'Content-Disposition': 'attachment; filename="migracion.xlsx"' });
+        res.send(buffer);
+    }
+    async syncFiles(body) {
+        var _a, _b, _c, _d, _e, _f, _g, _h, _j;
+        const entries = (_a = body === null || body === void 0 ? void 0 : body.entries) !== null && _a !== void 0 ? _a : [];
+        let subidos = 0, actualizados = 0;
+        const conn = this.entriesService['connection'];
+        for (const item of entries) {
+            const ef = String((_b = item.entriefile) !== null && _b !== void 0 ? _b : '').trim();
+            const efr = String((_c = item.entriefileresumen) !== null && _c !== void 0 ? _c : '').trim();
+            const titulo = String((_d = item.titulo) !== null && _d !== void 0 ? _d : '').trim().toUpperCase();
+            if (ef.startsWith('/uploads/') || efr.startsWith('/uploads/')) {
+                subidos++;
+            }
+            else {
+                continue;
+            }
+            const r = await conn.query(`UPDATE JURIS.ENTRADA
+         SET ENTRIEFILE = @0, ENTRIEFILERESUMEN = @1,
+             FEDCN = SYSDATETIMEOFFSET() AT TIME ZONE 'SA Pacific Standard Time'
+         WHERE ID = @2 AND UPPER(TITULO) = @3`, [ef || null, efr || null, item.id, titulo]);
+            const affected = (_j = (_g = (_f = (_e = r === null || r === void 0 ? void 0 : r[0]) === null || _e === void 0 ? void 0 : _e.rowsAffected) === null || _f === void 0 ? void 0 : _f[0]) !== null && _g !== void 0 ? _g : (_h = r === null || r === void 0 ? void 0 : r.rowsAffected) === null || _h === void 0 ? void 0 : _h[0]) !== null && _j !== void 0 ? _j : 0;
+            if (affected > 0)
+                actualizados++;
+        }
+        return { total: entries.length, subidos, actualizados };
     }
 };
 exports.EntriesController = EntriesController;
@@ -1435,10 +1570,51 @@ __decorate([
     __metadata("design:paramtypes", [Object, Number]),
     __metadata("design:returntype", Promise)
 ], EntriesController.prototype, "doc", null);
+__decorate([
+    (0, common_1.Get)('fs-info'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], EntriesController.prototype, "fsInfo", null);
+__decorate([
+    (0, common_1.Get)('migration/preview'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], EntriesController.prototype, "migrationPreview", null);
+__decorate([
+    (0, common_1.Post)('migration/start'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], EntriesController.prototype, "migrationStart", null);
+__decorate([
+    (0, common_1.Get)('migration/progress/:jobId'),
+    __param(0, (0, common_1.Param)('jobId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], EntriesController.prototype, "migrationProgress", null);
+__decorate([
+    (0, common_1.Get)('migration/excel/:jobId'),
+    __param(0, (0, common_1.Param)('jobId')),
+    __param(1, (0, common_1.Res)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", Promise)
+], EntriesController.prototype, "migrationExcel", null);
+__decorate([
+    (0, common_1.Post)('sync-files'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], EntriesController.prototype, "syncFiles", null);
 exports.EntriesController = EntriesController = __decorate([
     (0, common_1.Controller)('admin/entries'),
     __metadata("design:paramtypes", [entries_service_1.EntriesService,
-        aws_service_1.S3Service])
+        aws_service_1.S3Service,
+        hostinger_service_1.HostingerService])
 ], EntriesController);
 function makeSafeContentDisposition(rawName) {
     const name = (rawName || 'document').toString();

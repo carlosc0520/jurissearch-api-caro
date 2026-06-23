@@ -35,7 +35,7 @@ var __importStar = (this && this.__importStar) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 const dotenv = __importStar(require("dotenv"));
 dotenv.config();
-const entorno = process.env.NODE_ENV === 'production' ? 'PROD' : 'DEV';
+const entorno = 'PROD';
 const DBS = {
     "DEV": {
         "host": process.env.DB_SERVER || "SQL5110.site4now.net",

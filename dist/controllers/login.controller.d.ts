@@ -4,6 +4,7 @@ import { NoticiaService } from 'src/services/mantenimiento/noticia.service';
 import { NoticiaModel } from 'src/models/Admin/noticia.model';
 import { DataTable } from 'src/models/DataTable.model.';
 import { S3Service } from 'src/services/Aws/aws.service';
+import { HostingerService } from 'src/services/Aws/hostinger.service';
 import { PreguntasService } from 'src/services/mantenimiento/preguntas.service';
 import { PreguntaModel } from 'src/models/Admin/preguntas.model';
 import { EmailJurisService } from 'src/services/acompliance/emailJurisserivce';
@@ -53,7 +54,8 @@ export declare class LoginController {
     private readonly emailJurisService;
     private readonly s3Service;
     private readonly entriesService;
-    constructor(userService: UserService, tokenService: TokenService, noticiaService: NoticiaService, preguntaService: PreguntasService, emailJurisService: EmailJurisService, s3Service: S3Service, entriesService: EntriesService);
+    private readonly hostingerService;
+    constructor(userService: UserService, tokenService: TokenService, noticiaService: NoticiaService, preguntaService: PreguntasService, emailJurisService: EmailJurisService, s3Service: S3Service, entriesService: EntriesService, hostingerService: HostingerService);
     autenticarUsuario(entidad: User): Promise<User>;
     removeSession(token: string): Promise<boolean>;
     listaPreguntas(entidad: DataTable): Promise<PreguntaModel[]>;

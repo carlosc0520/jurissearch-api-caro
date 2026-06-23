@@ -69,13 +69,22 @@ let NoticiaController = class NoticiaController {
         return await this.noticiaService.list(entidad);
     }
     async downloadFile(KEY, res) {
+        var _a;
         try {
-            const file = await this.s3Service.getImage(KEY);
+            let file;
+            if (KEY === null || KEY === void 0 ? void 0 : KEY.startsWith('/uploads/')) {
+                file = await this.hostingerService.downloadDocumento(KEY);
+            }
+            else {
+                file = await this.s3Service.getImage(KEY);
+            }
             res.set('Content-Type', 'application/octet-stream');
             res.send(file);
         }
         catch (error) {
-            res.status(500).send('Error al descargar el archivo');
+            const msg = (_a = error === null || error === void 0 ? void 0 : error.message) !== null && _a !== void 0 ? _a : String(error);
+            console.error('[noticia/get-image]', msg);
+            res.status(500).json({ error: 'Error al descargar el archivo', detail: msg });
         }
     }
     async deleteUser(req, ID) {

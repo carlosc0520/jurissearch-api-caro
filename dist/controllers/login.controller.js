@@ -52,6 +52,7 @@ const token_service_1 = require("../services/User/token.service");
 const noticia_service_1 = require("../services/mantenimiento/noticia.service");
 const DataTable_model_1 = require("../models/DataTable.model.");
 const aws_service_1 = require("../services/Aws/aws.service");
+const hostinger_service_1 = require("../services/Aws/hostinger.service");
 const preguntas_service_1 = require("../services/mantenimiento/preguntas.service");
 const emailJurisserivce_1 = require("../services/acompliance/emailJurisserivce");
 const Solicitud_model_1 = require("../models/public/Solicitud.model");
@@ -67,7 +68,7 @@ class User {
     }
 }
 let LoginController = class LoginController {
-    constructor(userService, tokenService, noticiaService, preguntaService, emailJurisService, s3Service, entriesService) {
+    constructor(userService, tokenService, noticiaService, preguntaService, emailJurisService, s3Service, entriesService, hostingerService) {
         this.userService = userService;
         this.tokenService = tokenService;
         this.noticiaService = noticiaService;
@@ -75,6 +76,7 @@ let LoginController = class LoginController {
         this.emailJurisService = emailJurisService;
         this.s3Service = s3Service;
         this.entriesService = entriesService;
+        this.hostingerService = hostingerService;
     }
     async autenticarUsuario(entidad) {
         var _a, _b;
@@ -358,6 +360,7 @@ let LoginController = class LoginController {
         return await this.emailJurisService.sendCCFIRMAOportunidaes(name, email, message, file1);
     }
     async downloadFile(ID, res) {
+        var _a, _b;
         try {
             const data = await this.entriesService.get(ID);
             let fecha = new Date('2024-11-08');
@@ -365,7 +368,9 @@ let LoginController = class LoginController {
             if (data.FCRCN > fecha || data.FLGDOC === '1') {
                 modificar = true;
             }
-            const fileBuffer = await this.s3Service.downloadFile(data.ENTRIEFILE);
+            const fileBuffer = ((_a = data.ENTRIEFILE) === null || _a === void 0 ? void 0 : _a.startsWith('/uploads/'))
+                ? await this.hostingerService.downloadDocumento(data.ENTRIEFILE)
+                : await this.s3Service.downloadFile(data.ENTRIEFILE);
             const pathcaroa = path.join(__dirname, '..', 'files/files', 'caroa.png');
             const pathccfirma = path.join(__dirname, '..', 'files/files', 'ccfirma.png');
             const pathmarcadeagua = path.join(__dirname, '..', 'files/files', 'marcadeagua.png');
@@ -477,7 +482,9 @@ let LoginController = class LoginController {
             res.send(Buffer.from(pdfBytes));
         }
         catch (error) {
-            res.status(500).send('Error al descargar el archivo');
+            const msg = (_b = error === null || error === void 0 ? void 0 : error.message) !== null && _b !== void 0 ? _b : String(error);
+            console.error('[login/download]', msg);
+            res.status(500).json({ error: 'Error al descargar el archivo', detail: msg });
         }
     }
     async listaCategorias(entidad) {
@@ -641,6 +648,7 @@ exports.LoginController = LoginController = __decorate([
         preguntas_service_1.PreguntasService,
         emailJurisserivce_1.EmailJurisService,
         aws_service_1.S3Service,
-        entries_service_1.EntriesService])
+        entries_service_1.EntriesService,
+        hostinger_service_1.HostingerService])
 ], LoginController);
 //# sourceMappingURL=login.controller.js.map

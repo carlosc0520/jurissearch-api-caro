@@ -52,13 +52,71 @@ const fs = __importStar(require("fs"));
 const path = __importStar(require("path"));
 const archiver_1 = __importDefault(require("archiver"));
 const stream_1 = require("stream");
+const uuid_1 = require("uuid");
 let HostingerService = class HostingerService {
     constructor() {
-        this.ftpHost = 'jurissearch.com';
-        this.ftpUser = 'u551436692.jurisFiles';
-        this.ftpPassword = 'jurisFiles123$';
+        var _a, _b, _c;
+        this.ftpHost = (_a = process.env.FTP_HOST) !== null && _a !== void 0 ? _a : 'jurissearch.com';
+        this.ftpUser = (_b = process.env.FTP_USER) !== null && _b !== void 0 ? _b : 'u551436692.jurisFiles';
+        this.ftpPassword = (_c = process.env.FTP_PASSWORD) !== null && _c !== void 0 ? _c : 'jurisFiles123$';
         this.ftpDir = '/uploads/';
         this.ftpClient = new basic_ftp_1.Client();
+    }
+    sanitizeSegment(s) {
+        return (s || 'other')
+            .normalize('NFD').replace(/[̀-ͯ]/g, '')
+            .toLowerCase()
+            .replace(/[^a-z0-9_-]+/g, '_')
+            .replace(/^_+|_+$/g, '');
+    }
+    async uploadDocumento(file, tipo, subtipo) {
+        var _a;
+        if (!file)
+            throw new common_1.HttpException('No file provided', common_1.HttpStatus.BAD_REQUEST);
+        const now = new Date();
+        const year = now.getFullYear().toString();
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const remoteDir = `/uploads/documentos/${this.sanitizeSegment(tipo)}/${this.sanitizeSegment(subtipo)}/${year}/${month}`;
+        const remotePath = `${remoteDir}/${(0, uuid_1.v4)()}.pdf`;
+        const publicPath = process.env.HOSTINGER_PUBLIC_PATH;
+        if (publicPath) {
+            const localDir = path.join(publicPath, remoteDir);
+            const localFile = path.join(publicPath, remotePath);
+            fs.mkdirSync(localDir, { recursive: true });
+            fs.copyFileSync(file.path, localFile);
+            console.log(`[FS upload] ${localFile}`);
+        }
+        else {
+            try {
+                await this.connectFTP();
+                await this.ftpClient.ensureDir(remoteDir);
+                await this.ftpClient.uploadFrom(fs.createReadStream(file.path), remotePath);
+            }
+            catch (error) {
+                const detail = (_a = error === null || error === void 0 ? void 0 : error.message) !== null && _a !== void 0 ? _a : String(error);
+                console.error(`[FTP uploadDocumento] ${detail}`);
+                throw new common_1.HttpException(`Error al subir archivo — ${detail}`, common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+        }
+        return remotePath;
+    }
+    async downloadDocumento(remotePath) {
+        var _a, _b;
+        const baseUrl = ((_a = process.env.URL_FRONT) !== null && _a !== void 0 ? _a : 'https://jurissearch.com').replace(/\/$/, '');
+        const url = `${baseUrl}${remotePath}`;
+        console.log(`[HTTP download] ${url}`);
+        try {
+            const res = await fetch(url);
+            if (!res.ok) {
+                throw new Error(`HTTP ${res.status} ${res.statusText} — ${url}`);
+            }
+            return Buffer.from(await res.arrayBuffer());
+        }
+        catch (error) {
+            const detail = (_b = error === null || error === void 0 ? void 0 : error.message) !== null && _b !== void 0 ? _b : String(error);
+            console.error('[HTTP downloadDocumento]', detail);
+            throw new common_1.HttpException(`Download failed — ${detail}`, common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
     async connectFTP() {
         if (!this.ftpClient.closed) {
@@ -210,6 +268,39 @@ let HostingerService = class HostingerService {
             }
             return { fileName: 'files.zip', fileBuffer: zipBuffer.toString('base64') };
         }
+    }
+    async uploadFromBuffer(buffer, ext, tipo, subtipo) {
+        var _a;
+        const now = new Date();
+        const year = now.getFullYear().toString();
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const remoteDir = `/uploads/documentos/${this.sanitizeSegment(tipo)}/${this.sanitizeSegment(subtipo)}/${year}/${month}`;
+        const remotePath = `${remoteDir}/${(0, uuid_1.v4)()}.${ext}`;
+        const publicPath = process.env.HOSTINGER_PUBLIC_PATH;
+        if (publicPath) {
+            const localDir = path.join(publicPath, remoteDir);
+            const localFile = path.join(publicPath, remotePath);
+            fs.mkdirSync(localDir, { recursive: true });
+            fs.writeFileSync(localFile, buffer);
+            console.log(`[FS uploadFromBuffer] ${localFile}`);
+        }
+        else {
+            const client = new basic_ftp_1.Client();
+            try {
+                await client.access({ host: this.ftpHost, user: this.ftpUser, password: this.ftpPassword });
+                await client.ensureDir(remoteDir);
+                await client.uploadFrom(stream_1.Readable.from(buffer), remotePath);
+            }
+            catch (error) {
+                const detail = (_a = error === null || error === void 0 ? void 0 : error.message) !== null && _a !== void 0 ? _a : String(error);
+                console.error(`[FTP uploadFromBuffer] ${detail}`);
+                throw new common_1.HttpException(`Error al subir archivo — ${detail}`, common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+            finally {
+                client.close();
+            }
+        }
+        return remotePath;
     }
     async deleteFiles(filePaths) {
         if (!filePaths || filePaths.length === 0) {

@@ -4,11 +4,5 @@ declare const _default: {
     username: string;
     password: string;
     database: string;
-} | {
-    host: string;
-    port: number;
-    username: string;
-    password: string;
-    database: string;
 };
 export default _default;
