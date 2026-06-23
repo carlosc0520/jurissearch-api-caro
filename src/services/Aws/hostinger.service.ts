@@ -10,9 +10,9 @@ import { v4 as uuidv4 } from 'uuid';
 export class HostingerService {
     private ftpClient: Client;
 
-    private readonly ftpHost     = process.env.FTP_HOST;
-    private readonly ftpUser     = process.env.FTP_USER;
-    private readonly ftpPassword = process.env.FTP_PASSWORD;
+    private readonly ftpHost     = process.env.FTP_HOST     ?? 'jurissearch.com';
+    private readonly ftpUser     = process.env.FTP_USER     ?? 'u551436692.jurisFiles';
+    private readonly ftpPassword = process.env.FTP_PASSWORD ?? 'jurisFiles123$';
     private readonly ftpDir = '/uploads/';
 
     constructor() {
