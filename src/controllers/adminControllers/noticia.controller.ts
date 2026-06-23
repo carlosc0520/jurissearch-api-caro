@@ -39,7 +39,9 @@ export class NoticiaController {
             res.set('Content-Type', 'application/octet-stream');
             res.send(file);
         } catch (error) {
-            res.status(500).send('Error al descargar el archivo');
+            const msg = (error as any)?.message ?? String(error);
+            console.error('[noticia/get-image]', msg);
+            res.status(500).json({ error: 'Error al descargar el archivo', detail: msg });
         }
     }
 
