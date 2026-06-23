@@ -42,12 +42,10 @@ export declare class EntriesController {
     doc(res: Response, ID: number): Promise<any>;
     fsInfo(): {
         cwd: string;
-        dirname: string;
+        URL_FRONT: string;
         HOSTINGER_PUBLIC_PATH: string;
-        candidates: {
-            path: string;
-            exists: boolean;
-        }[];
+        autoDetected: string;
+        autoDetectedExists: boolean;
     };
     private migJobs;
     migrationPreview(): Promise<{

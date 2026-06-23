@@ -1625,20 +1625,16 @@ export class EntriesController {
   // ── Diagnóstico de rutas del servidor (temporal) ──────────────────────────
   @Get('fs-info')
   fsInfo() {
-    const cwd      = process.cwd();
-    const dirname  = __dirname;
-    const publicEnv = process.env.HOSTINGER_PUBLIC_PATH ?? '(no definido)';
-    const candidates = [
-      cwd + '/public_html',
-      cwd + '/../public_html',
-      cwd + '/../../public_html',
-      '/home/u551436692/domains/jurissearch.com/public_html',
-    ];
+    const cwd       = process.cwd();
+    const match     = cwd.match(/^(\/home\/[^/]+\/domains\/)[^/]+/);
+    const domain    = (process.env.URL_FRONT ?? '').replace(/^https?:\/\//, '').replace(/\/.*$/, '').replace('www.', '');
+    const autoPath  = match && domain ? `${match[1]}${domain}/public_html` : null;
     return {
       cwd,
-      dirname,
-      HOSTINGER_PUBLIC_PATH: publicEnv,
-      candidates: candidates.map(p => ({ path: p, exists: fs.existsSync(p) })),
+      URL_FRONT: process.env.URL_FRONT,
+      HOSTINGER_PUBLIC_PATH: process.env.HOSTINGER_PUBLIC_PATH ?? '(no definido)',
+      autoDetected: autoPath,
+      autoDetectedExists: autoPath ? fs.existsSync(autoPath) : false,
     };
   }
 

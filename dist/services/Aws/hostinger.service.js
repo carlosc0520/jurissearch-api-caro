@@ -62,6 +62,20 @@ let HostingerService = class HostingerService {
         this.ftpDir = '/uploads/';
         this.ftpClient = new basic_ftp_1.Client();
     }
+    getPublicPath() {
+        var _a;
+        if (process.env.HOSTINGER_PUBLIC_PATH)
+            return process.env.HOSTINGER_PUBLIC_PATH;
+        const cwd = process.cwd();
+        const match = cwd.match(/^(\/home\/[^/]+\/domains\/)[^/]+/);
+        if (!match)
+            return null;
+        const domain = ((_a = process.env.URL_FRONT) !== null && _a !== void 0 ? _a : '').replace(/^https?:\/\//, '').replace(/\/.*$/, '').replace('www.', '');
+        if (!domain)
+            return null;
+        const candidate = `${match[1]}${domain}/public_html`;
+        return fs.existsSync(candidate) ? candidate : null;
+    }
     sanitizeSegment(s) {
         return (s || 'other')
             .normalize('NFD').replace(/[̀-ͯ]/g, '')
@@ -78,7 +92,7 @@ let HostingerService = class HostingerService {
         const month = String(now.getMonth() + 1).padStart(2, '0');
         const remoteDir = `/uploads/documentos/${this.sanitizeSegment(tipo)}/${this.sanitizeSegment(subtipo)}/${year}/${month}`;
         const remotePath = `${remoteDir}/${(0, uuid_1.v4)()}.pdf`;
-        const publicPath = process.env.HOSTINGER_PUBLIC_PATH;
+        const publicPath = this.getPublicPath();
         if (publicPath) {
             const localDir = path.join(publicPath, remoteDir);
             const localFile = path.join(publicPath, remotePath);
@@ -276,7 +290,7 @@ let HostingerService = class HostingerService {
         const month = String(now.getMonth() + 1).padStart(2, '0');
         const remoteDir = `/uploads/documentos/${this.sanitizeSegment(tipo)}/${this.sanitizeSegment(subtipo)}/${year}/${month}`;
         const remotePath = `${remoteDir}/${(0, uuid_1.v4)()}.${ext}`;
-        const publicPath = process.env.HOSTINGER_PUBLIC_PATH;
+        const publicPath = this.getPublicPath();
         if (publicPath) {
             const localDir = path.join(publicPath, remoteDir);
             const localFile = path.join(publicPath, remotePath);

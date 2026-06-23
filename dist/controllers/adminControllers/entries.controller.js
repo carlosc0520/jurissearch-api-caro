@@ -1149,21 +1149,17 @@ let EntriesController = class EntriesController {
         res.send(buffer);
     }
     fsInfo() {
-        var _a;
+        var _a, _b;
         const cwd = process.cwd();
-        const dirname = __dirname;
-        const publicEnv = (_a = process.env.HOSTINGER_PUBLIC_PATH) !== null && _a !== void 0 ? _a : '(no definido)';
-        const candidates = [
-            cwd + '/public_html',
-            cwd + '/../public_html',
-            cwd + '/../../public_html',
-            '/home/u551436692/domains/jurissearch.com/public_html',
-        ];
+        const match = cwd.match(/^(\/home\/[^/]+\/domains\/)[^/]+/);
+        const domain = ((_a = process.env.URL_FRONT) !== null && _a !== void 0 ? _a : '').replace(/^https?:\/\//, '').replace(/\/.*$/, '').replace('www.', '');
+        const autoPath = match && domain ? `${match[1]}${domain}/public_html` : null;
         return {
             cwd,
-            dirname,
-            HOSTINGER_PUBLIC_PATH: publicEnv,
-            candidates: candidates.map(p => ({ path: p, exists: fs.existsSync(p) })),
+            URL_FRONT: process.env.URL_FRONT,
+            HOSTINGER_PUBLIC_PATH: (_b = process.env.HOSTINGER_PUBLIC_PATH) !== null && _b !== void 0 ? _b : '(no definido)',
+            autoDetected: autoPath,
+            autoDetectedExists: autoPath ? fs.existsSync(autoPath) : false,
         };
     }
     async migrationPreview() {

@@ -19,6 +19,18 @@ export class HostingerService {
         this.ftpClient = new Client();
     }
 
+    // Auto-detecta public_html: ENV → /home/{user}/domains/{domain}/public_html
+    private getPublicPath(): string | null {
+        if (process.env.HOSTINGER_PUBLIC_PATH) return process.env.HOSTINGER_PUBLIC_PATH;
+        const cwd   = process.cwd();
+        const match = cwd.match(/^(\/home\/[^/]+\/domains\/)[^/]+/);
+        if (!match) return null;
+        const domain = (process.env.URL_FRONT ?? '').replace(/^https?:\/\//, '').replace(/\/.*$/, '').replace('www.', '');
+        if (!domain) return null;
+        const candidate = `${match[1]}${domain}/public_html`;
+        return fs.existsSync(candidate) ? candidate : null;
+    }
+
     private sanitizeSegment(s: string): string {
         return (s || 'other')
             .normalize('NFD').replace(/[̀-ͯ]/g, '')
@@ -37,7 +49,7 @@ export class HostingerService {
         const remoteDir  = `/uploads/documentos/${this.sanitizeSegment(tipo)}/${this.sanitizeSegment(subtipo)}/${year}/${month}`;
         const remotePath = `${remoteDir}/${uuidv4()}.pdf`;
 
-        const publicPath = process.env.HOSTINGER_PUBLIC_PATH;
+        const publicPath = this.getPublicPath();
         if (publicPath) {
             const localDir  = path.join(publicPath, remoteDir);
             const localFile = path.join(publicPath, remotePath);
@@ -269,7 +281,7 @@ export class HostingerService {
         const remoteDir  = `/uploads/documentos/${this.sanitizeSegment(tipo)}/${this.sanitizeSegment(subtipo)}/${year}/${month}`;
         const remotePath = `${remoteDir}/${uuidv4()}.${ext}`;
 
-        const publicPath = process.env.HOSTINGER_PUBLIC_PATH;
+        const publicPath = this.getPublicPath();
         if (publicPath) {
             const localDir  = path.join(publicPath, remoteDir);
             const localFile = path.join(publicPath, remotePath);

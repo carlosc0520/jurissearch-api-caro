@@ -5,6 +5,7 @@ export declare class HostingerService {
     private readonly ftpPassword;
     private readonly ftpDir;
     constructor();
+    private getPublicPath;
     private sanitizeSegment;
     uploadDocumento(file: Express.Multer.File, tipo: string, subtipo: string): Promise<string>;
     downloadDocumento(remotePath: string): Promise<Buffer>;
