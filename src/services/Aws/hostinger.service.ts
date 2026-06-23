@@ -49,30 +49,25 @@ export class HostingerService {
         return remotePath;
     }
 
-    // ── Descarga un PDF desde FTP y retorna Buffer ──
+    // ── Descarga un PDF vía HTTP (más confiable que FTP en self-hosted) ──
     async downloadDocumento(remotePath: string): Promise<Buffer> {
-        const fileName = path.basename(remotePath);
-        const tempDir  = path.join(process.cwd(), 'uploads', 'temp');
-        const tempFile = path.join(tempDir, fileName);
-
-        fs.mkdirSync(tempDir, { recursive: true });
-
+        const baseUrl = (process.env.URL_FRONT ?? 'https://jurissearch.com').replace(/\/$/, '');
+        const url     = `${baseUrl}${remotePath}`;
+        console.log(`[HTTP download] ${url}`);
         try {
-            console.log(`[FTP] host="${this.ftpHost}" user="${this.ftpUser}" pass="${this.ftpPassword ? this.ftpPassword.slice(0,3)+'***' : 'UNDEFINED'}" path="${remotePath}" tempFile="${tempFile}"`);
-            await this.connectFTP();
-            await this.ftpClient.downloadTo(tempFile, remotePath);
+            const res = await fetch(url);
+            if (!res.ok) {
+                throw new Error(`HTTP ${res.status} ${res.statusText} — ${url}`);
+            }
+            return Buffer.from(await res.arrayBuffer());
         } catch (error) {
             const detail = (error as any)?.message ?? String(error);
-            console.error('[FTP downloadDocumento]', remotePath, detail);
+            console.error('[HTTP downloadDocumento]', detail);
             throw new HttpException(
-                `FTP download failed — host:${this.ftpHost} user:${this.ftpUser} pass:${this.ftpPassword ? this.ftpPassword.slice(0,3)+'***' : 'UNDEFINED'} — path: ${remotePath} — ${detail}`,
+                `Download failed — ${detail}`,
                 HttpStatus.INTERNAL_SERVER_ERROR,
             );
         }
-
-        const buffer = fs.readFileSync(tempFile);
-        try { fs.unlinkSync(tempFile); } catch { /* ignora error al limpiar temp */ }
-        return buffer;
     }
 
     private async connectFTP() {
