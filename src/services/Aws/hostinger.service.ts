@@ -31,19 +31,29 @@ export class HostingerService {
     async uploadDocumento(file: Express.Multer.File, tipo: string, subtipo: string): Promise<string> {
         if (!file) throw new HttpException('No file provided', HttpStatus.BAD_REQUEST);
 
-        const now       = new Date();
-        const year      = now.getFullYear().toString();
-        const month     = String(now.getMonth() + 1).padStart(2, '0');
-        const remoteDir = `/uploads/documentos/${this.sanitizeSegment(tipo)}/${this.sanitizeSegment(subtipo)}/${year}/${month}`;
+        const now        = new Date();
+        const year       = now.getFullYear().toString();
+        const month      = String(now.getMonth() + 1).padStart(2, '0');
+        const remoteDir  = `/uploads/documentos/${this.sanitizeSegment(tipo)}/${this.sanitizeSegment(subtipo)}/${year}/${month}`;
         const remotePath = `${remoteDir}/${uuidv4()}.pdf`;
 
-        try {
-            await this.connectFTP();
-            await this.ftpClient.ensureDir(remoteDir);
-            await this.ftpClient.uploadFrom(fs.createReadStream(file.path), remotePath);
-        } catch (error) {
-            console.warn(`FTP uploadDocumento failed: ${(error as any)?.message}`);
-            throw new HttpException('Error al subir el archivo al servidor', HttpStatus.INTERNAL_SERVER_ERROR);
+        const publicPath = process.env.HOSTINGER_PUBLIC_PATH;
+        if (publicPath) {
+            const localDir  = path.join(publicPath, remoteDir);
+            const localFile = path.join(publicPath, remotePath);
+            fs.mkdirSync(localDir, { recursive: true });
+            fs.copyFileSync(file.path, localFile);
+            console.log(`[FS upload] ${localFile}`);
+        } else {
+            try {
+                await this.connectFTP();
+                await this.ftpClient.ensureDir(remoteDir);
+                await this.ftpClient.uploadFrom(fs.createReadStream(file.path), remotePath);
+            } catch (error) {
+                const detail = (error as any)?.message ?? String(error);
+                console.error(`[FTP uploadDocumento] ${detail}`);
+                throw new HttpException(`Error al subir archivo — ${detail}`, HttpStatus.INTERNAL_SERVER_ERROR);
+            }
         }
 
         return remotePath;
@@ -259,13 +269,26 @@ export class HostingerService {
         const remoteDir  = `/uploads/documentos/${this.sanitizeSegment(tipo)}/${this.sanitizeSegment(subtipo)}/${year}/${month}`;
         const remotePath = `${remoteDir}/${uuidv4()}.${ext}`;
 
-        const client = new Client();
-        try {
-            await client.access({ host: this.ftpHost, user: this.ftpUser, password: this.ftpPassword });
-            await client.ensureDir(remoteDir);
-            await client.uploadFrom(Readable.from(buffer), remotePath);
-        } finally {
-            client.close();
+        const publicPath = process.env.HOSTINGER_PUBLIC_PATH;
+        if (publicPath) {
+            const localDir  = path.join(publicPath, remoteDir);
+            const localFile = path.join(publicPath, remotePath);
+            fs.mkdirSync(localDir, { recursive: true });
+            fs.writeFileSync(localFile, buffer);
+            console.log(`[FS uploadFromBuffer] ${localFile}`);
+        } else {
+            const client = new Client();
+            try {
+                await client.access({ host: this.ftpHost, user: this.ftpUser, password: this.ftpPassword });
+                await client.ensureDir(remoteDir);
+                await client.uploadFrom(Readable.from(buffer), remotePath);
+            } catch (error) {
+                const detail = (error as any)?.message ?? String(error);
+                console.error(`[FTP uploadFromBuffer] ${detail}`);
+                throw new HttpException(`Error al subir archivo — ${detail}`, HttpStatus.INTERNAL_SERVER_ERROR);
+            } finally {
+                client.close();
+            }
         }
         return remotePath;
     }
