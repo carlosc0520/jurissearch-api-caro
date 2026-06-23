@@ -1622,6 +1622,26 @@ export class EntriesController {
     res.send(buffer);
   }
 
+  // ── Diagnóstico de rutas del servidor (temporal) ──────────────────────────
+  @Get('fs-info')
+  fsInfo() {
+    const cwd      = process.cwd();
+    const dirname  = __dirname;
+    const publicEnv = process.env.HOSTINGER_PUBLIC_PATH ?? '(no definido)';
+    const candidates = [
+      cwd + '/public_html',
+      cwd + '/../public_html',
+      cwd + '/../../public_html',
+      '/home/u551436692/domains/jurissearch.com/public_html',
+    ];
+    return {
+      cwd,
+      dirname,
+      HOSTINGER_PUBLIC_PATH: publicEnv,
+      candidates: candidates.map(p => ({ path: p, exists: fs.existsSync(p) })),
+    };
+  }
+
   // ── Migración S3 → Hostinger ──────────────────────────────────────────────
   private migJobs = new Map<string, MigJob>();
 
